@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="StageDesk Pro è un'app desktop per scrivere copioni teatrali, gestire cue multimediali, note di regia, personaggi ed export PDF."
+    />
+    <meta property="og:title" content="StageDesk Pro" />
+    <meta
+      property="og:description"
+      content="Copioni teatrali, cue multimediali, note di regia, fullscreen e PDF in un'unica applicazione desktop."
+    />
+    <meta property="og:type" content="website" />
+    <title>StageDesk Pro</title>
+    <link rel="icon" href="./assets/stagedesk-pro-icon.png" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="StageDesk Pro">
+        <img src="./assets/stagedesk-pro-icon.png" alt="" />
+        <span>StageDesk Pro</span>
+      </a>
+      <nav aria-label="Navigazione principale">
+        <a href="#funzioni">Funzioni</a>
+        <a href="#download">Download</a>
+        <a href="#supporto">Supporto</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Applicazione desktop per teatro e regia</p>
+          <h1>StageDesk Pro</h1>
+          <p class="lead">
+            Scrivi copioni, organizza personaggi e media, gestisci cue audio, video e immagini, porta il testo
+            in modalità spettacolo ed esporta PDF pronti per la produzione.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#download">Scarica installer</a>
+            <a class="button secondary" href="https://github.com/igelsomino/stagedesk-pro" target="_blank" rel="noreferrer">
+              Repository GitHub
+            </a>
+          </div>
+        </div>
+        <div class="product-panel" aria-label="Anteprima funzionale">
+          <div class="panel-toolbar">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div class="panel-grid">
+            <aside>
+              <strong>Struttura</strong>
+              <p>Atto 1</p>
+              <p>Scena XV</p>
+              <p>Bookmark</p>
+            </aside>
+            <article>
+              <h2>Scena XV</h2>
+              <div class="note">Personaggi in scena: Mirandolina, Fabrizio</div>
+              <p><b>MIRANDOLINA</b>: A pranzo, che cosa comanda?</p>
+              <div class="cue">Campanello · suono</div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="funzioni" class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Cosa include</p>
+          <h2>Un ambiente operativo per il copione teatrale</h2>
+        </div>
+        <div class="feature-grid">
+          <article>
+            <h3>Editor strutturato</h3>
+            <p>Gestione di atti, scene, battute, tabelle personaggi, note di regia, bookmark e collegamenti.</p>
+          </article>
+          <article>
+            <h3>Cue multimediali</h3>
+            <p>Audio, musica, immagini e video collegati al testo, con anteprime e controlli in editor e fullscreen.</p>
+          </article>
+          <article>
+            <h3>Modalità spettacolo</h3>
+            <p>Avanzamento per step, autoplay dei cue, shortcut da tastiera e controlli rapidi durante la lettura.</p>
+          </article>
+          <article>
+            <h3>Export PDF</h3>
+            <p>Esportazione completa o pulita, con rendering di titoli, battute, tabelle, citazioni e timbro pagina.</p>
+          </article>
+          <article>
+            <h3>Progetti su file</h3>
+            <p>Salvataggio automatico nella cartella progetto e raccolta media organizzata per sistema di file.</p>
+          </article>
+          <article>
+            <h3>Aggiornamenti</h3>
+            <p>Release pubblicate su GitHub con metadata per il sistema di aggiornamento automatico desktop.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="download" class="section download-section">
+        <div class="section-heading">
+          <p class="eyebrow">Installer</p>
+          <h2>Download per sistema operativo</h2>
+          <p id="release-status" class="status">Caricamento ultima release...</p>
+        </div>
+        <div id="downloads" class="download-grid" aria-live="polite"></div>
+        <p class="download-note">
+          Gli installer sono pubblicati nella release GitHub ufficiale. Su macOS e Windows l'installazione può
+          segnalare che il file non è firmato finché non saranno disponibili certificati di firma e notarizzazione.
+        </p>
+      </section>
+
+      <section id="supporto" class="section support">
+        <div>
+          <p class="eyebrow">Supporto</p>
+          <h2>Documentazione, issue e release</h2>
+          <p>
+            Il progetto è distribuito tramite GitHub. Da lì puoi consultare il codice sorgente, aprire segnalazioni,
+            verificare le release e seguire gli aggiornamenti.
+          </p>
+        </div>
+        <div class="support-links">
+          <a href="https://github.com/igelsomino/stagedesk-pro" target="_blank" rel="noreferrer">Sorgenti</a>
+          <a href="https://github.com/igelsomino/stagedesk-pro/issues" target="_blank" rel="noreferrer">Issues</a>
+          <a href="https://github.com/igelsomino/stagedesk-pro/releases" target="_blank" rel="noreferrer">Release</a>
+          <a href="https://stagedesk-pro.aigconsulting.it/informativa-privacy" target="_blank" rel="noreferrer">Privacy</a>
+          <a href="https://stagedesk-pro.aigconsulting.it/termini-uso" target="_blank" rel="noreferrer">Termini</a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>StageDesk Pro</span>
+      <span>Applicazione desktop per copioni teatrali</span>
+    </footer>
+
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>

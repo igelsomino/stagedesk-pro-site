@@ -20,7 +20,7 @@
   <body>
     <header class="site-header">
       <a class="brand" href="#top" aria-label="StageDesk Pro">
-        <img src="./assets/stagedesk-pro-icon.png" alt="" />
+        <span class="brand-mark"></span>
         <span>StageDesk Pro</span>
       </a>
       <nav aria-label="Navigazione principale">
@@ -32,111 +32,100 @@
 
     <main id="top">
       <section class="hero">
-        <div class="hero-copy">
-          <p class="eyebrow">Applicazione desktop per teatro e regia</p>
+        <div class="hero-media" aria-hidden="true"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <p class="eyebrow">Desktop app per regia, copioni e cue</p>
           <h1>StageDesk Pro</h1>
           <p class="lead">
-            Scrivi copioni, organizza personaggi e media, gestisci cue audio, video e immagini, porta il testo
-            in modalità spettacolo ed esporta PDF pronti per la produzione.
+            Un ambiente di lavoro per costruire il copione, organizzare personaggi e media, governare i cue in prova
+            e preparare l'esecuzione in modalità schermo intero.
           </p>
           <div class="hero-actions">
-            <a class="button primary" href="#download">Scarica installer</a>
-            <a class="button secondary" href="https://github.com/igelsomino/stagedesk-pro" target="_blank" rel="noreferrer">
-              Repository GitHub
+            <a class="button primary" href="#download">Scarica l'installer</a>
+            <a class="button ghost" href="https://github.com/igelsomino/stagedesk-pro" target="_blank" rel="noreferrer">
+              Apri il repository
             </a>
           </div>
         </div>
-        <div class="product-panel" aria-label="Anteprima funzionale">
-          <div class="panel-toolbar">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-          <div class="panel-grid">
-            <aside>
-              <strong>Struttura</strong>
-              <p>Atto 1</p>
-              <p>Scena XV</p>
-              <p>Bookmark</p>
-            </aside>
-            <article>
-              <h2>Scena XV</h2>
-              <div class="note">Personaggi in scena: Mirandolina, Fabrizio</div>
-              <p><b>MIRANDOLINA</b>: A pranzo, che cosa comanda?</p>
-              <div class="cue">Campanello · suono</div>
-            </article>
-          </div>
+        <aside class="release-card" aria-label="Ultima release">
+          <span class="release-label">Release corrente</span>
+          <strong id="hero-version">...</strong>
+          <p>Installer disponibili per macOS, Windows e Linux.</p>
+        </aside>
+      </section>
+
+      <section id="funzioni" class="section intro">
+        <div class="section-kicker">Perché usarlo</div>
+        <div class="intro-grid">
+          <h2>Dal testo di prova alla regia tecnica, senza uscire dal copione.</h2>
+          <p>
+            StageDesk Pro tratta note, cue, personaggi e battute come elementi del documento. Il copione resta
+            leggibile, ma contiene le informazioni operative necessarie a prove, regia e preparazione della scena.
+          </p>
         </div>
       </section>
 
-      <section id="funzioni" class="section">
-        <div class="section-heading">
-          <p class="eyebrow">Cosa include</p>
-          <h2>Un ambiente operativo per il copione teatrale</h2>
-        </div>
-        <div class="feature-grid">
-          <article>
-            <h3>Editor strutturato</h3>
-            <p>Gestione di atti, scene, battute, tabelle personaggi, note di regia, bookmark e collegamenti.</p>
-          </article>
-          <article>
-            <h3>Cue multimediali</h3>
-            <p>Audio, musica, immagini e video collegati al testo, con anteprime e controlli in editor e fullscreen.</p>
-          </article>
-          <article>
-            <h3>Modalità spettacolo</h3>
-            <p>Avanzamento per step, autoplay dei cue, shortcut da tastiera e controlli rapidi durante la lettura.</p>
-          </article>
-          <article>
-            <h3>Export PDF</h3>
-            <p>Esportazione completa o pulita, con rendering di titoli, battute, tabelle, citazioni e timbro pagina.</p>
-          </article>
-          <article>
-            <h3>Progetti su file</h3>
-            <p>Salvataggio automatico nella cartella progetto e raccolta media organizzata per sistema di file.</p>
-          </article>
-          <article>
-            <h3>Aggiornamenti</h3>
-            <p>Release pubblicate su GitHub con metadata per il sistema di aggiornamento automatico desktop.</p>
-          </article>
-        </div>
+      <section class="section feature-strip" aria-label="Funzioni principali">
+        <article>
+          <span>01</span>
+          <h3>Scrittura strutturata</h3>
+          <p>Atti, scene, battute, tabelle personaggi, bookmark, link e note di regia direttamente nell'editor.</p>
+        </article>
+        <article>
+          <span>02</span>
+          <h3>Cue multimediali</h3>
+          <p>Audio, musica, immagini e video collegati al testo, con anteprime e controlli dedicati.</p>
+        </article>
+        <article>
+          <span>03</span>
+          <h3>Modalità spettacolo</h3>
+          <p>Step automatici, autoplay dei cue e shortcut per seguire il copione durante prove ed esecuzione.</p>
+        </article>
+        <article>
+          <span>04</span>
+          <h3>Export PDF</h3>
+          <p>Versioni complete o pulite, con titoli, battute, tabelle, citazioni e timbro di generazione.</p>
+        </article>
       </section>
 
       <section id="download" class="section download-section">
-        <div class="section-heading">
-          <p class="eyebrow">Installer</p>
-          <h2>Download per sistema operativo</h2>
+        <div class="download-heading">
+          <div>
+            <div class="section-kicker">Download</div>
+            <h2>Installer desktop</h2>
+          </div>
           <p id="release-status" class="status">Caricamento ultima release...</p>
         </div>
         <div id="downloads" class="download-grid" aria-live="polite"></div>
         <p class="download-note">
-          Gli installer sono pubblicati nella release GitHub ufficiale. Su macOS e Windows l'installazione può
-          segnalare che il file non è firmato finché non saranno disponibili certificati di firma e notarizzazione.
+          Gli installer vengono letti dalla release GitHub ufficiale. Su macOS e Windows può comparire un avviso di
+          file non firmato finché non saranno completate firma e notarizzazione.
         </p>
       </section>
 
       <section id="supporto" class="section support">
         <div>
-          <p class="eyebrow">Supporto</p>
-          <h2>Documentazione, issue e release</h2>
+          <div class="section-kicker">Supporto</div>
+          <h2>Sorgenti, segnalazioni e aggiornamenti</h2>
           <p>
-            Il progetto è distribuito tramite GitHub. Da lì puoi consultare il codice sorgente, aprire segnalazioni,
-            verificare le release e seguire gli aggiornamenti.
+            Il progetto è pubblicato su GitHub. Puoi consultare il codice, verificare le release, aprire issue e
+            seguire lo stato degli aggiornamenti.
           </p>
         </div>
         <div class="support-links">
           <a href="https://github.com/igelsomino/stagedesk-pro" target="_blank" rel="noreferrer">Sorgenti</a>
           <a href="https://github.com/igelsomino/stagedesk-pro/issues" target="_blank" rel="noreferrer">Issues</a>
           <a href="https://github.com/igelsomino/stagedesk-pro/releases" target="_blank" rel="noreferrer">Release</a>
-          <a href="https://stagedesk-pro.aigconsulting.it/informativa-privacy" target="_blank" rel="noreferrer">Privacy</a>
-          <a href="https://stagedesk-pro.aigconsulting.it/termini-uso" target="_blank" rel="noreferrer">Termini</a>
+          <a href="/informativa-privacy/">Privacy</a>
+          <a href="/termini-uso/">Termini</a>
         </div>
       </section>
     </main>
 
     <footer>
       <span>StageDesk Pro</span>
-      <span>Applicazione desktop per copioni teatrali</span>
+      <span>Immagine hero: public domain via Rawpixel/Flickr.</span>
     </footer>
 
     <script src="./app.js" type="module"></script>

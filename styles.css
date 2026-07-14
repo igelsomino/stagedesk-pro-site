@@ -447,6 +447,87 @@ footer {
   border-top: 1px solid var(--line);
 }
 
+.store-page {
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.store-construction {
+  min-height: 100vh;
+}
+
+.store-hero {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  align-items: center;
+  padding: 120px clamp(22px, 5vw, 72px) 52px;
+  overflow: hidden;
+}
+
+.store-hero-media,
+.store-hero-overlay {
+  position: absolute;
+  inset: 0;
+}
+
+.store-hero-media {
+  background-image: url("./assets/theatre-hero.jpg");
+  background-size: cover;
+  background-position: center 68%;
+  filter: saturate(0.98) contrast(1.08);
+  transform: scale(1.02);
+}
+
+.store-hero-overlay {
+  background:
+    linear-gradient(90deg, rgba(15, 14, 12, 0.96) 0%, rgba(15, 14, 12, 0.78) 48%, rgba(15, 14, 12, 0.32) 100%),
+    linear-gradient(180deg, rgba(15, 14, 12, 0.32), rgba(15, 14, 12, 0.92));
+}
+
+.store-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 820px;
+}
+
+.store-hero h1 {
+  font-size: clamp(3.4rem, 8vw, 8rem);
+  line-height: 0.92;
+}
+
+.store-status-card {
+  width: min(520px, 100%);
+  margin-top: 30px;
+  border: 1px solid rgba(255, 248, 239, 0.18);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  padding: 18px;
+  background: rgba(15, 14, 12, 0.66);
+  backdrop-filter: blur(16px);
+}
+
+.store-status-card span {
+  display: block;
+  margin-bottom: 7px;
+  color: #ff7a42;
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.store-status-card strong {
+  display: block;
+  font-size: 1.05rem;
+}
+
+.store-status-card p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
 @media (max-width: 980px) {
   .release-card {
     position: relative;

@@ -19,43 +19,99 @@
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href="#top" aria-label="StageDesk Pro">
-        <span class="brand-mark"></span>
-        <span>StageDesk Pro</span>
-      </a>
-      <nav aria-label="Navigazione principale">
-        <a href="#funzioni">Funzioni</a>
-        <a href="#anteprima">Anteprima</a>
-        <a href="#funzionalita-dettaglio">Funzionalità</a>
-        <a href="#download">Download</a>
-        <a href="/store/">Store</a>
-        <a href="#supporto">Supporto</a>
-      </nav>
+      <div class="header-inner">
+        <div class="header-left">
+          <a class="brand" href="#top" aria-label="StageDesk Pro">
+            <span class="brand-mark"></span>
+            <span>StageDesk Pro</span>
+          </a>
+          <nav aria-label="Navigazione principale">
+            <a href="#funzioni">Funzioni</a>
+            <a href="#anteprima">Anteprima</a>
+            <a href="#funzionalita-dettaglio">Funzionalità</a>
+            <a href="#download">Download</a>
+            <a href="/store/">Store</a>
+            <a href="#supporto">Supporto</a>
+          </nav>
+        </div>
+      </div>
     </header>
 
     <main id="top">
       <section class="hero">
         <div class="hero-media" aria-hidden="true"></div>
         <div class="hero-overlay"></div>
-        <div class="hero-content">
-          <p class="eyebrow">Desktop app per regia, copioni e cue</p>
-          <h1>StageDesk Pro</h1>
-          <p class="lead">
-            Scrivi, organizza e porta in prova il tuo copione con personaggi, battute, note, cue multimediali e
-            modalità spettacolo in un unico ambiente desktop.
-          </p>
-          <div class="hero-actions">
-            <a class="button primary" href="#download">Scarica l'installer</a>
-            <a class="button ghost" href="https://github.com/igelsomino/stagedesk-pro" target="_blank" rel="noreferrer">
-              Apri il repository
-            </a>
+        <div class="hero-inner">
+          <div class="hero-content">
+            <p class="eyebrow">Desktop app per regia, copioni e cue</p>
+            <h1>StageDesk Pro</h1>
+            <p class="lead">
+              Scrivi, organizza e porta in prova il tuo copione con personaggi, battute, note, cue multimediali e
+              modalità spettacolo in un unico ambiente desktop.
+            </p>
+            <div class="hero-actions">
+              <a class="button primary" href="#download">Scarica l'installer</a>
+              <a class="button ghost" href="https://github.com/igelsomino/stagedesk-pro" target="_blank" rel="noreferrer">
+                Apri il repository
+              </a>
+            </div>
+            <aside class="release-card" aria-label="Ultima release">
+              <span class="release-label">Release corrente</span>
+              <strong id="hero-version">...</strong>
+              <p>Installer disponibili per macOS, Windows e Linux.</p>
+            </aside>
+          </div>
+
+          <div id="anteprima" class="hero-carousel" aria-labelledby="hero-carousel-title">
+            <div class="hero-carousel-heading">
+              <div class="section-kicker">Dentro l'app</div>
+              <h2 id="hero-carousel-title">Il copione prende forma mentre lavori.</h2>
+            </div>
+            <div class="carousel" data-carousel tabindex="0" role="region" aria-roledescription="carosello" aria-label="Schermate di StageDesk Pro">
+              <div class="carousel-stage">
+                <div class="carousel-track" data-carousel-track>
+                  <figure class="carousel-slide" data-carousel-slide>
+                    <img src="./assets/workspace-overview.png" alt="Editor StageDesk Pro con struttura, tabella personaggi e cue" fetchpriority="high" />
+                    <figcaption><strong>Il copione al centro.</strong><span>Struttura, editor e cue convivono nello stesso spazio di lavoro.</span></figcaption>
+                  </figure>
+                  <figure class="carousel-slide" data-carousel-slide aria-hidden="true">
+                    <img src="./assets/cue-inspector.png" alt="Inspector di un cue musicale con controlli di fade e anteprima" loading="lazy" />
+                    <figcaption><strong>Cue pronti per la prova.</strong><span>Audio, fade, autoplay e proprietà operative restano vicino alla battuta.</span></figcaption>
+                  </figure>
+                  <figure class="carousel-slide" data-carousel-slide aria-hidden="true">
+                    <img src="./assets/fullscreen-performance.png" alt="Modalità schermo intero con battuta e controlli di riproduzione" loading="lazy" />
+                    <figcaption><strong>La modalità spettacolo.</strong><span>Segui la battuta corrente e governa la riproduzione senza distrazioni.</span></figcaption>
+                  </figure>
+                  <figure class="carousel-slide" data-carousel-slide aria-hidden="true">
+                    <img src="./assets/theatre-menu.png" alt="Menu teatrale con struttura, note, battuta ed export" loading="lazy" />
+                    <figcaption><strong>Comandi teatrali ordinati.</strong><span>Gli strumenti ricorrenti sono raggruppati in un menu compatto.</span></figcaption>
+                  </figure>
+                  <figure class="carousel-slide" data-carousel-slide aria-hidden="true">
+                    <img src="./assets/pdf-export.png" alt="Anteprima PDF completo con tabella, titoli e note di regia" loading="lazy" />
+                    <figcaption><strong>Un PDF pronto da condividere.</strong><span>Versioni complete e pulite con una resa tipografica adatta al copione.</span></figcaption>
+                  </figure>
+                </div>
+                <button class="carousel-control previous" type="button" data-carousel-previous aria-label="Schermata precedente">
+                  <span aria-hidden="true">&#8592;</span>
+                </button>
+                <button class="carousel-control next" type="button" data-carousel-next aria-label="Schermata successiva">
+                  <span aria-hidden="true">&#8594;</span>
+                </button>
+              </div>
+              <div class="carousel-footer">
+                <span class="carousel-counter" data-carousel-counter>01 / 05</span>
+                <div class="carousel-dots" role="tablist" aria-label="Seleziona schermata">
+                  <button type="button" role="tab" aria-label="Vai alla schermata 1" aria-selected="true" data-carousel-dot="0"></button>
+                  <button type="button" role="tab" aria-label="Vai alla schermata 2" aria-selected="false" data-carousel-dot="1"></button>
+                  <button type="button" role="tab" aria-label="Vai alla schermata 3" aria-selected="false" data-carousel-dot="2"></button>
+                  <button type="button" role="tab" aria-label="Vai alla schermata 4" aria-selected="false" data-carousel-dot="3"></button>
+                  <button type="button" role="tab" aria-label="Vai alla schermata 5" aria-selected="false" data-carousel-dot="4"></button>
+                </div>
+                <span class="carousel-hint">Usa le frecce o trascina</span>
+              </div>
+            </div>
           </div>
         </div>
-        <aside class="release-card" aria-label="Ultima release">
-          <span class="release-label">Release corrente</span>
-          <strong id="hero-version">...</strong>
-          <p>Installer disponibili per macOS, Windows e Linux.</p>
-        </aside>
       </section>
 
       <section id="funzioni" class="section intro">
@@ -66,60 +122,6 @@
             StageDesk Pro tratta note, cue, personaggi e battute come elementi del documento. Il copione resta
             leggibile, ma contiene le informazioni operative necessarie a prove, regia e preparazione della scena.
           </p>
-        </div>
-      </section>
-
-      <section id="anteprima" class="section showcase" aria-labelledby="showcase-title">
-        <div class="showcase-heading">
-          <div>
-            <div class="section-kicker">Dentro l'app</div>
-            <h2 id="showcase-title">Una regia leggibile, anche quando tutto si muove.</h2>
-          </div>
-          <p>Esplora l'editor, i cue, il menu teatrale, la modalità spettacolo e l'export PDF.</p>
-        </div>
-
-        <div class="carousel" data-carousel tabindex="0" role="region" aria-roledescription="carosello" aria-label="Schermate di StageDesk Pro">
-          <div class="carousel-stage">
-            <div class="carousel-track" data-carousel-track>
-              <figure class="carousel-slide" data-carousel-slide>
-                <img src="./assets/workspace-overview.png" alt="Editor StageDesk Pro con struttura, tabella personaggi e cue" fetchpriority="high" />
-                <figcaption><strong>Il copione al centro.</strong><span>Struttura, editor e cue convivono nello stesso spazio di lavoro.</span></figcaption>
-              </figure>
-              <figure class="carousel-slide" data-carousel-slide aria-hidden="true">
-                <img src="./assets/cue-inspector.png" alt="Inspector di un cue musicale con controlli di fade e anteprima" loading="lazy" />
-                <figcaption><strong>Cue pronti per la prova.</strong><span>Audio, fade, autoplay e proprietà operative restano vicino alla battuta.</span></figcaption>
-              </figure>
-              <figure class="carousel-slide" data-carousel-slide aria-hidden="true">
-                <img src="./assets/fullscreen-performance.png" alt="Modalità schermo intero con battuta e controlli di riproduzione" loading="lazy" />
-                <figcaption><strong>La modalità spettacolo.</strong><span>Segui la battuta corrente e governa la riproduzione senza distrazioni.</span></figcaption>
-              </figure>
-              <figure class="carousel-slide" data-carousel-slide aria-hidden="true">
-                <img src="./assets/theatre-menu.png" alt="Menu teatrale con struttura, note, battuta ed export" loading="lazy" />
-                <figcaption><strong>Comandi teatrali ordinati.</strong><span>Gli strumenti ricorrenti sono raggruppati in un menu compatto.</span></figcaption>
-              </figure>
-              <figure class="carousel-slide" data-carousel-slide aria-hidden="true">
-                <img src="./assets/pdf-export.png" alt="Anteprima PDF completo con tabella, titoli e note di regia" loading="lazy" />
-                <figcaption><strong>Un PDF pronto da condividere.</strong><span>Versioni complete e pulite con una resa tipografica adatta al copione.</span></figcaption>
-              </figure>
-            </div>
-            <button class="carousel-control previous" type="button" data-carousel-previous aria-label="Schermata precedente">
-              <span aria-hidden="true">&#8592;</span>
-            </button>
-            <button class="carousel-control next" type="button" data-carousel-next aria-label="Schermata successiva">
-              <span aria-hidden="true">&#8594;</span>
-            </button>
-          </div>
-          <div class="carousel-footer">
-            <span class="carousel-counter" data-carousel-counter>01 / 05</span>
-            <div class="carousel-dots" role="tablist" aria-label="Seleziona schermata">
-              <button type="button" role="tab" aria-label="Vai alla schermata 1" aria-selected="true" data-carousel-dot="0"></button>
-              <button type="button" role="tab" aria-label="Vai alla schermata 2" aria-selected="false" data-carousel-dot="1"></button>
-              <button type="button" role="tab" aria-label="Vai alla schermata 3" aria-selected="false" data-carousel-dot="2"></button>
-              <button type="button" role="tab" aria-label="Vai alla schermata 4" aria-selected="false" data-carousel-dot="3"></button>
-              <button type="button" role="tab" aria-label="Vai alla schermata 5" aria-selected="false" data-carousel-dot="4"></button>
-            </div>
-            <span class="carousel-hint">Usa le frecce o trascina</span>
-          </div>
         </div>
       </section>
 

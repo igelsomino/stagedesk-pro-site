@@ -876,12 +876,20 @@ h3 {
 }
 
 footer {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 26px clamp(22px, 5vw, 72px);
+  padding: 0;
   color: var(--faint);
   border-top: 1px solid var(--line);
+}
+
+.footer-inner {
+  width: min(1220px, calc(100% - clamp(44px, 10vw, 144px)));
+  min-height: 78px;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-block: 26px;
 }
 
 .store-page {
@@ -1031,7 +1039,7 @@ footer {
 @media (max-width: 680px) {
   .site-header,
   .download-heading,
-  footer {
+  footer .footer-inner {
     align-items: flex-start;
     flex-direction: column;
   }

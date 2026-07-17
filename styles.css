@@ -1888,6 +1888,12 @@ h1 {
   stroke-width: 1.7;
 }
 
+.support-heading {
+  max-width: none;
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
+  white-space: nowrap;
+}
+
 .download-card .asset-list {
   display: flex;
   flex-wrap: wrap;
@@ -1922,6 +1928,10 @@ h1 {
 @media (max-width: 680px) {
   .support-nav-link {
     margin-left: 0;
+  }
+
+  .support-heading {
+    white-space: normal;
   }
 
   .support-links {

@@ -6,8 +6,7 @@ const downloadsEl = document.querySelector('#downloads')
 const statusEl = document.querySelector('#release-status')
 const heroVersionEl = document.querySelector('#hero-version')
 
-function setupCarousel() {
-  const carousel = document.querySelector('[data-carousel]')
+function setupCarousel(carousel) {
   if (!carousel) return
   const track = carousel.querySelector('[data-carousel-track]')
   const slides = [...carousel.querySelectorAll('[data-carousel-slide]')]
@@ -192,4 +191,4 @@ async function loadRelease() {
 }
 
 loadRelease()
-setupCarousel()
+document.querySelectorAll('[data-carousel]').forEach(setupCarousel)

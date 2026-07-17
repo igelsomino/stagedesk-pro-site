@@ -10,6 +10,10 @@ La pagina recupera automaticamente l'ultima release pubblicata su GitHub:
 
 In caso di errore sulla GitHub API usa un fallback statico alla release `v1.0.13`.
 
+La home contiene due caroselli distinti: `Anteprima` presenta le schermate reali dell'applicazione, mentre
+`Funzionalità` descrive in dodici schede testuali il flusso di lavoro, dall'accesso e dalla gestione dei progetti
+fino a cue, modalità spettacolo, export PDF, condivisione e aggiornamenti.
+
 ## Deploy Cloudflare Pages
 
 ```bash

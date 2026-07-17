@@ -468,7 +468,7 @@ h3 {
 .feature-carousel-stage {
   position: relative;
   overflow: hidden;
-  min-height: 540px;
+  min-height: 620px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #080807;
@@ -484,16 +484,17 @@ h3 {
 
 .feature-slide {
   display: grid;
-  grid-template-columns: minmax(0, 0.88fr) minmax(300px, 1.12fr);
+  grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr);
   flex: 0 0 100%;
   min-width: 0;
-  min-height: 540px;
+  min-height: 620px;
 }
 
 .feature-slide-copy {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  border-right: 1px solid var(--line);
   padding: clamp(28px, 4vw, 54px);
 }
 
@@ -568,22 +569,51 @@ h3 {
   outline-offset: 5px;
 }
 
-.feature-slide-visual {
-  display: grid;
+.feature-slide-aside {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   min-width: 0;
-  min-height: 0;
-  place-items: center;
-  padding: 24px;
-  border-left: 1px solid var(--line);
-  background: #080807;
+  padding: clamp(28px, 4vw, 48px);
+  background: rgba(255, 248, 239, 0.025);
 }
 
-.feature-slide-visual img {
-  display: block;
-  width: 100%;
-  max-height: 485px;
-  object-fit: contain;
-  object-position: center;
+.feature-slide-aside > span {
+  margin-bottom: 18px;
+  color: var(--accent);
+  font-size: 0.74rem;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.feature-slide-aside strong {
+  max-width: 320px;
+  font-size: clamp(1.25rem, 2vw, 1.85rem);
+  line-height: 1.08;
+}
+
+.feature-slide-aside p {
+  max-width: 330px;
+  margin: 18px 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.feature-aside-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 28px;
+}
+
+.feature-aside-tags span {
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--faint);
+  font-size: 0.72rem;
+  font-weight: 760;
 }
 
 .carousel-control {
@@ -973,15 +1003,14 @@ footer {
     min-height: 0;
   }
 
-  .feature-slide-visual {
-    min-height: 300px;
-    border-top: 0;
+  .feature-slide-copy {
+    border-right: 0;
     border-bottom: 1px solid var(--line);
-    border-left: 0;
   }
 
-  .feature-slide-copy {
-    min-height: 430px;
+  .feature-slide-aside {
+    min-height: 250px;
+    justify-content: flex-start;
   }
 
   .feature-strip,
@@ -1084,9 +1113,9 @@ footer {
     padding-top: 0;
   }
 
-  .feature-slide-visual {
+  .feature-slide-aside {
     min-height: 220px;
-    padding: 14px;
+    padding: 28px 22px 32px;
   }
 
   .carousel-control {

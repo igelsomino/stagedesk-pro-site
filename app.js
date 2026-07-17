@@ -62,7 +62,7 @@ function setupCarousel(carousel) {
   carousel.addEventListener('mouseleave', start)
   carousel.addEventListener('focusin', stop)
   carousel.addEventListener('focusout', (event) => {
-    if (!carousel.contains(event.relatedTarget)) start()
+    if (!(event.relatedTarget instanceof Node) || !carousel.contains(event.relatedTarget)) start()
   })
   carousel.addEventListener('touchstart', (event) => {
     touchStartX = event.changedTouches[0]?.clientX
@@ -115,9 +115,7 @@ function osIcon(id) {
     </svg>`
   }
 
-  return `<svg viewBox="0 0 24 24" aria-hidden="true">
-    <path d="M4.4 4.2h15.2c1 0 1.8.8 1.8 1.8v9.8c0 1-.8 1.8-1.8 1.8h-5.4l1.2 1.9h2.1c.5 0 .9.4.9.9s-.4.9-.9.9h-11c-.5 0-.9-.4-.9-.9s.4-.9.9-.9h2.1l1.2-1.9H4.4c-1 0-1.8-.8-1.8-1.8V6c0-1 .8-1.8 1.8-1.8Zm.2 2v9.4h14.8V6.2H4.6Zm4.1 2.1 2.4 2.4-2.4 2.4-1.2-1.2 1.2-1.2-1.2-1.2 1.2-1.2Zm3.6 4h4.2V14h-4.2v-1.7Z"/>
-  </svg>`
+  return '<img class="os-raster-icon" src="./assets/linux-platform-icon.png" alt="" aria-hidden="true" />'
 }
 
 function assetLabel(name) {
@@ -136,7 +134,8 @@ function githubDownloadUrl(tag, name) {
 }
 
 function renderDownloads(tag, assets, sourceUrl) {
-  const filteredAssets = assets.filter((asset) => !asset.name.endsWith('.sig') && asset.name !== 'latest.json')
+  if (!downloadsEl) return
+  const filteredAssets = (Array.isArray(assets) ? assets : []).filter((asset) => !asset.name.endsWith('.sig') && asset.name !== 'latest.json')
   downloadsEl.innerHTML = ''
   if (heroVersionEl) heroVersionEl.textContent = tag
 
@@ -176,6 +175,7 @@ function renderDownloads(tag, assets, sourceUrl) {
 }
 
 async function loadRelease() {
+  if (!downloadsEl || !statusEl) return
   try {
     const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases/latest`, {
       headers: { Accept: 'application/vnd.github+json' },
@@ -190,5 +190,5 @@ async function loadRelease() {
   }
 }
 
-loadRelease()
+if (downloadsEl && statusEl) loadRelease()
 document.querySelectorAll('[data-carousel]').forEach(setupCarousel)

@@ -767,6 +767,15 @@ h3 {
   color: #fff8ef;
 }
 
+.download-card .os .os-raster-icon {
+  display: block;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  object-fit: contain;
+  filter: brightness(0) saturate(100%) invert(86%) sepia(8%) saturate(347%) hue-rotate(175deg) brightness(92%) contrast(90%);
+}
+
 .download-card p {
   margin: 0;
   color: var(--muted);
@@ -1141,5 +1150,340 @@ footer {
 
   .carousel-hint {
     display: none;
+  }
+}
+
+:root {
+  --bg: #0c0e10;
+  --bg-soft: #141719;
+  --surface: #1a1d20;
+  --surface-strong: #202428;
+  --text: #f5f1eb;
+  --muted: #b4b8b9;
+  --faint: #81898c;
+  --line: rgba(245, 241, 235, 0.15);
+  --accent: #f1602b;
+  --accent-soft: rgba(241, 96, 43, 0.15);
+  --accent-line: rgba(241, 96, 43, 0.52);
+}
+
+body {
+  background: var(--bg);
+}
+
+.site-header {
+  min-height: 68px;
+  padding-top: 14px;
+  padding-bottom: 14px;
+  background: rgba(12, 14, 16, 0.84);
+}
+
+nav {
+  gap: 18px;
+}
+
+nav a {
+  font-size: 0.9rem;
+}
+
+.hero {
+  min-height: 82vh;
+  grid-template-columns: minmax(0, 1fr) minmax(230px, 320px);
+  align-items: end;
+  column-gap: clamp(32px, 8vw, 130px);
+  padding-top: 132px;
+  padding-bottom: 72px;
+}
+
+.hero-content {
+  max-width: 780px;
+}
+
+h1 {
+  max-width: 780px;
+  font-size: clamp(3.5rem, 7vw, 7.2rem);
+  line-height: 0.92;
+}
+
+.lead {
+  max-width: 680px;
+  margin-top: 24px;
+  font-size: clamp(1.05rem, 1.45vw, 1.28rem);
+}
+
+.release-card {
+  position: relative;
+  right: auto;
+  bottom: auto;
+  align-self: end;
+  width: auto;
+  margin: 0;
+  border-left: 3px solid var(--accent);
+  border-radius: 7px;
+  background: rgba(20, 23, 25, 0.86);
+}
+
+.section {
+  padding-top: clamp(72px, 8vw, 112px);
+  padding-bottom: clamp(72px, 8vw, 112px);
+}
+
+.intro-grid {
+  gap: clamp(32px, 7vw, 110px);
+}
+
+.showcase {
+  background: #111416;
+}
+
+.showcase-heading {
+  margin-bottom: 28px;
+}
+
+.showcase-heading h2 {
+  max-width: 780px;
+  font-size: clamp(2.25rem, 4vw, 4rem);
+  line-height: 1.02;
+}
+
+.carousel-stage {
+  border-radius: 10px;
+  background: #080a0b;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.24);
+}
+
+.carousel-footer,
+.feature-carousel-footer {
+  padding-right: 4px;
+  padding-left: 4px;
+}
+
+.feature-carousel {
+  display: block;
+}
+
+.feature-carousel-nav {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 7px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(12, 14, 16, 0.72);
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-line) transparent;
+}
+
+.feature-nav-item {
+  display: grid;
+  grid-template-columns: 28px minmax(140px, 1fr);
+  flex: 0 0 188px;
+  align-items: start;
+  min-height: 70px;
+  padding: 12px 11px;
+  border-color: transparent;
+  background: transparent;
+}
+
+.feature-nav-item strong {
+  font-size: 0.84rem;
+}
+
+.feature-nav-item small {
+  font-size: 0.7rem;
+}
+
+.feature-carousel-content {
+  margin-top: 14px;
+}
+
+.feature-carousel-stage {
+  min-height: 0;
+  border-radius: 10px;
+  background: #0b0d0e;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.22);
+}
+
+.feature-carousel-track {
+  height: auto;
+}
+
+.feature-slide {
+  display: block;
+  min-height: 0;
+}
+
+.feature-slide-copy {
+  max-width: 1000px;
+  min-height: 0;
+  margin: 0 auto;
+  padding: clamp(34px, 5vw, 66px) clamp(26px, 7vw, 94px) 34px;
+  border-right: 0;
+}
+
+.feature-slide-copy h3 {
+  max-width: 760px;
+  font-size: clamp(2rem, 4.4vw, 4.3rem);
+  line-height: 0.98;
+}
+
+.feature-slide-copy p {
+  max-width: 780px;
+  margin-top: 22px;
+  font-size: 1.02rem;
+}
+
+.feature-slide-copy ul {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  max-width: none;
+  margin-top: 30px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+
+.feature-slide-copy li {
+  padding-left: 17px;
+  font-size: 0.9rem;
+}
+
+.feature-slide-aside {
+  display: grid;
+  grid-template-columns: auto minmax(180px, 0.9fr) minmax(220px, 1fr) auto;
+  align-items: center;
+  gap: 22px;
+  min-height: 0;
+  padding: 22px clamp(26px, 7vw, 94px);
+  border-top: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.feature-slide-aside > span {
+  margin: 0;
+  font-size: 0.68rem;
+}
+
+.feature-slide-aside strong {
+  max-width: 310px;
+  font-size: 1.14rem;
+}
+
+.feature-slide-aside p {
+  max-width: 390px;
+  margin: 0;
+  font-size: 0.87rem;
+}
+
+.feature-aside-tags {
+  justify-content: end;
+  margin: 0;
+}
+
+.feature-carousel-footer {
+  padding-top: 14px;
+}
+
+.feature-carousel .carousel-control {
+  top: 45%;
+  width: 38px;
+  height: 38px;
+}
+
+.feature-carousel .carousel-control.previous {
+  left: 18px;
+}
+
+.feature-carousel .carousel-control.next {
+  right: 18px;
+}
+
+.feature-strip article {
+  min-height: 230px;
+  padding: 30px 34px;
+  background: rgba(255, 255, 255, 0.012);
+}
+
+.feature-strip span {
+  margin-bottom: 54px;
+}
+
+.download-section {
+  background: #111416;
+}
+
+.download-card {
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.support-links a {
+  justify-content: flex-start;
+}
+
+@media (max-width: 980px) {
+  .hero {
+    grid-template-columns: 1fr;
+    row-gap: 32px;
+  }
+
+  .release-card {
+    width: min(360px, 100%);
+    margin-top: 0;
+  }
+
+  .feature-carousel-nav {
+    grid-template-columns: none;
+  }
+
+  .feature-slide-copy ul {
+    grid-template-columns: 1fr;
+  }
+
+  .feature-slide-aside {
+    grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .feature-aside-tags {
+    grid-column: 2 / -1;
+    justify-content: start;
+  }
+}
+
+@media (max-width: 680px) {
+  .hero {
+    min-height: auto;
+    padding-top: 130px;
+  }
+
+  h1 {
+    font-size: clamp(3.5rem, 17vw, 5.2rem);
+  }
+
+  .feature-nav-item {
+    flex-basis: 170px;
+  }
+
+  .feature-slide-copy {
+    padding: 34px 22px 30px;
+  }
+
+  .feature-slide-copy h3 {
+    font-size: 2.35rem;
+  }
+
+  .feature-slide-aside {
+    display: block;
+    padding: 24px 22px 28px;
+  }
+
+  .feature-slide-aside strong,
+  .feature-slide-aside p {
+    display: block;
+    margin-top: 10px;
+  }
+
+  .feature-aside-tags {
+    margin-top: 18px;
   }
 }

@@ -1711,15 +1711,15 @@ h1 {
 
 .intro-grid {
   display: block;
-  max-width: 980px;
+  max-width: none;
 }
 
 .intro-grid h2 {
-  max-width: 900px;
+  max-width: none;
 }
 
 .intro-grid > p {
-  max-width: 900px;
+  max-width: none;
   margin: 22px 0 0;
 }
 
@@ -1753,6 +1753,17 @@ h1 {
 
 .intro .hero-actions {
   margin-top: 0;
+}
+
+.support {
+  display: block;
+}
+
+.support-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
 }
 
 .showcase-heading {

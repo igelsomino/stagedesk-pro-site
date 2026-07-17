@@ -1798,7 +1798,7 @@ h1 {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto auto auto auto;
-  align-content: end;
+  align-content: start;
   gap: 10px;
   min-height: 214px;
   padding: 14px clamp(26px, 7vw, 94px) 22px;

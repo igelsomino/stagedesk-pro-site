@@ -1710,15 +1710,18 @@ h1 {
 }
 
 .intro-grid {
-  display: block;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 0.46fr);
+  align-items: center;
+  gap: clamp(32px, 6vw, 88px);
   max-width: none;
 }
 
-.intro-grid h2 {
+.intro-copy h2 {
   max-width: none;
 }
 
-.intro-grid > p {
+.intro-copy p {
   max-width: none;
   margin: 22px 0 0;
 }
@@ -1727,10 +1730,8 @@ h1 {
   position: relative;
   right: auto;
   bottom: auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
+  display: block;
+  align-self: center;
   width: 100%;
   margin: 28px 0 0;
   padding: 20px 22px;
@@ -1752,7 +1753,7 @@ h1 {
 }
 
 .intro .hero-actions {
-  margin-top: 0;
+  margin-top: 24px;
 }
 
 .support {
@@ -1800,8 +1801,8 @@ h1 {
   grid-template-rows: auto auto auto auto;
   align-content: start;
   gap: 10px;
-  min-height: 214px;
-  padding: 14px clamp(26px, 7vw, 94px) 22px;
+  min-height: 0;
+  padding: 14px clamp(26px, 7vw, 94px) 14px;
 }
 
 .feature-slide-aside > span,
@@ -1877,6 +1878,10 @@ h1 {
 }
 
 @media (max-width: 980px) {
+  .intro-grid {
+    grid-template-columns: 1fr;
+  }
+
   .hero-intro .lead,
   .showcase-heading h2 {
     white-space: normal;

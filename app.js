@@ -6,6 +6,82 @@ const downloadsEl = document.querySelector('#downloads')
 const statusEl = document.querySelector('#release-status')
 const heroVersionEl = document.querySelector('#hero-version')
 
+function setupCarousel() {
+  const carousel = document.querySelector('[data-carousel]')
+  if (!carousel) return
+  const track = carousel.querySelector('[data-carousel-track]')
+  const slides = [...carousel.querySelectorAll('[data-carousel-slide]')]
+  const dots = [...carousel.querySelectorAll('[data-carousel-dot]')]
+  const counter = carousel.querySelector('[data-carousel-counter]')
+  const previous = carousel.querySelector('[data-carousel-previous]')
+  const next = carousel.querySelector('[data-carousel-next]')
+  if (!track || slides.length === 0) return
+
+  let activeIndex = 0
+  let timer
+  let touchStartX
+
+  const render = (index) => {
+    activeIndex = (index + slides.length) % slides.length
+    track.style.transform = `translate3d(${-activeIndex * 100}%, 0, 0)`
+    slides.forEach((slide, slideIndex) => {
+      slide.setAttribute('aria-hidden', String(slideIndex !== activeIndex))
+    })
+    dots.forEach((dot, dotIndex) => {
+      dot.setAttribute('aria-selected', String(dotIndex === activeIndex))
+    })
+    if (counter) counter.textContent = `${String(activeIndex + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`
+  }
+
+  const stop = () => {
+    if (timer) window.clearInterval(timer)
+    timer = undefined
+  }
+
+  const start = () => {
+    stop()
+    timer = window.setInterval(() => render(activeIndex + 1), 6500)
+  }
+
+  previous?.addEventListener('click', () => { render(activeIndex - 1); start() })
+  next?.addEventListener('click', () => { render(activeIndex + 1); start() })
+  dots.forEach((dot, index) => dot.addEventListener('click', () => { render(index); start() }))
+
+  carousel.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault()
+      render(activeIndex - 1)
+      start()
+    }
+    if (event.key === 'ArrowRight') {
+      event.preventDefault()
+      render(activeIndex + 1)
+      start()
+    }
+  })
+  carousel.addEventListener('mouseenter', stop)
+  carousel.addEventListener('mouseleave', start)
+  carousel.addEventListener('focusin', stop)
+  carousel.addEventListener('focusout', (event) => {
+    if (!carousel.contains(event.relatedTarget)) start()
+  })
+  carousel.addEventListener('touchstart', (event) => {
+    touchStartX = event.changedTouches[0]?.clientX
+    stop()
+  }, { passive: true })
+  carousel.addEventListener('touchend', (event) => {
+    const endX = event.changedTouches[0]?.clientX
+    if (touchStartX !== undefined && endX !== undefined && Math.abs(endX - touchStartX) > 42) {
+      render(activeIndex + (endX < touchStartX ? 1 : -1))
+    }
+    touchStartX = undefined
+    start()
+  }, { passive: true })
+
+  render(0)
+  start()
+}
+
 const osGroups = [
   {
     id: 'macos',
@@ -116,3 +192,4 @@ async function loadRelease() {
 }
 
 loadRelease()
+setupCarousel()

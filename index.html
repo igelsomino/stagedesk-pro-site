@@ -15,17 +15,22 @@
     <meta property="og:type" content="website" />
     <title>StageDesk Pro</title>
     <link rel="icon" href="./assets/stagedesk-pro-icon.png" />
-    <link rel="stylesheet" href="./styles.css?v=20260717-5" />
+    <link rel="stylesheet" href="./styles.css?v=20260717-12" />
   </head>
   <body>
     <header class="site-header">
       <div class="header-inner">
         <div class="header-left">
-          <a class="brand" href="#top" aria-label="StageDesk Pro">
-            <span class="brand-mark"></span>
-            <span>StageDesk Pro</span>
-          </a>
-          <nav aria-label="Navigazione principale">
+          <div class="header-brand-row">
+            <a class="brand" href="#top" aria-label="StageDesk Pro">
+              <span class="brand-mark"></span>
+              <span>StageDesk Pro</span>
+            </a>
+            <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-navigation" aria-label="Apri menu">
+              <span></span><span></span><span></span>
+            </button>
+          </div>
+          <nav id="main-navigation" aria-label="Navigazione principale">
             <a href="#funzionalita-dettaglio">Funzionalità</a>
             <a href="https://github.com/igelsomino/stagedesk-pro/wiki" target="_blank" rel="noreferrer">Documentazione</a>
             <a href="/store/">Store</a>
@@ -354,7 +359,7 @@
             </div>
             <div class="feature-carousel-footer">
               <span class="carousel-counter" data-carousel-counter>01 / 12</span>
-              <span class="carousel-hint">Seleziona una funzione o usa le frecce</span>
+              <span class="carousel-hint">Seleziona una funzione o trascina per esplorare</span>
             </div>
           </div>
         </div>
@@ -439,6 +444,6 @@
       </div>
     </footer>
 
-    <script src="./app.js" type="module"></script>
+    <script src="./app.js?v=20260717-2" type="module"></script>
   </body>
 </html>

@@ -6,6 +6,28 @@ const downloadsEl = document.querySelector('#downloads')
 const statusEl = document.querySelector('#release-status')
 const heroVersionEl = document.querySelector('#hero-version')
 const headerDownloadEl = document.querySelector('#header-download')
+const menuToggle = document.querySelector('[data-menu-toggle]') || document.querySelector('.menu-toggle')
+const mainNavigation = document.querySelector('#main-navigation')
+
+function setMobileMenu(open) {
+  if (!menuToggle || !mainNavigation) return
+  menuToggle.setAttribute('aria-expanded', String(open))
+  menuToggle.setAttribute('aria-label', open ? 'Chiudi menu' : 'Apri menu')
+  mainNavigation.classList.toggle('is-open', open)
+  document.body.classList.toggle('mobile-menu-open', open)
+}
+
+menuToggle?.addEventListener('click', () => {
+  setMobileMenu(menuToggle.getAttribute('aria-expanded') !== 'true')
+})
+
+mainNavigation?.querySelectorAll('a').forEach((link) => {
+  link.addEventListener('click', () => setMobileMenu(false))
+})
+
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 680) setMobileMenu(false)
+})
 
 function setupCarousel(carousel) {
   if (!carousel) return
@@ -92,7 +114,7 @@ const osGroups = [
   {
     id: 'windows',
     label: 'Windows',
-    description: 'Setup EXE e pacchetto MSI per Windows x64.',
+    description: 'EXE e pacchetto MSI per Windows x64.',
     match: (name) => name.endsWith('.exe') || name.endsWith('.msi'),
   },
   {
@@ -165,11 +187,11 @@ function osIcon(id) {
 function assetLabel(name) {
   if (name.includes('aarch64') && name.endsWith('.dmg')) return 'Apple Silicon'
   if (name.includes('x64') && name.endsWith('.dmg')) return 'Intel'
-  if (name.endsWith('.exe')) return 'Setup EXE'
+  if (name.endsWith('.exe')) return 'EXE'
   if (name.endsWith('.msi')) return 'MSI'
   if (name.endsWith('.AppImage')) return 'AppImage'
-  if (name.endsWith('.deb')) return 'Debian/Ubuntu'
-  if (name.endsWith('.rpm')) return 'Fedora/RHEL'
+  if (name.endsWith('.deb')) return 'DEB'
+  if (name.endsWith('.rpm')) return 'RPM'
   return 'Download'
 }
 

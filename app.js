@@ -5,6 +5,7 @@ const latestReleaseUrl = `https://github.com/${owner}/${repo}/releases/latest`
 const downloadsEl = document.querySelector('#downloads')
 const statusEl = document.querySelector('#release-status')
 const heroVersionEl = document.querySelector('#hero-version')
+const headerDownloadEl = document.querySelector('#header-download')
 
 function setupCarousel(carousel) {
   if (!carousel) return
@@ -102,6 +103,49 @@ const osGroups = [
   },
 ]
 
+function detectOperatingSystem() {
+  const platform = `${navigator.userAgentData?.platform || ''} ${navigator.platform || ''} ${navigator.userAgent || ''}`.toLowerCase()
+  if (platform.includes('win')) return 'windows'
+  if (platform.includes('mac')) return 'macos'
+  if (platform.includes('linux')) return 'linux'
+  return undefined
+}
+
+function selectInstaller(osId, assets) {
+  const group = osGroups.find((item) => item.id === osId)
+  const candidates = group ? assets.filter((asset) => group.match(asset.name)) : []
+  if (candidates.length === 0) return undefined
+
+  if (osId === 'macos') {
+    const architecture = `${navigator.userAgentData?.architecture || ''} ${navigator.platform || ''}`.toLowerCase()
+    const preferred = architecture.includes('arm') || architecture.includes('aarch')
+      ? candidates.find((asset) => /aarch64|arm64/i.test(asset.name))
+      : candidates.find((asset) => /x64|x86_64|intel/i.test(asset.name))
+    return preferred || candidates[0]
+  }
+
+  if (osId === 'windows') {
+    return candidates.find((asset) => asset.name.endsWith('.exe')) || candidates[0]
+  }
+
+  return candidates.find((asset) => asset.name.endsWith('.AppImage'))
+    || candidates.find((asset) => asset.name.endsWith('.deb'))
+    || candidates[0]
+}
+
+function configureHeaderDownload(tag, assets) {
+  if (!headerDownloadEl) return
+  const installer = selectInstaller(detectOperatingSystem(), assets)
+  if (!installer) {
+    headerDownloadEl.href = '#download'
+    headerDownloadEl.removeAttribute('title')
+    return
+  }
+
+  headerDownloadEl.href = installer.browser_download_url || githubDownloadUrl(tag, installer.name)
+  headerDownloadEl.title = `Scarica ${assetLabel(installer.name)}`
+}
+
 function osIcon(id) {
   if (id === 'macos') {
     return `<svg viewBox="0 0 24 24" aria-hidden="true">
@@ -138,6 +182,7 @@ function renderDownloads(tag, assets, sourceUrl) {
   const filteredAssets = (Array.isArray(assets) ? assets : []).filter((asset) => !asset.name.endsWith('.sig') && asset.name !== 'latest.json')
   downloadsEl.innerHTML = ''
   if (heroVersionEl) heroVersionEl.textContent = tag
+  configureHeaderDownload(tag, filteredAssets)
 
   osGroups.forEach((group) => {
     const groupAssets = filteredAssets.filter((asset) => group.match(asset.name))

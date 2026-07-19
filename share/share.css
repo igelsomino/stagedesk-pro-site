@@ -141,7 +141,8 @@ button { cursor: pointer; }
 .script-navigation input { width: 46px; height: 36px; border: 1px solid var(--line); border-radius: 5px; padding: 6px 4px; color: var(--text); background: #101213; text-align: center; }
 .script-navigation input:focus { border-color: var(--accent); outline: 2px solid rgba(255, 91, 31, 0.32); outline-offset: 1px; }
 .dialogue-list { display: grid; gap: 9px; min-width: 0; }
-.actor-dialogue { content-visibility: auto; contain-intrinsic-size: 0 132px; border: 0; border-left: 2px solid var(--accent); border-radius: 0; padding: 11px 0 11px 14px; background: transparent; }
+.actor-dialogue { content-visibility: auto; contain-intrinsic-size: 0 132px; border: 0; border-left: 2px solid var(--accent); border-radius: 0; padding: 11px 0 11px 14px; background: transparent; transform-origin: center center; transition: transform 180ms ease, opacity 180ms ease, background-color 180ms ease; }
+.actor-dialogue.is-current { transform: scale(1.018); border-left-width: 3px; background: rgba(255, 91, 31, 0.045); }
 .actor-dialogue.is-hidden { display: none; }
 .actor-dialogue.is-search-hidden, .dialogue-context.is-search-hidden { display: none; }
 .actor-dialogue.is-dialogue-hidden { border-left-color: #000; }

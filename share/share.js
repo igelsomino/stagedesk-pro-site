@@ -17,6 +17,8 @@ let filterMode = 'hide-selected'
 let revealedDialogueIds = new Set()
 let characterMenuOpen = false
 let authMode = 'signin'
+let removeStepNavigation = () => {}
+let stepNavigationLocked = false
 const SHARE_ACCESS_TTL_MS = 48 * 60 * 60 * 1000
 
 const escapeHtml = (value) => String(value ?? '')
@@ -320,6 +322,7 @@ async function refreshSharedScript(fromBootstrap = false) {
 }
 
 const renderShare = (updateMessage = '', uiState = {}) => {
+  removeStepNavigation()
   const payload = share?.payload || {}
   const characters = Array.isArray(payload.characters) ? payload.characters : []
   const dialogues = Array.isArray(payload.dialogues) ? payload.dialogues : []
@@ -461,6 +464,83 @@ const renderShare = (updateMessage = '', uiState = {}) => {
     dialogue.setAttribute('tabindex', '-1')
     dialogue.scrollIntoView({ behavior: 'smooth', block: 'center' })
     dialogue.focus({ preventScroll: true })
+  }
+  const visibleDialogues = () => Array.from(root.querySelectorAll('.actor-dialogue:not(.is-hidden):not(.is-search-hidden)'))
+  const stepToDialogue = (direction) => {
+    const cards = visibleDialogues()
+    if (!cards.length) return
+    const current = root.querySelector('.actor-dialogue.is-current')
+    let currentIndex = current ? cards.indexOf(current) : -1
+    if (currentIndex < 0) {
+      const viewportCenter = window.innerHeight / 2
+      currentIndex = cards.reduce((closestIndex, card, index) => {
+        const closestDistance = Math.abs(cards[closestIndex].getBoundingClientRect().top + cards[closestIndex].getBoundingClientRect().height / 2 - viewportCenter)
+        const distance = Math.abs(card.getBoundingClientRect().top + card.getBoundingClientRect().height / 2 - viewportCenter)
+        return distance < closestDistance ? index : closestIndex
+      }, 0)
+    }
+    const nextIndex = Math.max(0, Math.min(cards.length - 1, currentIndex + direction))
+    if (nextIndex !== currentIndex) focusDialogue(cards[nextIndex])
+    else focusDialogue(cards[currentIndex])
+  }
+  const runStep = (direction) => {
+    if (stepNavigationLocked) return
+    stepNavigationLocked = true
+    stepToDialogue(direction)
+    window.setTimeout(() => { stepNavigationLocked = false }, 420)
+  }
+  const handleStepWheel = (event) => {
+    if (!event.deltaY || event.defaultPrevented) return
+    if (event.target.closest('input, button, select, textarea, .character-options')) return
+    event.preventDefault()
+    runStep(event.deltaY > 0 ? 1 : -1)
+  }
+  const handleStepKeyDown = (event) => {
+    if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return
+    if (event.target.closest('input, button, select, textarea, [contenteditable="true"]')) return
+    const direction = event.key === 'ArrowDown' || event.key === 'PageDown' ? 1 : event.key === 'ArrowUp' || event.key === 'PageUp' ? -1 : 0
+    if (!direction) return
+    event.preventDefault()
+    runStep(direction)
+  }
+  let touchStartY = 0
+  let touchStartX = 0
+  let touchStartTarget
+  const allowsNativeTouch = (target) => target instanceof Element && target.closest('input, button, select, textarea, .character-options')
+  const handleTouchStart = (event) => {
+    const touch = event.changedTouches[0]
+    if (!touch) return
+    touchStartY = touch.clientY
+    touchStartX = touch.clientX
+    touchStartTarget = event.target
+  }
+  const handleTouchMove = (event) => {
+    if (allowsNativeTouch(touchStartTarget)) return
+    const touch = event.changedTouches[0]
+    if (touch && Math.abs(touch.clientY - touchStartY) > 8) event.preventDefault()
+  }
+  const handleTouchEnd = (event) => {
+    if (allowsNativeTouch(touchStartTarget)) return
+    const touch = event.changedTouches[0]
+    if (!touch) return
+    const deltaY = touch.clientY - touchStartY
+    const deltaX = touch.clientX - touchStartX
+    if (Math.abs(deltaY) < 34 || Math.abs(deltaY) < Math.abs(deltaX)) return
+    event.preventDefault()
+    runStep(deltaY < 0 ? 1 : -1)
+  }
+  window.addEventListener('wheel', handleStepWheel, { passive: false })
+  window.addEventListener('keydown', handleStepKeyDown)
+  window.addEventListener('touchstart', handleTouchStart, { passive: true })
+  window.addEventListener('touchmove', handleTouchMove, { passive: false })
+  window.addEventListener('touchend', handleTouchEnd, { passive: false })
+  removeStepNavigation = () => {
+    window.removeEventListener('wheel', handleStepWheel)
+    window.removeEventListener('keydown', handleStepKeyDown)
+    window.removeEventListener('touchstart', handleTouchStart)
+    window.removeEventListener('touchmove', handleTouchMove)
+    window.removeEventListener('touchend', handleTouchEnd)
+    removeStepNavigation = () => {}
   }
   root.querySelectorAll('[data-script-nav]').forEach((button) => {
     button.addEventListener('click', () => {

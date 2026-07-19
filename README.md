@@ -23,3 +23,21 @@ wrangler pages deploy . --project-name stagedesk-pro-site
 Repository sorgente applicazione:
 
 https://github.com/igelsomino/stagedesk-pro
+
+## Pagina attori condivisa
+
+Il percorso `/share/[UID]` è una pagina responsive per l'apprendimento delle battute. Richiede autenticazione
+con Google, GitHub, Azure oppure e-mail e password, quindi verifica il PIN di cinque cifre associato alla
+condivisione.
+
+La pagina usa la Pages Function `/share-config`, configurata con i secret Cloudflare Pages:
+
+- `SUPABASE_URL`;
+- `SUPABASE_PUBLISHABLE_KEY`.
+
+Nel progetto Supabase devono essere eseguiti `docs/supabase-auth.sql` e `docs/supabase-sharing.sql` del repository
+applicazione. La migrazione crea il bucket privato `published-scripts` e le policy per il caricamento dei file da parte del proprietario. Per i provider OAuth va aggiunto agli URL di redirect autorizzati anche:
+
+```text
+https://stagedesk-pro.aigconsulting.it/share/*
+```

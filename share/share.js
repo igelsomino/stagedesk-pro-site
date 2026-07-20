@@ -20,6 +20,9 @@ let authMode = 'signin'
 let scriptRenderLimit = 24
 let dialogueSearchQuery = ''
 let characterSearchQuery = ''
+let bookmarkedDialogueIds = new Set()
+let bookmarksInitialized = false
+let activeBookmarkId = ''
 let lastMobileScrollY = 0
 const SHARE_ACCESS_TTL_MS = 48 * 60 * 60 * 1000
 const SCRIPT_BATCH_SIZE = 24
@@ -59,6 +62,10 @@ const iconSvg = (name) => {
     eye: '<path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/>',
     'eye-off': '<path d="m3 3 18 18"/><path d="M10.6 5.2A10.8 10.8 0 0 1 12 5c6 0 9.5 7 9.5 7a17 17 0 0 1-3.1 3.8M6.2 6.3C3.7 8.1 2.5 12 2.5 12s3.5 7 9.5 7c1 0 1.9-.2 2.7-.5"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>',
     'select-all': '<rect x="4" y="4" width="12" height="12" rx="1.5"/><path d="m8 10 2.2 2.2L15 7.5"/><path d="M8 20h8a2 2 0 0 0 2-2v-8"/>',
+    bookmark: '<path d="M6 4.5A2.5 2.5 0 0 1 8.5 2h7A2.5 2.5 0 0 1 18 4.5V21l-6-3.5L6 21Z"/>',
+    previous: '<path d="m14 6-6 6 6 6"/>',
+    next: '<path d="m10 6 6 6-6 6"/>',
+    top: '<path d="m5 11 7-7 7 7"/><path d="M12 4v16"/>',
     study: '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5Z"/><path d="M4 5.5v15M8 7h8m-8 4h8"/>',
     progress: '<path d="m14 6 4 4"/><path d="M4 20h4l10-10a2.8 2.8 0 0 0-4-4L4 16v4Z"/><path d="M13 7 17 11"/>',
     done: '<circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/>',
@@ -68,6 +75,7 @@ const iconSvg = (name) => {
 
 const getPinStorageKey = () => `stagedesk-share-progress:${shareUid}`
 const getSelectionStorageKey = () => `stagedesk-share-selection:${shareUid}`
+const getBookmarkStorageKey = () => `stagedesk-share-bookmarks:${shareUid}:${session?.user?.id || 'user'}`
 const getAccessStorageKey = () => `stagedesk-share-access:v2:${shareUid}`
 const getLegacyAccessStorageKey = () => `stagedesk-share-access:${shareUid}`
 const shareAuthRedirectUrl = () => `${window.location.origin}/share/${encodeURIComponent(shareUid)}`
@@ -76,6 +84,19 @@ const formatPublishedAt = (value) => {
   const date = new Date(value || '')
   if (Number.isNaN(date.getTime())) return 'Versione caricata'
   return `Versione caricata il ${new Intl.DateTimeFormat('it-IT', { dateStyle: 'medium', timeStyle: 'short' }).format(date)}`
+}
+const persistBookmarks = () => {
+  localStorage.setItem(getBookmarkStorageKey(), JSON.stringify([...bookmarkedDialogueIds]))
+}
+const loadBookmarks = () => {
+  if (bookmarksInitialized) return
+  try {
+    const stored = JSON.parse(localStorage.getItem(getBookmarkStorageKey()) || '[]')
+    if (Array.isArray(stored)) bookmarkedDialogueIds = new Set(stored)
+  } catch {
+    localStorage.removeItem(getBookmarkStorageKey())
+  }
+  bookmarksInitialized = true
 }
 const readCachedAccess = () => {
   try {
@@ -345,6 +366,7 @@ const renderShare = (updateMessage = '', uiState = {}) => {
   const notes = Array.isArray(payload.notes) ? payload.notes : []
   const items = Array.isArray(payload.items) ? payload.items : []
   const progress = JSON.parse(localStorage.getItem(getPinStorageKey()) || '{}')
+  loadBookmarks()
   if (!selectionInitialized) {
     try {
       const stored = JSON.parse(localStorage.getItem(getSelectionStorageKey()) || 'null')
@@ -356,6 +378,11 @@ const renderShare = (updateMessage = '', uiState = {}) => {
   }
   const availableCharacterIds = new Set(characters.map((character) => character.id))
   selectedCharacters = new Set([...selectedCharacters].filter((id) => availableCharacterIds.has(id)))
+  const availableDialogueIds = new Set(dialogues.map((dialogue) => dialogue.id))
+  bookmarkedDialogueIds = new Set([...bookmarkedDialogueIds].filter((id) => availableDialogueIds.has(id)))
+  const bookmarkIds = dialogues.filter((dialogue) => bookmarkedDialogueIds.has(dialogue.id)).map((dialogue) => dialogue.id)
+  if (activeBookmarkId && !bookmarkIds.includes(activeBookmarkId)) activeBookmarkId = bookmarkIds[0] || ''
+  const activeBookmarkIndex = activeBookmarkId ? bookmarkIds.indexOf(activeBookmarkId) : -1
   const noteDialogueIds = noteDialogueIdsFromItems(items)
   const scriptItems = orderedScriptItems(items, dialogues, noteDialogueIds)
   const renderedScriptItems = scriptItems.slice(0, Math.max(SCRIPT_BATCH_SIZE, scriptRenderLimit))
@@ -400,11 +427,17 @@ const renderShare = (updateMessage = '', uiState = {}) => {
         </aside>
         <div class="learning-content">
           <div class="mobile-quick-tools" data-mobile-quick-tools aria-label="Strumenti copione">
-            <label class="character-search"><span class="search-field-icon">${iconSvg('search')}</span><span class="sr-only">Cerca personaggio</span><input type="search" placeholder="Cerca personaggio" value="${escapeHtml(characterSearchQuery)}" data-character-search /></label>
             <label class="dialogue-search"><span class="search-field-icon">${iconSvg('search')}</span><span class="sr-only">Cerca battuta o personaggio</span><input type="search" placeholder="Cerca battuta o personaggio" value="${escapeHtml(dialogueSearchQuery)}" data-dialogue-search /></label>
+            <label class="character-search"><span class="search-field-icon">${iconSvg('search')}</span><span class="sr-only">Cerca personaggio</span><input type="search" placeholder="Cerca personaggio" value="${escapeHtml(characterSearchQuery)}" data-character-search /></label>
+            <div class="mobile-bookmark-nav" data-bookmark-nav aria-label="Navigazione bookmark">
+              <button type="button" data-bookmark-nav-action="previous" title="Bookmark precedente" aria-label="Bookmark precedente" ${activeBookmarkIndex <= 0 ? 'disabled' : ''}>${iconSvg('previous')}</button>
+              <span data-bookmark-position>${bookmarkIds.length ? `${activeBookmarkIndex >= 0 ? activeBookmarkIndex + 1 : 1}/${bookmarkIds.length}` : 'Nessun bookmark'}</span>
+              <button type="button" data-bookmark-nav-action="next" title="Bookmark successivo" aria-label="Bookmark successivo" ${activeBookmarkIndex >= bookmarkIds.length - 1 || !bookmarkIds.length ? 'disabled' : ''}>${iconSvg('next')}</button>
+            </div>
             <div class="filter-modes" role="group" aria-label="Modalità filtro personaggi">
               <button type="button" data-filter-mode="only-selected" class="${filterMode === 'only-selected' ? 'active' : ''}" title="Solo selezionati" aria-label="Solo selezionati">${iconSvg('eye')}<span class="sr-only">Solo selezionati</span></button>
               <button type="button" data-filter-mode="hide-selected" class="${filterMode === 'hide-selected' ? 'active' : ''}" title="Nascondi selezionati" aria-label="Nascondi selezionati">${iconSvg('eye-off')}<span class="sr-only">Nascondi selezionati</span></button>
+              <button type="button" data-scroll-top title="Vai all’inizio" aria-label="Vai all’inizio">${iconSvg('top')}</button>
             </div>
           </div>
           <div class="learning-summary">
@@ -435,10 +468,11 @@ const renderShare = (updateMessage = '', uiState = {}) => {
               const hasStudyControls = selected
               const status = progress[item.id] || 'da_studiare'
               const matchesSearch = !dialogueSearchQuery || `${item.characterName} ${item.text}`.toLowerCase().includes(dialogueSearchQuery)
+              const isBookmarked = bookmarkedDialogueIds.has(item.id)
               return `<article class="actor-dialogue ${visible ? '' : 'is-hidden'} ${concealed ? 'is-dialogue-hidden' : ''} ${matchesSearch ? '' : 'is-search-hidden'}" data-character="${escapeHtml(item.characterId)}" data-dialogue-id="${escapeHtml(item.id)}" data-dialogue-index="${dialogueIndex}" data-dialogue-search="${escapeHtml(`${item.characterName} ${item.text}`.toLowerCase())}">
                 <div class="actor-dialogue-header">
                   <strong>${escapeHtml(item.characterName)}</strong>
-                <span class="dialogue-index">Battuta ${dialogueIndex + 1}</span>
+                  <span class="dialogue-meta"><span class="dialogue-index">Battuta ${dialogueIndex + 1}</span><span class="dialogue-bookmark${isBookmarked ? ' is-active' : ''}" data-dialogue-bookmark title="${isBookmarked ? 'Bookmark attivo' : 'Bookmark non attivo'}" aria-label="${isBookmarked ? 'Bookmark attivo' : 'Bookmark non attivo'}">${iconSvg('bookmark')}</span></span>
                 </div>
                 <p class="dialogue-copy">${escapeHtml(item.text)}</p>
                 ${hasStudyControls ? `<div class="status-picker" role="group" aria-label="Stato battuta ${dialogueIndex + 1}">
@@ -493,6 +527,75 @@ const renderShare = (updateMessage = '', uiState = {}) => {
       note.classList.toggle('is-search-hidden', Boolean(query && ownerId && !matchingIds.has(ownerId)))
     })
   }))
+  const currentBookmarkIds = () => dialogues.filter((dialogue) => bookmarkedDialogueIds.has(dialogue.id)).map((dialogue) => dialogue.id)
+  const findDialogueCard = (dialogueId) => Array.from(root.querySelectorAll('.actor-dialogue')).find((card) => card.dataset.dialogueId === dialogueId)
+  const refreshBookmarkUi = () => {
+    const ids = currentBookmarkIds()
+    const index = activeBookmarkId ? ids.indexOf(activeBookmarkId) : -1
+    root.querySelectorAll('[data-bookmark-position]').forEach((position) => {
+      position.textContent = ids.length ? `${index >= 0 ? index + 1 : 1}/${ids.length}` : 'Nessun bookmark'
+    })
+    root.querySelectorAll('[data-bookmark-nav-action="previous"]').forEach((button) => { button.disabled = index <= 0 })
+    root.querySelectorAll('[data-bookmark-nav-action="next"]').forEach((button) => { button.disabled = index >= ids.length - 1 || !ids.length })
+  }
+  const setBookmark = (dialogueId, enabled) => {
+    if (enabled) {
+      bookmarkedDialogueIds.add(dialogueId)
+      activeBookmarkId = dialogueId
+    } else {
+      bookmarkedDialogueIds.delete(dialogueId)
+      if (activeBookmarkId === dialogueId) activeBookmarkId = currentBookmarkIds()[0] || ''
+    }
+    persistBookmarks()
+    const indicator = findDialogueCard(dialogueId)?.querySelector('[data-dialogue-bookmark]')
+    indicator?.classList.toggle('is-active', enabled)
+    if (indicator) {
+      indicator.title = enabled ? 'Bookmark attivo' : 'Bookmark non attivo'
+      indicator.setAttribute('aria-label', enabled ? 'Bookmark attivo' : 'Bookmark non attivo')
+    }
+    refreshBookmarkUi()
+  }
+  const scrollToBookmark = (dialogueId) => {
+    if (!dialogueId) return
+    activeBookmarkId = dialogueId
+    const card = findDialogueCard(dialogueId)
+    if (!card && scriptRenderLimit < scriptItems.length) {
+      scriptRenderLimit = scriptItems.length
+      renderShare('', { scrollToDialogueId: dialogueId })
+      return
+    }
+    card?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    refreshBookmarkUi()
+  }
+  root.querySelectorAll('[data-bookmark-nav-action]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const ids = currentBookmarkIds()
+      if (!ids.length) return
+      const currentIndex = activeBookmarkId ? ids.indexOf(activeBookmarkId) : -1
+      const direction = button.dataset.bookmarkNavAction === 'next' ? 1 : -1
+      const nextIndex = Math.max(0, Math.min(ids.length - 1, currentIndex < 0 ? (direction > 0 ? 0 : ids.length - 1) : currentIndex + direction))
+      scrollToBookmark(ids[nextIndex])
+    })
+  })
+  root.querySelectorAll('.actor-dialogue').forEach((card) => {
+    let touchStart
+    card.addEventListener('touchstart', (event) => {
+      if (window.innerWidth > 560) return
+      const touch = event.changedTouches[0]
+      if (touch) touchStart = { x: touch.clientX, y: touch.clientY }
+    }, { passive: true })
+    card.addEventListener('touchend', (event) => {
+      if (window.innerWidth > 560 || !touchStart) return
+      const touch = event.changedTouches[0]
+      if (!touch) return
+      const deltaX = touch.clientX - touchStart.x
+      const deltaY = touch.clientY - touchStart.y
+      touchStart = undefined
+      if (Math.abs(deltaX) < 52 || Math.abs(deltaX) <= Math.abs(deltaY)) return
+      event.preventDefault()
+      setBookmark(card.dataset.dialogueId, deltaX < 0)
+    }, { passive: false })
+  })
   root.querySelectorAll('.character-option input').forEach((input) => {
     input.addEventListener('change', () => {
       const scrollY = window.scrollY
@@ -509,6 +612,9 @@ const renderShare = (updateMessage = '', uiState = {}) => {
       revealedDialogueIds = new Set()
       renderShare()
     })
+  })
+  root.querySelector('[data-scroll-top]')?.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   })
   root.querySelector('[data-character-selection-toggle]')?.addEventListener('click', () => {
     const ids = characters.map((character) => character.id)
@@ -582,6 +688,9 @@ const renderShare = (updateMessage = '', uiState = {}) => {
       input?.setSelectionRange(input.value.length, input.value.length)
     })
   }
+  if (uiState.scrollToDialogueId) {
+    requestAnimationFrame(() => findDialogueCard(uiState.scrollToDialogueId)?.scrollIntoView({ behavior: 'smooth', block: 'center' }))
+  }
 }
 
 async function submitEmailAuth(form) {
@@ -627,6 +736,9 @@ async function verifyPin(form) {
   scriptRenderLimit = SCRIPT_BATCH_SIZE
   dialogueSearchQuery = ''
   characterSearchQuery = ''
+  bookmarkedDialogueIds = new Set()
+  bookmarksInitialized = false
+  activeBookmarkId = ''
   renderShare()
 }
 
@@ -641,6 +753,9 @@ async function signOut(message = '') {
   scriptRenderLimit = SCRIPT_BATCH_SIZE
   dialogueSearchQuery = ''
   characterSearchQuery = ''
+  bookmarkedDialogueIds = new Set()
+  bookmarksInitialized = false
+  activeBookmarkId = ''
   renderAuth(message)
 }
 

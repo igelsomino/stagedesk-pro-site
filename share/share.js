@@ -423,6 +423,8 @@ const renderShare = (updateMessage = '', uiState = {}) => {
     stats[status] = (stats[status] || 0) + 1
     return stats
   }, { da_studiare: 0, in_studio: 0, studiata: 0 })
+  const studyTotal = Object.values(progressStats).reduce((sum, count) => sum + count, 0)
+  const activityRingProgress = (status) => studyTotal ? Math.round((progressStats[status] / studyTotal) * 360) : 0
 
   renderShell(`
     ${renderBrand(scriptTitle, formatPublishedAt(share?.publishedAt || payload.publishedAt), `<div class="share-header-actions"><button type="button" class="share-header-icon" data-refresh-share title="Aggiorna copione" aria-label="Aggiorna copione">${iconSvg('refresh')}</button><button type="button" class="share-header-action" data-signout>Esci</button></div>`)}
@@ -431,6 +433,13 @@ const renderShare = (updateMessage = '', uiState = {}) => {
         <aside class="character-panel" aria-label="Selezione personaggi">
           <div class="study-stats desktop-study-stats" aria-label="Statistiche battute">
             <div class="study-stats-heading panel-section-title"><span class="panel-section-title-icon">${iconSvg('statistics')}</span><span class="field-label">Statistiche</span></div>
+            <div class="activity-rings-label">Activity Rings</div>
+            <div class="activity-rings" role="img" aria-label="Activity Rings: ${progressStats.da_studiare} da studiare, ${progressStats.in_studio} in studio, ${progressStats.studiata} completate">
+              <span class="activity-ring activity-ring-da_studiare" data-activity-ring="da_studiare" style="--ring-degrees: ${activityRingProgress('da_studiare')}deg"></span>
+              <span class="activity-ring activity-ring-in_studio" data-activity-ring="in_studio" style="--ring-degrees: ${activityRingProgress('in_studio')}deg"></span>
+              <span class="activity-ring activity-ring-studiata" data-activity-ring="studiata" style="--ring-degrees: ${activityRingProgress('studiata')}deg"></span>
+              <span class="activity-rings-center" data-activity-completed>${progressStats.studiata}/${studyTotal}</span>
+            </div>
             <span class="study-stat study-stat-da_studiare"><span class="study-stat-dot" aria-hidden="true"></span><span>Da studiare</span><strong data-study-stat="da_studiare">${progressStats.da_studiare}</strong></span>
             <span class="study-stat study-stat-in_studio"><span class="study-stat-dot" aria-hidden="true"></span><span>In studio</span><strong data-study-stat="in_studio">${progressStats.in_studio}</strong></span>
             <span class="study-stat study-stat-studiata"><span class="study-stat-dot" aria-hidden="true"></span><span>Completato</span><strong data-study-stat="studiata">${progressStats.studiata}</strong></span>
@@ -681,6 +690,16 @@ const renderShare = (updateMessage = '', uiState = {}) => {
         root.querySelectorAll(`[data-study-stat="${status}"]`).forEach((stat) => {
           stat.textContent = count
         })
+      })
+      const nextTotal = Object.values(nextStats).reduce((sum, count) => sum + count, 0)
+      Object.entries(nextStats).forEach(([status, count]) => {
+        const degrees = nextTotal ? Math.round((count / nextTotal) * 360) : 0
+        root.querySelectorAll(`[data-activity-ring="${status}"]`).forEach((ring) => {
+          ring.style.setProperty('--ring-degrees', `${degrees}deg`)
+        })
+      })
+      root.querySelectorAll('[data-activity-completed]').forEach((value) => {
+        value.textContent = `${nextStats.studiata}/${nextTotal}`
       })
       const group = button.parentElement
       group?.querySelectorAll('[data-progress]').forEach((item) => {

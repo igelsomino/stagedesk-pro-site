@@ -130,6 +130,13 @@ button { cursor: pointer; }
 .study-stats-heading .field-label { color: var(--text); font-size: 0.95rem; line-height: 1.2; font-weight: 800; }
 .study-stats-heading .panel-section-title-icon { display: inline-flex; color: var(--muted); }
 .study-stats-heading .panel-section-title-icon .inline-icon { width: 16px; height: 16px; }
+.activity-rings-label { color: var(--muted); font-size: 0.7rem; font-weight: 800; letter-spacing: 0.04em; text-align: center; text-transform: uppercase; }
+.activity-rings { position: relative; width: 88px; height: 88px; margin: 2px auto 10px; }
+.activity-ring { position: absolute; display: block; border-radius: 50%; background: conic-gradient(currentColor 0deg var(--ring-degrees), #2c3233 var(--ring-degrees) 360deg); -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px)); mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px)); }
+.activity-ring-da_studiare { inset: 0; color: #ff7777; }
+.activity-ring-in_studio { inset: 10px; color: #f2c94c; }
+.activity-ring-studiata { inset: 20px; color: #72d4ad; }
+.activity-rings-center { position: absolute; inset: 0; display: grid; place-items: center; color: var(--text); font-size: 0.72rem; font-weight: 800; }
 .desktop-study-stats .study-stat { justify-content: flex-start; width: 100%; min-height: 27px; margin-left: 0; font-size: 0.8rem; text-transform: uppercase; }
 .desktop-study-stats .study-stat strong { margin-left: auto; font-size: 0.8rem; }
 .desktop-study-stats .study-stat + .study-stat { border-top: 1px solid rgba(52, 57, 58, 0.7); }

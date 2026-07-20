@@ -130,7 +130,6 @@ button { cursor: pointer; }
 .study-stats-heading .field-label { color: var(--text); font-size: 0.95rem; line-height: 1.2; font-weight: 800; }
 .study-stats-heading .panel-section-title-icon { display: inline-flex; color: var(--muted); }
 .study-stats-heading .panel-section-title-icon .inline-icon { width: 16px; height: 16px; }
-.activity-rings-label { color: var(--muted); font-size: 0.7rem; font-weight: 800; letter-spacing: 0.04em; text-align: center; text-transform: uppercase; }
 .activity-rings { position: relative; width: 88px; height: 88px; margin: 2px auto 10px; }
 .activity-ring { position: absolute; display: block; border-radius: 50%; background: conic-gradient(currentColor 0deg var(--ring-degrees), #2c3233 var(--ring-degrees) 360deg); -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px)); mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px)); }
 .activity-ring-da_studiare { inset: 0; color: #ff7777; }

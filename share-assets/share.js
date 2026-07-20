@@ -433,7 +433,6 @@ const renderShare = (updateMessage = '', uiState = {}) => {
         <aside class="character-panel" aria-label="Selezione personaggi">
           <div class="study-stats desktop-study-stats" aria-label="Statistiche battute">
             <div class="study-stats-heading panel-section-title"><span class="panel-section-title-icon">${iconSvg('statistics')}</span><span class="field-label">Statistiche</span></div>
-            <div class="activity-rings-label">Activity Rings</div>
             <div class="activity-rings" role="img" aria-label="Activity Rings: ${progressStats.da_studiare} da studiare, ${progressStats.in_studio} in studio, ${progressStats.studiata} completate">
               <span class="activity-ring activity-ring-da_studiare" data-activity-ring="da_studiare" style="--ring-degrees: ${activityRingProgress('da_studiare')}deg"></span>
               <span class="activity-ring activity-ring-in_studio" data-activity-ring="in_studio" style="--ring-degrees: ${activityRingProgress('in_studio')}deg"></span>

@@ -401,6 +401,11 @@ const renderShare = (updateMessage = '', uiState = {}) => {
     <section class="share-card learning-card">
       <div class="learning-layout">
         <aside class="character-panel" aria-label="Selezione personaggi">
+          <div class="study-stats desktop-study-stats" aria-label="Statistiche battute">
+            <span class="study-stat study-stat-da_studiare"><span class="study-stat-dot" aria-hidden="true"></span><span>Da studiare</span><strong data-study-stat="da_studiare">${progressStats.da_studiare}</strong></span>
+            <span class="study-stat study-stat-in_studio"><span class="study-stat-dot" aria-hidden="true"></span><span>In studio</span><strong data-study-stat="in_studio">${progressStats.in_studio}</strong></span>
+            <span class="study-stat study-stat-studiata"><span class="study-stat-dot" aria-hidden="true"></span><span>Completato</span><strong data-study-stat="studiata">${progressStats.studiata}</strong></span>
+          </div>
           <div class="bookmark-nav desktop-bookmark-nav" data-bookmark-nav aria-label="Navigazione bookmark">
             <div class="bookmark-nav-heading"><span class="field-label">Bookmark</span></div>
             <div class="bookmark-nav-controls">
@@ -409,11 +414,6 @@ const renderShare = (updateMessage = '', uiState = {}) => {
               <button type="button" data-bookmark-nav-action="next" title="Bookmark successivo" aria-label="Bookmark successivo" ${activeBookmarkIndex >= bookmarkIds.length - 1 || !bookmarkIds.length ? 'disabled' : ''}>${iconSvg('next')}</button>
               <button type="button" data-scroll-top title="Vai all’inizio" aria-label="Vai all’inizio">${iconSvg('top')}</button>
             </div>
-          </div>
-          <div class="study-stats desktop-study-stats" aria-label="Statistiche battute">
-            <span class="study-stat study-stat-da_studiare"><span class="study-stat-dot" aria-hidden="true"></span><span>Da studiare</span><strong data-study-stat="da_studiare">${progressStats.da_studiare}</strong></span>
-            <span class="study-stat study-stat-in_studio"><span class="study-stat-dot" aria-hidden="true"></span><span>In studio</span><strong data-study-stat="in_studio">${progressStats.in_studio}</strong></span>
-            <span class="study-stat study-stat-studiata"><span class="study-stat-dot" aria-hidden="true"></span><span>Completato</span><strong data-study-stat="studiata">${progressStats.studiata}</strong></span>
           </div>
           <button type="button" class="character-menu-toggle" data-character-menu-toggle aria-expanded="${characterMenuOpen}" aria-controls="character-menu-content">${iconSvg('menu')}<span>Personaggi</span><span class="selection-count">${selectedCharacters.size}/${characters.length}</span></button>
           <div id="character-menu-content" class="character-panel-content${characterMenuOpen ? ' is-open' : ''}" data-character-menu>

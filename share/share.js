@@ -1,5 +1,3 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.110.1'
-
 const root = document.querySelector('#share-app')
 const shareUid = decodeURIComponent(window.location.pathname.split('/').filter(Boolean).pop() || '')
 const statusLabels = {
@@ -11,6 +9,8 @@ const statusLabels = {
 let supabase
 let session
 let share
+let createSupabaseClient
+let cachedAccessUserId = ''
 let selectedCharacters = new Set()
 let selectionInitialized = false
 let filterMode = 'hide-selected'
@@ -26,6 +26,14 @@ let activeBookmarkId = ''
 let lastMobileScrollY = 0
 const SHARE_ACCESS_TTL_MS = 48 * 60 * 60 * 1000
 const SCRIPT_BATCH_SIZE = 24
+
+const loadSupabaseClient = async () => {
+  if (!createSupabaseClient) {
+    const module = await import('https://esm.sh/@supabase/supabase-js@2.110.1')
+    createSupabaseClient = module.createClient
+  }
+  return createSupabaseClient
+}
 
 const updateMobileToolsVisibility = () => {
   if (!root) return
@@ -110,18 +118,22 @@ const readCachedAccess = () => {
     if (!cached?.share || userMismatch || !Number.isFinite(cached.expiresAt) || cached.expiresAt <= Date.now()) {
       localStorage.removeItem(currentKey)
       localStorage.removeItem(legacyKey)
+      cachedAccessUserId = ''
       return null
     }
+    cachedAccessUserId = cached.userId || ''
     if (!localStorage.getItem(currentKey)) localStorage.setItem(currentKey, JSON.stringify(cached))
     return { ...cached, hasPin: typeof cached.pin === 'string' && cached.pin.length === 5 }
   } catch {
     localStorage.removeItem(getAccessStorageKey())
     localStorage.removeItem(getLegacyAccessStorageKey())
+    cachedAccessUserId = ''
     return null
   }
 }
 const cacheShareAccess = (nextShare, pin) => {
-  localStorage.setItem(getAccessStorageKey(), JSON.stringify({ userId: session?.user?.id, pin, share: nextShare, expiresAt: Date.now() + SHARE_ACCESS_TTL_MS }))
+  cachedAccessUserId = session?.user?.id || cachedAccessUserId || ''
+  localStorage.setItem(getAccessStorageKey(), JSON.stringify({ userId: cachedAccessUserId, pin, share: nextShare, expiresAt: Date.now() + SHARE_ACCESS_TTL_MS }))
 }
 const persistSelectedCharacters = () => {
   localStorage.setItem(getSelectionStorageKey(), JSON.stringify([...selectedCharacters]))
@@ -133,6 +145,14 @@ const clearSelectedCharacters = () => {
 const clearCachedShareAccess = () => {
   localStorage.removeItem(getAccessStorageKey())
   localStorage.removeItem(getLegacyAccessStorageKey())
+  cachedAccessUserId = ''
+}
+
+const renderCachedShareOffline = (cached) => {
+  if (!cached?.share) return false
+  share = cached.share
+  renderShare('Modalità offline: ultima versione disponibile.')
+  return true
 }
 
 const setMessage = (message, tone = '') => {
@@ -326,6 +346,10 @@ async function refreshSharedScript(fromBootstrap = false) {
     else await signOut('La sessione di condivisione è scaduta. Inserisci nuovamente il PIN.')
     return
   }
+  if (!navigator.onLine) {
+    if (share) updateRefreshStatus('Modalità offline: ultima versione disponibile.')
+    return
+  }
   const refreshButton = root?.querySelector('[data-refresh-share]')
   if (refreshButton) {
     refreshButton.disabled = true
@@ -336,7 +360,7 @@ async function refreshSharedScript(fromBootstrap = false) {
     const { data, error } = await supabase.rpc('verify_script_share', { p_share_uid: shareUid, p_pin: cached.pin })
     if (error) {
       if (fromBootstrap) {
-        renderPinForm('Impossibile verificare la versione condivisa. Inserisci nuovamente il PIN.')
+        if (!renderCachedShareOffline(cached)) renderPinForm('Impossibile verificare la versione condivisa. Inserisci nuovamente il PIN.')
       } else {
         updateRefreshStatus('Aggiornamento non disponibile.', 'error')
       }
@@ -350,7 +374,9 @@ async function refreshSharedScript(fromBootstrap = false) {
     cacheShareAccess(share, cached.pin)
     renderShare(previousPublishedAt && previousPublishedAt !== share.publishedAt ? 'Copione aggiornato' : '')
   } catch {
-    if (fromBootstrap) renderPinForm('Impossibile aggiornare la versione condivisa. Riprova tra poco.')
+    if (fromBootstrap) {
+      if (!renderCachedShareOffline(cached)) renderPinForm('Impossibile aggiornare la versione condivisa. Riprova tra poco.')
+    }
     else updateRefreshStatus('Aggiornamento non disponibile.', 'error')
   } finally {
     const currentRefreshButton = root?.querySelector('[data-refresh-share]')
@@ -773,11 +799,27 @@ async function bootstrap() {
     renderShell(`${renderBrand('Link non valido')}<section class="share-card"><p class="share-message" data-tone="error">Il collegamento di condivisione non è valido.</p></section>`)
     return
   }
-  const configResponse = await fetch('/share-config', { cache: 'no-store' })
-  const config = await configResponse.json()
+  const cachedShare = readCachedAccess()
+  if (!navigator.onLine && renderCachedShareOffline(cachedShare)) return
+  let config
+  try {
+    const configResponse = await fetch('/share-config', { cache: 'no-store' })
+    config = await configResponse.json()
+  } catch (error) {
+    if (renderCachedShareOffline(cachedShare)) return
+    throw error
+  }
   if (!config.url || !config.publishableKey) {
+    if (renderCachedShareOffline(cachedShare)) return
     renderShell(`${renderBrand('Configurazione non disponibile')}<section class="share-card"><p class="share-message" data-tone="error">La pagina di condivisione non è ancora configurata.</p></section>`)
     return
+  }
+  let createClient
+  try {
+    createClient = await loadSupabaseClient()
+  } catch (error) {
+    if (renderCachedShareOffline(cachedShare)) return
+    throw error
   }
   supabase = createClient(config.url, config.publishableKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce' } })
   const { data } = await supabase.auth.getSession()

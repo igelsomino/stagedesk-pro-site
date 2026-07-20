@@ -403,6 +403,7 @@ const renderShare = (updateMessage = '', uiState = {}) => {
       <div class="learning-layout">
         <aside class="character-panel" aria-label="Selezione personaggi">
           <div class="study-stats desktop-study-stats" aria-label="Statistiche battute">
+            <div class="study-stats-heading field-label">Statistiche</div>
             <span class="study-stat study-stat-da_studiare"><span class="study-stat-dot" aria-hidden="true"></span><span>Da studiare</span><strong data-study-stat="da_studiare">${progressStats.da_studiare}</strong></span>
             <span class="study-stat study-stat-in_studio"><span class="study-stat-dot" aria-hidden="true"></span><span>In studio</span><strong data-study-stat="in_studio">${progressStats.in_studio}</strong></span>
             <span class="study-stat study-stat-studiata"><span class="study-stat-dot" aria-hidden="true"></span><span>Completato</span><strong data-study-stat="studiata">${progressStats.studiata}</strong></span>
@@ -463,7 +464,6 @@ const renderShare = (updateMessage = '', uiState = {}) => {
             <label class="dialogue-search"><span class="search-field-icon">${iconSvg('search')}</span><span class="sr-only">Cerca battuta</span><input type="search" placeholder="Cerca battuta o personaggio" value="${escapeHtml(dialogueSearchQuery)}" data-dialogue-search /></label>
           </div>
           <div class="dialogue-list">
-            ${selectedCharacters.size === 0 ? '<p class="empty-state">Seleziona almeno un personaggio per visualizzare le battute.</p>' : ''}
             ${renderedScriptItems.map(({ kind, item, index, dialogueIndex, dialogueId }) => {
               if (kind === 'note') {
                 const owner = dialogues.find((dialogue) => dialogue.id === dialogueId)

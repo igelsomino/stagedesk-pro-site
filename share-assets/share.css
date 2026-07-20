@@ -126,9 +126,11 @@ button { cursor: pointer; }
 .panel-section-title .inline-icon { width: 16px; height: 16px; color: var(--muted); }
 .bookmark-nav-controls { display: grid; grid-template-columns: 32px minmax(0, 1fr) 32px 32px; align-items: center; gap: 8px; width: 100%; min-height: 36px; border: 1px solid #2c3233; border-radius: 6px; padding: 6px 8px; background: rgba(29, 32, 33, 0.6); }
 .desktop-study-stats { display: grid; gap: 0; align-items: stretch; justify-content: stretch; margin: 0; padding: 6px 10px; border: 1px solid #2c3233; border-radius: 6px; background: rgba(29, 32, 33, 0.6); }
-.desktop-study-stats .study-stat { justify-content: space-between; width: 100%; min-height: 27px; margin-left: 0; }
+.study-stats-heading { min-height: 27px; padding-bottom: 6px; color: var(--text); font-size: 0.95rem; line-height: 1.2; font-weight: 800; }
+.desktop-study-stats .study-stat { justify-content: flex-start; width: 100%; min-height: 27px; margin-left: 0; }
+.desktop-study-stats .study-stat strong { margin-left: auto; }
 .desktop-study-stats .study-stat + .study-stat { border-top: 1px solid rgba(52, 57, 58, 0.7); }
-.character-panel-content { border-top: 1px solid var(--line); margin-top: 16px; padding-top: 14px; }
+.character-panel-content { border-top: 0; margin-top: 16px; padding-top: 0; }
 .learning-summary .study-stats { display: none; }
 .mobile-quick-tools { display: none; }
 .dialogue-search { position: relative; flex: 1 1 auto; min-width: 0; }

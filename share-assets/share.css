@@ -125,8 +125,8 @@ button { cursor: pointer; }
 .panel-section-title { display: inline-flex; align-items: center; gap: 7px; min-width: 0; }
 .panel-section-title .inline-icon { width: 16px; height: 16px; color: var(--muted); }
 .bookmark-nav-controls { display: grid; grid-template-columns: 32px minmax(0, 1fr) 32px 32px; align-items: center; gap: 8px; width: 100%; min-height: 36px; border: 1px solid var(--line); border-radius: 6px; padding: 7px 8px; background: var(--panel-soft); }
-.desktop-study-stats { display: grid; gap: 8px; margin: 14px 0 0; padding: 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel-soft); }
-.desktop-study-stats .study-stat { justify-content: space-between; width: 100%; }
+.desktop-study-stats { display: grid; gap: 8px; align-items: stretch; justify-content: stretch; margin: 14px 0 0; padding: 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel-soft); }
+.desktop-study-stats .study-stat { justify-content: space-between; width: 100%; margin-left: 0; }
 .character-panel-content { border-top: 1px solid var(--line); margin-top: 18px; padding-top: 14px; }
 .learning-summary .study-stats { display: none; }
 .mobile-quick-tools { display: none; }

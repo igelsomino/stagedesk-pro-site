@@ -425,10 +425,13 @@ const renderShare = (updateMessage = '', uiState = {}) => {
             <p class="character-help">Scegli uno o più personaggi per studiare le relative battute.</p>
           </div>
           <div class="bookmark-nav desktop-bookmark-nav" data-bookmark-nav aria-label="Navigazione bookmark">
-            <button type="button" data-bookmark-nav-action="previous" title="Bookmark precedente" aria-label="Bookmark precedente" ${activeBookmarkIndex <= 0 ? 'disabled' : ''}>${iconSvg('previous')}</button>
-            <span data-bookmark-position>${bookmarkIds.length ? `${activeBookmarkIndex >= 0 ? activeBookmarkIndex + 1 : 1}/${bookmarkIds.length}` : 'Nessun bookmark'}</span>
-            <button type="button" data-bookmark-nav-action="next" title="Bookmark successivo" aria-label="Bookmark successivo" ${activeBookmarkIndex >= bookmarkIds.length - 1 || !bookmarkIds.length ? 'disabled' : ''}>${iconSvg('next')}</button>
-            <button type="button" data-scroll-top title="Vai all’inizio" aria-label="Vai all’inizio">${iconSvg('top')}</button>
+            <div class="bookmark-nav-heading"><span class="field-label">Bookmark</span><span class="selection-count">${bookmarkIds.length}</span></div>
+            <div class="bookmark-nav-controls">
+              <button type="button" data-bookmark-nav-action="previous" title="Bookmark precedente" aria-label="Bookmark precedente" ${activeBookmarkIndex <= 0 ? 'disabled' : ''}>${iconSvg('previous')}</button>
+              <span data-bookmark-position>${bookmarkIds.length ? `${activeBookmarkIndex >= 0 ? activeBookmarkIndex + 1 : 1}/${bookmarkIds.length}` : 'Nessun bookmark'}</span>
+              <button type="button" data-bookmark-nav-action="next" title="Bookmark successivo" aria-label="Bookmark successivo" ${activeBookmarkIndex >= bookmarkIds.length - 1 || !bookmarkIds.length ? 'disabled' : ''}>${iconSvg('next')}</button>
+              <button type="button" data-scroll-top title="Vai all’inizio" aria-label="Vai all’inizio">${iconSvg('top')}</button>
+            </div>
           </div>
         </aside>
         <div class="learning-content">

@@ -113,13 +113,16 @@ button { cursor: pointer; }
 .study-stat-in_studio { color: #f2c94c; }
 .study-stat-studiata { color: #72d4ad; }
 .script-tools { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
-.bookmark-nav { display: flex; align-items: center; gap: 8px; min-height: 36px; color: var(--muted); font-size: 0.76rem; font-weight: 700; }
+.bookmark-nav { width: 100%; color: var(--muted); font-size: 0.76rem; font-weight: 700; }
 .bookmark-nav button { display: grid; place-items: center; flex: 0 0 32px; width: 32px; height: 32px; border: 1px solid var(--line); border-radius: 5px; color: var(--muted); background: var(--panel-soft); }
 .bookmark-nav button:hover:not(:disabled) { border-color: var(--accent); color: var(--text); }
 .bookmark-nav button:disabled { cursor: default; opacity: 0.35; }
-.bookmark-nav [data-bookmark-position] { width: 104px; overflow: hidden; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
+.bookmark-nav [data-bookmark-position] { min-width: 0; overflow: hidden; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
 .bookmark-nav .inline-icon { width: 16px; height: 16px; }
 .desktop-bookmark-nav { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
+.bookmark-nav-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 36px; min-height: 36px; margin-bottom: 12px; }
+.bookmark-nav-heading .field-label { color: var(--text); font-size: 0.95rem; line-height: 1.2; font-weight: 800; }
+.bookmark-nav-controls { display: grid; grid-template-columns: 32px minmax(0, 1fr) 32px 32px; align-items: center; gap: 8px; width: 100%; min-height: 36px; }
 .mobile-quick-tools { display: none; }
 .dialogue-search { position: relative; flex: 1 1 auto; min-width: 0; }
 .dialogue-search input { width: 100%; min-height: 36px; border: 1px solid var(--line); border-radius: 5px; padding: 7px 10px 7px 32px; color: var(--text); background: #101213; }
@@ -218,7 +221,7 @@ button { cursor: pointer; }
   .mobile-quick-tools .dialogue-search input { min-height: 34px; }
   .mobile-quick-tools .dialogue-search { grid-column: 1 / -1; width: 100%; }
   .desktop-bookmark-nav { display: none; }
-  .mobile-bookmark-nav { justify-content: flex-start; grid-column: 1 / -1; width: 100%; min-height: 32px; }
+  .mobile-bookmark-nav { display: flex; align-items: center; justify-content: flex-start; gap: 8px; grid-column: 1 / -1; width: 100%; min-height: 32px; }
   .mobile-bookmark-nav [data-bookmark-position] { flex: 0 0 104px; width: 104px; overflow: hidden; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
   .share-header-action { height: 38px; min-height: 38px; padding-inline: 12px; }
   .actor-dialogue-header { align-items: flex-start; flex-direction: column; gap: 3px; }

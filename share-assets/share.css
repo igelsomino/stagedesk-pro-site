@@ -130,8 +130,8 @@ button { cursor: pointer; }
 .study-stats-heading .field-label { color: var(--text); font-size: 0.95rem; line-height: 1.2; font-weight: 800; }
 .study-stats-heading .panel-section-title-icon { display: inline-flex; color: var(--muted); }
 .study-stats-heading .panel-section-title-icon .inline-icon { width: 16px; height: 16px; }
-.desktop-study-stats .study-stat { justify-content: flex-start; width: 100%; min-height: 27px; margin-left: 0; }
-.desktop-study-stats .study-stat strong { margin-left: auto; }
+.desktop-study-stats .study-stat { justify-content: flex-start; width: 100%; min-height: 27px; margin-left: 0; font-size: 0.8rem; text-transform: uppercase; }
+.desktop-study-stats .study-stat strong { margin-left: auto; font-size: 0.8rem; }
 .desktop-study-stats .study-stat + .study-stat { border-top: 1px solid rgba(52, 57, 58, 0.7); }
 .character-panel-content { border-top: 0; margin-top: 16px; padding-top: 0; }
 .learning-summary .study-stats { display: none; }

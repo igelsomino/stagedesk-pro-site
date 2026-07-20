@@ -428,15 +428,10 @@ const renderShare = (updateMessage = '', uiState = {}) => {
         <div class="learning-content">
           <div class="mobile-quick-tools" data-mobile-quick-tools aria-label="Strumenti copione">
             <label class="dialogue-search"><span class="search-field-icon">${iconSvg('search')}</span><span class="sr-only">Cerca battuta o personaggio</span><input type="search" placeholder="Cerca battuta o personaggio" value="${escapeHtml(dialogueSearchQuery)}" data-dialogue-search /></label>
-            <label class="character-search"><span class="search-field-icon">${iconSvg('search')}</span><span class="sr-only">Cerca personaggio</span><input type="search" placeholder="Cerca personaggio" value="${escapeHtml(characterSearchQuery)}" data-character-search /></label>
             <div class="mobile-bookmark-nav" data-bookmark-nav aria-label="Navigazione bookmark">
               <button type="button" data-bookmark-nav-action="previous" title="Bookmark precedente" aria-label="Bookmark precedente" ${activeBookmarkIndex <= 0 ? 'disabled' : ''}>${iconSvg('previous')}</button>
               <span data-bookmark-position>${bookmarkIds.length ? `${activeBookmarkIndex >= 0 ? activeBookmarkIndex + 1 : 1}/${bookmarkIds.length}` : 'Nessun bookmark'}</span>
               <button type="button" data-bookmark-nav-action="next" title="Bookmark successivo" aria-label="Bookmark successivo" ${activeBookmarkIndex >= bookmarkIds.length - 1 || !bookmarkIds.length ? 'disabled' : ''}>${iconSvg('next')}</button>
-            </div>
-            <div class="filter-modes" role="group" aria-label="Modalità filtro personaggi">
-              <button type="button" data-filter-mode="only-selected" class="${filterMode === 'only-selected' ? 'active' : ''}" title="Solo selezionati" aria-label="Solo selezionati">${iconSvg('eye')}<span class="sr-only">Solo selezionati</span></button>
-              <button type="button" data-filter-mode="hide-selected" class="${filterMode === 'hide-selected' ? 'active' : ''}" title="Nascondi selezionati" aria-label="Nascondi selezionati">${iconSvg('eye-off')}<span class="sr-only">Nascondi selezionati</span></button>
               <button type="button" data-scroll-top title="Vai all’inizio" aria-label="Vai all’inizio">${iconSvg('top')}</button>
             </div>
           </div>
@@ -578,22 +573,10 @@ const renderShare = (updateMessage = '', uiState = {}) => {
     })
   })
   root.querySelectorAll('.actor-dialogue').forEach((card) => {
-    let touchStart
-    card.addEventListener('touchstart', (event) => {
-      if (window.innerWidth > 560) return
-      const touch = event.changedTouches[0]
-      if (touch) touchStart = { x: touch.clientX, y: touch.clientY }
-    }, { passive: true })
-    card.addEventListener('touchend', (event) => {
-      if (window.innerWidth > 560 || !touchStart) return
-      const touch = event.changedTouches[0]
-      if (!touch) return
-      const deltaX = touch.clientX - touchStart.x
-      const deltaY = touch.clientY - touchStart.y
-      touchStart = undefined
-      if (Math.abs(deltaX) < 52 || Math.abs(deltaX) <= Math.abs(deltaY)) return
-      event.preventDefault()
-      setBookmark(card.dataset.dialogueId, deltaX < 0)
+    card.addEventListener('dblclick', (event) => {
+      if (window.innerWidth > 560 || event.target.closest('button, input, select, a')) return
+      const dialogueId = card.dataset.dialogueId
+      setBookmark(dialogueId, !bookmarkedDialogueIds.has(dialogueId))
     }, { passive: false })
   })
   root.querySelectorAll('.character-option input').forEach((input) => {

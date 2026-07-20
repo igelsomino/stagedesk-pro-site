@@ -208,8 +208,7 @@ button { cursor: pointer; }
   #share-app.mobile-tools-visible .mobile-quick-tools { transform: translateY(0); pointer-events: auto; }
   .mobile-quick-tools .character-search input,
   .mobile-quick-tools .dialogue-search input { min-height: 34px; }
-  .mobile-quick-tools .filter-modes { grid-column: 1 / -1; margin: 0; }
-  .mobile-quick-tools .filter-modes button { width: 32px; height: 32px; min-height: 32px; }
+  .mobile-quick-tools .dialogue-search { grid-column: 1 / -1; }
   .mobile-bookmark-nav { display: flex; align-items: center; justify-content: center; gap: 8px; grid-column: 1 / -1; min-height: 32px; color: var(--muted); font-size: 0.76rem; font-weight: 700; }
   .mobile-bookmark-nav button { display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid var(--line); border-radius: 5px; color: var(--muted); background: var(--panel-soft); }
   .mobile-bookmark-nav button:hover:not(:disabled) { border-color: var(--accent); color: var(--text); }

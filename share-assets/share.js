@@ -428,7 +428,7 @@ const renderShare = (updateMessage = '', uiState = {}) => {
         <div class="learning-content">
           <div class="mobile-quick-tools" data-mobile-quick-tools aria-label="Strumenti copione">
             <label class="dialogue-search"><span class="search-field-icon">${iconSvg('search')}</span><span class="sr-only">Cerca battuta o personaggio</span><input type="search" placeholder="Cerca battuta o personaggio" value="${escapeHtml(dialogueSearchQuery)}" data-dialogue-search /></label>
-            <div class="mobile-bookmark-nav" data-bookmark-nav aria-label="Navigazione bookmark">
+            <div class="bookmark-nav mobile-bookmark-nav" data-bookmark-nav aria-label="Navigazione bookmark">
               <button type="button" data-bookmark-nav-action="previous" title="Bookmark precedente" aria-label="Bookmark precedente" ${activeBookmarkIndex <= 0 ? 'disabled' : ''}>${iconSvg('previous')}</button>
               <span data-bookmark-position>${bookmarkIds.length ? `${activeBookmarkIndex >= 0 ? activeBookmarkIndex + 1 : 1}/${bookmarkIds.length}` : 'Nessun bookmark'}</span>
               <button type="button" data-bookmark-nav-action="next" title="Bookmark successivo" aria-label="Bookmark successivo" ${activeBookmarkIndex >= bookmarkIds.length - 1 || !bookmarkIds.length ? 'disabled' : ''}>${iconSvg('next')}</button>
@@ -446,6 +446,12 @@ const renderShare = (updateMessage = '', uiState = {}) => {
           </div>
           <div class="script-tools">
             <label class="dialogue-search"><span class="search-field-icon">${iconSvg('search')}</span><span class="sr-only">Cerca battuta</span><input type="search" placeholder="Cerca battuta o personaggio" value="${escapeHtml(dialogueSearchQuery)}" data-dialogue-search /></label>
+            <div class="bookmark-nav desktop-bookmark-nav" data-bookmark-nav aria-label="Navigazione bookmark">
+              <button type="button" data-bookmark-nav-action="previous" title="Bookmark precedente" aria-label="Bookmark precedente" ${activeBookmarkIndex <= 0 ? 'disabled' : ''}>${iconSvg('previous')}</button>
+              <span data-bookmark-position>${bookmarkIds.length ? `${activeBookmarkIndex >= 0 ? activeBookmarkIndex + 1 : 1}/${bookmarkIds.length}` : 'Nessun bookmark'}</span>
+              <button type="button" data-bookmark-nav-action="next" title="Bookmark successivo" aria-label="Bookmark successivo" ${activeBookmarkIndex >= bookmarkIds.length - 1 || !bookmarkIds.length ? 'disabled' : ''}>${iconSvg('next')}</button>
+              <button type="button" data-scroll-top title="Vai all’inizio" aria-label="Vai all’inizio">${iconSvg('top')}</button>
+            </div>
           </div>
           <div class="dialogue-list">
             ${selectedCharacters.size === 0 ? '<p class="empty-state">Seleziona almeno un personaggio per visualizzare le battute.</p>' : ''}
@@ -467,7 +473,7 @@ const renderShare = (updateMessage = '', uiState = {}) => {
               return `<article class="actor-dialogue ${visible ? '' : 'is-hidden'} ${concealed ? 'is-dialogue-hidden' : ''} ${matchesSearch ? '' : 'is-search-hidden'}" data-character="${escapeHtml(item.characterId)}" data-dialogue-id="${escapeHtml(item.id)}" data-dialogue-index="${dialogueIndex}" data-dialogue-search="${escapeHtml(`${item.characterName} ${item.text}`.toLowerCase())}">
                 <div class="actor-dialogue-header">
                   <strong>${escapeHtml(item.characterName)}</strong>
-                  <span class="dialogue-meta"><span class="dialogue-index">Battuta ${dialogueIndex + 1}</span><span class="dialogue-bookmark${isBookmarked ? ' is-active' : ''}" data-dialogue-bookmark title="${isBookmarked ? 'Bookmark attivo' : 'Bookmark non attivo'}" aria-label="${isBookmarked ? 'Bookmark attivo' : 'Bookmark non attivo'}">${iconSvg('bookmark')}</span></span>
+                  <span class="dialogue-meta"><span class="dialogue-index">Battuta ${dialogueIndex + 1}</span><button type="button" class="dialogue-bookmark${isBookmarked ? ' is-active' : ''}" data-dialogue-bookmark title="${isBookmarked ? 'Rimuovi bookmark' : 'Aggiungi bookmark'}" aria-label="${isBookmarked ? 'Rimuovi bookmark' : 'Aggiungi bookmark'}" aria-pressed="${isBookmarked}">${iconSvg('bookmark')}</button></span>
                 </div>
                 <p class="dialogue-copy">${escapeHtml(item.text)}</p>
                 ${hasStudyControls ? `<div class="status-picker" role="group" aria-label="Stato battuta ${dialogueIndex + 1}">
@@ -545,8 +551,9 @@ const renderShare = (updateMessage = '', uiState = {}) => {
     const indicator = findDialogueCard(dialogueId)?.querySelector('[data-dialogue-bookmark]')
     indicator?.classList.toggle('is-active', enabled)
     if (indicator) {
-      indicator.title = enabled ? 'Bookmark attivo' : 'Bookmark non attivo'
-      indicator.setAttribute('aria-label', enabled ? 'Bookmark attivo' : 'Bookmark non attivo')
+      indicator.title = enabled ? 'Rimuovi bookmark' : 'Aggiungi bookmark'
+      indicator.setAttribute('aria-label', enabled ? 'Rimuovi bookmark' : 'Aggiungi bookmark')
+      indicator.setAttribute('aria-pressed', String(enabled))
     }
     refreshBookmarkUi()
   }
@@ -573,6 +580,12 @@ const renderShare = (updateMessage = '', uiState = {}) => {
     })
   })
   root.querySelectorAll('.actor-dialogue').forEach((card) => {
+    card.querySelector('[data-dialogue-bookmark]')?.addEventListener('click', (event) => {
+      event.preventDefault()
+      event.stopPropagation()
+      const dialogueId = card.dataset.dialogueId
+      setBookmark(dialogueId, !bookmarkedDialogueIds.has(dialogueId))
+    })
     card.addEventListener('dblclick', (event) => {
       if (window.innerWidth > 560 || event.target.closest('button, input, select, a')) return
       const dialogueId = card.dataset.dialogueId
@@ -596,8 +609,10 @@ const renderShare = (updateMessage = '', uiState = {}) => {
       renderShare()
     })
   })
-  root.querySelector('[data-scroll-top]')?.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+  root.querySelectorAll('[data-scroll-top]').forEach((button) => {
+    button.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    })
   })
   root.querySelector('[data-character-selection-toggle]')?.addEventListener('click', () => {
     const ids = characters.map((character) => character.id)

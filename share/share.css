@@ -113,6 +113,13 @@ button { cursor: pointer; }
 .study-stat-in_studio { color: #f2c94c; }
 .study-stat-studiata { color: #72d4ad; }
 .script-tools { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+.bookmark-nav { display: flex; align-items: center; gap: 8px; min-height: 36px; color: var(--muted); font-size: 0.76rem; font-weight: 700; }
+.bookmark-nav button { display: grid; place-items: center; flex: 0 0 32px; width: 32px; height: 32px; border: 1px solid var(--line); border-radius: 5px; color: var(--muted); background: var(--panel-soft); }
+.bookmark-nav button:hover:not(:disabled) { border-color: var(--accent); color: var(--text); }
+.bookmark-nav button:disabled { cursor: default; opacity: 0.35; }
+.bookmark-nav [data-bookmark-position] { width: 104px; overflow: hidden; text-align: left; text-overflow: ellipsis; white-space: nowrap; }
+.bookmark-nav .inline-icon { width: 16px; height: 16px; }
+.desktop-bookmark-nav { margin-left: auto; }
 .mobile-quick-tools { display: none; }
 .dialogue-search { position: relative; flex: 1 1 auto; min-width: 0; }
 .dialogue-search input { width: 100%; min-height: 36px; border: 1px solid var(--line); border-radius: 5px; padding: 7px 10px 7px 32px; color: var(--text); background: #101213; }
@@ -133,7 +140,8 @@ button { cursor: pointer; }
 .actor-dialogue-header strong { color: #ffb095; font-size: 0.82rem; letter-spacing: 0.05em; }
 .dialogue-meta { display: inline-flex; align-items: center; gap: 8px; }
 .dialogue-index { color: #777c7d; font-size: 0.72rem; }
-.dialogue-bookmark { display: inline-grid; place-items: center; color: #777c7d; opacity: 0.45; }
+.dialogue-bookmark { display: inline-grid; place-items: center; width: 24px; height: 24px; border: 0; border-radius: 4px; padding: 0; color: #777c7d; background: transparent; opacity: 0.45; }
+.dialogue-bookmark:hover { color: var(--text); opacity: 1; }
 .dialogue-bookmark.is-active { color: var(--accent); opacity: 1; }
 .dialogue-bookmark .inline-icon { width: 15px; height: 15px; }
 .status-picker { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-start; margin-top: 15px; }
@@ -209,12 +217,9 @@ button { cursor: pointer; }
   .mobile-quick-tools .character-search input,
   .mobile-quick-tools .dialogue-search input { min-height: 34px; }
   .mobile-quick-tools .dialogue-search { grid-column: 1 / -1; width: 100%; }
-  .mobile-bookmark-nav { display: flex; align-items: center; justify-content: flex-start; gap: 8px; grid-column: 1 / -1; width: 100%; min-height: 32px; color: var(--muted); font-size: 0.76rem; font-weight: 700; }
-  .mobile-bookmark-nav button { display: grid; place-items: center; flex: 0 0 32px; width: 32px; height: 32px; border: 1px solid var(--line); border-radius: 5px; color: var(--muted); background: var(--panel-soft); }
+  .desktop-bookmark-nav { display: none; }
+  .mobile-bookmark-nav { justify-content: flex-start; grid-column: 1 / -1; width: 100%; min-height: 32px; }
   .mobile-bookmark-nav [data-bookmark-position] { flex: 0 0 104px; width: 104px; overflow: hidden; text-align: left; text-overflow: ellipsis; white-space: nowrap; }
-  .mobile-bookmark-nav button:hover:not(:disabled) { border-color: var(--accent); color: var(--text); }
-  .mobile-bookmark-nav button:disabled { cursor: default; opacity: 0.35; }
-  .mobile-bookmark-nav .inline-icon { width: 16px; height: 16px; }
   .share-header-action { height: 38px; min-height: 38px; padding-inline: 12px; }
   .actor-dialogue-header { align-items: flex-start; flex-direction: column; gap: 3px; }
   .status-picker { justify-content: stretch; }

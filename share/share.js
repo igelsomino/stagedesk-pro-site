@@ -17,8 +17,6 @@ let filterMode = 'hide-selected'
 let revealedDialogueIds = new Set()
 let characterMenuOpen = false
 let authMode = 'signin'
-let removeStepNavigation = () => {}
-let stepNavigationLocked = false
 const SHARE_ACCESS_TTL_MS = 48 * 60 * 60 * 1000
 
 const escapeHtml = (value) => String(value ?? '')
@@ -37,8 +35,6 @@ const iconSvg = (name) => {
     refresh: '<path d="M20 11a8 8 0 0 0-14.8-4L3 10"/><path d="M3 4v6h6"/><path d="M4 13a8 8 0 0 0 14.8 4L21 14"/><path d="M21 20v-6h-6"/>',
     menu: '<path d="M4 6h16M4 12h16M4 18h16"/>',
     search: '<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/>',
-    previous: '<path d="m14 6-6 6 6 6"/>',
-    next: '<path d="m10 6 6 6-6 6"/>',
     eye: '<path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/>',
     'eye-off': '<path d="m3 3 18 18"/><path d="M10.6 5.2A10.8 10.8 0 0 1 12 5c6 0 9.5 7 9.5 7a17 17 0 0 1-3.1 3.8M6.2 6.3C3.7 8.1 2.5 12 2.5 12s3.5 7 9.5 7c1 0 1.9-.2 2.7-.5"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>',
     'select-all': '<rect x="4" y="4" width="12" height="12" rx="1.5"/><path d="m8 10 2.2 2.2L15 7.5"/><path d="M8 20h8a2 2 0 0 0 2-2v-8"/>',
@@ -322,7 +318,6 @@ async function refreshSharedScript(fromBootstrap = false) {
 }
 
 const renderShare = (updateMessage = '', uiState = {}) => {
-  removeStepNavigation()
   const payload = share?.payload || {}
   const characters = Array.isArray(payload.characters) ? payload.characters : []
   const dialogues = Array.isArray(payload.dialogues) ? payload.dialogues : []
@@ -393,11 +388,6 @@ const renderShare = (updateMessage = '', uiState = {}) => {
           </div>
           <div class="script-tools">
             <label class="dialogue-search"><span class="search-field-icon">${iconSvg('search')}</span><span class="sr-only">Cerca battuta</span><input type="search" placeholder="Cerca battuta o personaggio" data-dialogue-search /></label>
-            <div class="script-navigation" aria-label="Navigazione copione">
-              <button type="button" data-script-nav="previous" title="Battuta precedente" aria-label="Battuta precedente">${iconSvg('previous')}</button>
-              <label><span class="sr-only">Vai alla battuta</span><input type="number" min="1" max="${dialogues.length || 1}" placeholder="N." title="Numero battuta" aria-label="Numero battuta" data-dialogue-jump /></label>
-              <button type="button" data-script-nav="next" title="Battuta successiva" aria-label="Battuta successiva">${iconSvg('next')}</button>
-            </div>
           </div>
           <div class="dialogue-list">
             ${selectedCharacters.size === 0 ? '<p class="empty-state">Seleziona almeno un personaggio per visualizzare le battute.</p>' : ''}
@@ -456,108 +446,6 @@ const renderShare = (updateMessage = '', uiState = {}) => {
       const ownerId = note.dataset.dialogueId
       note.classList.toggle('is-search-hidden', Boolean(query && ownerId && !matchingIds.has(ownerId)))
     })
-  })
-  const focusDialogue = (dialogue) => {
-    if (!dialogue) return
-    root.querySelectorAll('.actor-dialogue.is-current').forEach((item) => item.classList.remove('is-current'))
-    dialogue.classList.add('is-current')
-    dialogue.setAttribute('tabindex', '-1')
-    dialogue.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    dialogue.focus({ preventScroll: true })
-  }
-  const visibleDialogues = () => Array.from(root.querySelectorAll('.actor-dialogue:not(.is-hidden):not(.is-search-hidden)'))
-  const stepToDialogue = (direction) => {
-    const cards = visibleDialogues()
-    if (!cards.length) return
-    const current = root.querySelector('.actor-dialogue.is-current')
-    let currentIndex = current ? cards.indexOf(current) : -1
-    if (currentIndex < 0) {
-      const viewportCenter = window.innerHeight / 2
-      currentIndex = cards.reduce((closestIndex, card, index) => {
-        const closestDistance = Math.abs(cards[closestIndex].getBoundingClientRect().top + cards[closestIndex].getBoundingClientRect().height / 2 - viewportCenter)
-        const distance = Math.abs(card.getBoundingClientRect().top + card.getBoundingClientRect().height / 2 - viewportCenter)
-        return distance < closestDistance ? index : closestIndex
-      }, 0)
-    }
-    const nextIndex = Math.max(0, Math.min(cards.length - 1, currentIndex + direction))
-    if (nextIndex !== currentIndex) focusDialogue(cards[nextIndex])
-    else focusDialogue(cards[currentIndex])
-  }
-  const runStep = (direction) => {
-    if (stepNavigationLocked) return
-    stepNavigationLocked = true
-    stepToDialogue(direction)
-    window.setTimeout(() => { stepNavigationLocked = false }, 420)
-  }
-  const handleStepWheel = (event) => {
-    if (!event.deltaY || event.defaultPrevented) return
-    if (event.target.closest('input, button, select, textarea, .character-options')) return
-    event.preventDefault()
-    runStep(event.deltaY > 0 ? 1 : -1)
-  }
-  const handleStepKeyDown = (event) => {
-    if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return
-    if (event.target.closest('input, button, select, textarea, [contenteditable="true"]')) return
-    const direction = event.key === 'ArrowDown' || event.key === 'PageDown' ? 1 : event.key === 'ArrowUp' || event.key === 'PageUp' ? -1 : 0
-    if (!direction) return
-    event.preventDefault()
-    runStep(direction)
-  }
-  let touchStartY = 0
-  let touchStartX = 0
-  let touchStartTarget
-  const allowsNativeTouch = (target) => target instanceof Element && target.closest('input, button, select, textarea, .character-options')
-  const handleTouchStart = (event) => {
-    const touch = event.changedTouches[0]
-    if (!touch) return
-    touchStartY = touch.clientY
-    touchStartX = touch.clientX
-    touchStartTarget = event.target
-  }
-  const handleTouchMove = (event) => {
-    if (allowsNativeTouch(touchStartTarget)) return
-    const touch = event.changedTouches[0]
-    if (touch && Math.abs(touch.clientY - touchStartY) > 8) event.preventDefault()
-  }
-  const handleTouchEnd = (event) => {
-    if (allowsNativeTouch(touchStartTarget)) return
-    const touch = event.changedTouches[0]
-    if (!touch) return
-    const deltaY = touch.clientY - touchStartY
-    const deltaX = touch.clientX - touchStartX
-    if (Math.abs(deltaY) < 34 || Math.abs(deltaY) < Math.abs(deltaX)) return
-    event.preventDefault()
-    runStep(deltaY < 0 ? 1 : -1)
-  }
-  window.addEventListener('wheel', handleStepWheel, { passive: false })
-  window.addEventListener('keydown', handleStepKeyDown)
-  window.addEventListener('touchstart', handleTouchStart, { passive: true })
-  window.addEventListener('touchmove', handleTouchMove, { passive: false })
-  window.addEventListener('touchend', handleTouchEnd, { passive: false })
-  removeStepNavigation = () => {
-    window.removeEventListener('wheel', handleStepWheel)
-    window.removeEventListener('keydown', handleStepKeyDown)
-    window.removeEventListener('touchstart', handleTouchStart)
-    window.removeEventListener('touchmove', handleTouchMove)
-    window.removeEventListener('touchend', handleTouchEnd)
-    removeStepNavigation = () => {}
-  }
-  root.querySelectorAll('[data-script-nav]').forEach((button) => {
-    button.addEventListener('click', () => {
-      const cards = Array.from(root.querySelectorAll('.actor-dialogue:not(.is-hidden):not(.is-search-hidden)'))
-      if (!cards.length) return
-      const current = root.querySelector('.actor-dialogue.is-current')
-      const currentIndex = current ? cards.indexOf(current) : button.dataset.scriptNav === 'next' ? -1 : cards.length
-      const direction = button.dataset.scriptNav === 'next' ? 1 : -1
-      const nextIndex = Math.max(0, Math.min(cards.length - 1, currentIndex + direction))
-      focusDialogue(cards[nextIndex])
-    })
-  })
-  root.querySelector('[data-dialogue-jump]')?.addEventListener('change', (event) => {
-    const requested = Number(event.currentTarget.value) - 1
-    const target = root.querySelector(`[data-dialogue-index="${requested}"]:not(.is-hidden):not(.is-search-hidden)`)
-    if (target) focusDialogue(target)
-    else event.currentTarget.value = ''
   })
   root.querySelectorAll('.character-option input').forEach((input) => {
     input.addEventListener('change', () => {

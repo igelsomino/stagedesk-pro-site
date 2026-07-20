@@ -123,6 +123,8 @@ button { cursor: pointer; }
 .bookmark-nav-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 36px; min-height: 36px; margin-bottom: 12px; }
 .bookmark-nav-heading .field-label { color: var(--text); font-size: 0.95rem; line-height: 1.2; font-weight: 800; }
 .bookmark-nav-controls { display: grid; grid-template-columns: 32px minmax(0, 1fr) 32px 32px; align-items: center; gap: 8px; width: 100%; min-height: 36px; }
+.desktop-study-stats { display: flex; align-items: center; justify-content: flex-start; flex-wrap: wrap; gap: 7px 10px; margin: 14px 0 0; }
+.learning-summary .study-stats { display: none; }
 .mobile-quick-tools { display: none; }
 .dialogue-search { position: relative; flex: 1 1 auto; min-width: 0; }
 .dialogue-search input { width: 100%; min-height: 36px; border: 1px solid var(--line); border-radius: 5px; padding: 7px 10px 7px 32px; color: var(--text); background: #101213; }
@@ -198,6 +200,8 @@ button { cursor: pointer; }
   .learning-summary { align-items: flex-start; flex-wrap: wrap; gap: 6px 10px; }
   .learning-summary-main { width: 100%; }
   .study-stats { order: 3; width: 100%; justify-content: flex-start; gap: 6px 12px; margin-left: 0; }
+  .desktop-study-stats { display: none; }
+  .learning-summary .study-stats { display: flex; }
   .script-tools { margin-bottom: 12px; }
   .mobile-quick-tools {
     position: fixed;

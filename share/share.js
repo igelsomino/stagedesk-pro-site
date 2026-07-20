@@ -66,6 +66,7 @@ const iconSvg = (name) => {
     previous: '<path d="m14 6-6 6 6 6"/>',
     next: '<path d="m10 6 6 6-6 6"/>',
     top: '<path d="m5 11 7-7 7 7"/><path d="M12 4v16"/>',
+    users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
     study: '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5Z"/><path d="M4 5.5v15M8 7h8m-8 4h8"/>',
     progress: '<path d="m14 6 4 4"/><path d="M4 20h4l10-10a2.8 2.8 0 0 0-4-4L4 16v4Z"/><path d="M13 7 17 11"/>',
     done: '<circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/>',
@@ -407,7 +408,7 @@ const renderShare = (updateMessage = '', uiState = {}) => {
             <span class="study-stat study-stat-studiata"><span class="study-stat-dot" aria-hidden="true"></span><span>Completato</span><strong data-study-stat="studiata">${progressStats.studiata}</strong></span>
           </div>
           <div class="bookmark-nav desktop-bookmark-nav" data-bookmark-nav aria-label="Navigazione bookmark">
-            <div class="bookmark-nav-heading"><span class="field-label">Bookmark</span></div>
+            <div class="bookmark-nav-heading"><span class="panel-section-title">${iconSvg('bookmark')}<span class="field-label">Bookmark</span></span></div>
             <div class="bookmark-nav-controls">
               <button type="button" data-bookmark-nav-action="previous" title="Bookmark precedente" aria-label="Bookmark precedente" ${activeBookmarkIndex <= 0 ? 'disabled' : ''}>${iconSvg('previous')}</button>
               <span data-bookmark-position>${bookmarkIds.length ? `${activeBookmarkIndex >= 0 ? activeBookmarkIndex + 1 : 1}/${bookmarkIds.length}` : 'Nessun bookmark'}</span>
@@ -415,9 +416,9 @@ const renderShare = (updateMessage = '', uiState = {}) => {
               <button type="button" data-scroll-top title="Vai all’inizio" aria-label="Vai all’inizio">${iconSvg('top')}</button>
             </div>
           </div>
-          <button type="button" class="character-menu-toggle" data-character-menu-toggle aria-expanded="${characterMenuOpen}" aria-controls="character-menu-content">${iconSvg('menu')}<span>Personaggi</span><span class="selection-count">${selectedCharacters.size}/${characters.length}</span></button>
+          <button type="button" class="character-menu-toggle" data-character-menu-toggle aria-expanded="${characterMenuOpen}" aria-controls="character-menu-content">${iconSvg('users')}<span>Personaggi</span><span class="selection-count">${selectedCharacters.size}/${characters.length}</span></button>
           <div id="character-menu-content" class="character-panel-content${characterMenuOpen ? ' is-open' : ''}" data-character-menu>
-            <div class="filter-heading character-panel-heading"><span class="field-label">Personaggi</span><span class="selection-count">${selectedCharacters.size}/${characters.length}</span></div>
+            <div class="filter-heading character-panel-heading"><span class="panel-section-title">${iconSvg('users')}<span class="field-label">Personaggi</span></span><span class="selection-count">${selectedCharacters.size}/${characters.length}</span></div>
             <label class="character-search">
               <span class="sr-only">Cerca personaggio</span>
               <span class="search-field-icon">${iconSvg('search')}</span>

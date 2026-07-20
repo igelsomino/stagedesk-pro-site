@@ -67,6 +67,7 @@ const iconSvg = (name) => {
     next: '<path d="m10 6 6 6-6 6"/>',
     top: '<path d="m5 11 7-7 7 7"/><path d="M12 4v16"/>',
     users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+    statistics: '<path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-4"/><path d="M12 16V8"/><path d="M16 16v-7"/>',
     study: '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5Z"/><path d="M4 5.5v15M8 7h8m-8 4h8"/>',
     progress: '<path d="m14 6 4 4"/><path d="M4 20h4l10-10a2.8 2.8 0 0 0-4-4L4 16v4Z"/><path d="M13 7 17 11"/>',
     done: '<circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/>',
@@ -403,7 +404,7 @@ const renderShare = (updateMessage = '', uiState = {}) => {
       <div class="learning-layout">
         <aside class="character-panel" aria-label="Selezione personaggi">
           <div class="study-stats desktop-study-stats" aria-label="Statistiche battute">
-            <div class="study-stats-heading field-label">Statistiche</div>
+            <div class="study-stats-heading panel-section-title"><span class="panel-section-title-icon">${iconSvg('statistics')}</span><span class="field-label">Statistiche</span></div>
             <span class="study-stat study-stat-da_studiare"><span class="study-stat-dot" aria-hidden="true"></span><span>Da studiare</span><strong data-study-stat="da_studiare">${progressStats.da_studiare}</strong></span>
             <span class="study-stat study-stat-in_studio"><span class="study-stat-dot" aria-hidden="true"></span><span>In studio</span><strong data-study-stat="in_studio">${progressStats.in_studio}</strong></span>
             <span class="study-stat study-stat-studiata"><span class="study-stat-dot" aria-hidden="true"></span><span>Completato</span><strong data-study-stat="studiata">${progressStats.studiata}</strong></span>

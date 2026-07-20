@@ -17,7 +17,28 @@ let filterMode = 'hide-selected'
 let revealedDialogueIds = new Set()
 let characterMenuOpen = false
 let authMode = 'signin'
+let scriptRenderLimit = 24
+let dialogueSearchQuery = ''
+let characterSearchQuery = ''
+let lastMobileScrollY = 0
 const SHARE_ACCESS_TTL_MS = 48 * 60 * 60 * 1000
+const SCRIPT_BATCH_SIZE = 24
+
+const updateMobileToolsVisibility = () => {
+  if (!root) return
+  const currentScrollY = Math.max(0, window.scrollY || document.documentElement.scrollTop || 0)
+  if (window.innerWidth > 560 || currentScrollY <= 16) {
+    root.classList.remove('mobile-tools-visible')
+  } else if (currentScrollY < lastMobileScrollY - 4) {
+    root.classList.add('mobile-tools-visible')
+  } else if (currentScrollY > lastMobileScrollY + 4) {
+    root.classList.remove('mobile-tools-visible')
+  }
+  lastMobileScrollY = currentScrollY
+}
+
+window.addEventListener('scroll', updateMobileToolsVisibility, { passive: true })
+window.addEventListener('resize', updateMobileToolsVisibility)
 
 const escapeHtml = (value) => String(value ?? '')
   .replaceAll('&', '&amp;')
@@ -219,7 +240,7 @@ const renderPinForm = (message = '') => {
 
 const sameScene = (left, right) => (left && right && left === right) || (!left && !right)
 
-const renderNote = (note, hidden = false, dialogueId = '') => `<aside class="dialogue-context note-${escapeHtml(note.type || 'general')} ${hidden ? 'is-context-hidden' : ''}" ${dialogueId ? `data-dialogue-id="${escapeHtml(dialogueId)}"` : ''}>
+const renderNote = (note, hidden = false, dialogueId = '', searchHidden = false) => `<aside class="dialogue-context note-${escapeHtml(note.type || 'general')} ${hidden ? 'is-context-hidden' : ''} ${searchHidden ? 'is-search-hidden' : ''}" ${dialogueId ? `data-dialogue-id="${escapeHtml(dialogueId)}"` : ''}>
   <div class="dialogue-note-title"><span class="note-dot" aria-hidden="true"></span>${escapeHtml(note.title)}</div>
   <p>${escapeHtml(note.content)}</p>
 </aside>`
@@ -337,6 +358,7 @@ const renderShare = (updateMessage = '', uiState = {}) => {
   selectedCharacters = new Set([...selectedCharacters].filter((id) => availableCharacterIds.has(id)))
   const noteDialogueIds = noteDialogueIdsFromItems(items)
   const scriptItems = orderedScriptItems(items, dialogues, noteDialogueIds)
+  const renderedScriptItems = scriptItems.slice(0, Math.max(SCRIPT_BATCH_SIZE, scriptRenderLimit))
   const scriptTitle = formatScriptTitle(share?.scriptName)
   const allCharactersSelected = characters.length > 0 && selectedCharacters.size === characters.length
   const selectionActionLabel = allCharactersSelected ? 'Inverti selezione' : 'Seleziona tutto'
@@ -358,7 +380,7 @@ const renderShare = (updateMessage = '', uiState = {}) => {
             <label class="character-search">
               <span class="sr-only">Cerca personaggio</span>
               <span class="search-field-icon">${iconSvg('search')}</span>
-              <input type="search" placeholder="Cerca personaggio" data-character-search />
+              <input type="search" placeholder="Cerca personaggio" value="${escapeHtml(characterSearchQuery)}" data-character-search />
             </label>
             <div class="character-options">
               ${characters.map((character) => `
@@ -377,6 +399,14 @@ const renderShare = (updateMessage = '', uiState = {}) => {
           </div>
         </aside>
         <div class="learning-content">
+          <div class="mobile-quick-tools" data-mobile-quick-tools aria-label="Strumenti copione">
+            <label class="character-search"><span class="search-field-icon">${iconSvg('search')}</span><span class="sr-only">Cerca personaggio</span><input type="search" placeholder="Cerca personaggio" value="${escapeHtml(characterSearchQuery)}" data-character-search /></label>
+            <label class="dialogue-search"><span class="search-field-icon">${iconSvg('search')}</span><span class="sr-only">Cerca battuta o personaggio</span><input type="search" placeholder="Cerca battuta o personaggio" value="${escapeHtml(dialogueSearchQuery)}" data-dialogue-search /></label>
+            <div class="filter-modes" role="group" aria-label="Modalità filtro personaggi">
+              <button type="button" data-filter-mode="only-selected" class="${filterMode === 'only-selected' ? 'active' : ''}" title="Solo selezionati" aria-label="Solo selezionati">${iconSvg('eye')}<span class="sr-only">Solo selezionati</span></button>
+              <button type="button" data-filter-mode="hide-selected" class="${filterMode === 'hide-selected' ? 'active' : ''}" title="Nascondi selezionati" aria-label="Nascondi selezionati">${iconSvg('eye-off')}<span class="sr-only">Nascondi selezionati</span></button>
+            </div>
+          </div>
           <div class="learning-summary">
             <div class="learning-summary-main"><strong>${dialogues.length} battute</strong><span>${notes.length} note di regia</span></div>
             <span class="refresh-status" data-refresh-status data-tone="${updateMessage ? 'success' : ''}">${escapeHtml(updateMessage)}</span>
@@ -387,15 +417,16 @@ const renderShare = (updateMessage = '', uiState = {}) => {
             </div>
           </div>
           <div class="script-tools">
-            <label class="dialogue-search"><span class="search-field-icon">${iconSvg('search')}</span><span class="sr-only">Cerca battuta</span><input type="search" placeholder="Cerca battuta o personaggio" data-dialogue-search /></label>
+            <label class="dialogue-search"><span class="search-field-icon">${iconSvg('search')}</span><span class="sr-only">Cerca battuta</span><input type="search" placeholder="Cerca battuta o personaggio" value="${escapeHtml(dialogueSearchQuery)}" data-dialogue-search /></label>
           </div>
           <div class="dialogue-list">
             ${selectedCharacters.size === 0 ? '<p class="empty-state">Seleziona almeno un personaggio per visualizzare le battute.</p>' : ''}
-            ${scriptItems.map(({ kind, item, index, dialogueIndex, dialogueId }) => {
+            ${renderedScriptItems.map(({ kind, item, index, dialogueIndex, dialogueId }) => {
               if (kind === 'note') {
                 const owner = dialogues.find((dialogue) => dialogue.id === dialogueId)
                 const noteVisible = !owner || filterMode === 'hide-selected' || selectedCharacters.has(owner.characterId)
-                return renderNote(item, !noteVisible, dialogueId)
+                const ownerMatchesSearch = !dialogueSearchQuery || !owner || `${owner.characterName} ${owner.text}`.toLowerCase().includes(dialogueSearchQuery)
+                return renderNote(item, !noteVisible, dialogueId, !ownerMatchesSearch)
               }
               const selected = selectedCharacters.has(item.characterId)
               const concealed = filterMode === 'hide-selected' && selected && !revealedDialogueIds.has(item.id)
@@ -403,7 +434,8 @@ const renderShare = (updateMessage = '', uiState = {}) => {
               const canToggleVisibility = filterMode === 'hide-selected' && selected
               const hasStudyControls = selected
               const status = progress[item.id] || 'da_studiare'
-              return `<article class="actor-dialogue ${visible ? '' : 'is-hidden'} ${concealed ? 'is-dialogue-hidden' : ''}" data-character="${escapeHtml(item.characterId)}" data-dialogue-id="${escapeHtml(item.id)}" data-dialogue-index="${dialogueIndex}" data-dialogue-search="${escapeHtml(`${item.characterName} ${item.text}`.toLowerCase())}">
+              const matchesSearch = !dialogueSearchQuery || `${item.characterName} ${item.text}`.toLowerCase().includes(dialogueSearchQuery)
+              return `<article class="actor-dialogue ${visible ? '' : 'is-hidden'} ${concealed ? 'is-dialogue-hidden' : ''} ${matchesSearch ? '' : 'is-search-hidden'}" data-character="${escapeHtml(item.characterId)}" data-dialogue-id="${escapeHtml(item.id)}" data-dialogue-index="${dialogueIndex}" data-dialogue-search="${escapeHtml(`${item.characterName} ${item.text}`.toLowerCase())}">
                 <div class="actor-dialogue-header">
                   <strong>${escapeHtml(item.characterName)}</strong>
                 <span class="dialogue-index">Battuta ${dialogueIndex + 1}</span>
@@ -415,6 +447,7 @@ const renderShare = (updateMessage = '', uiState = {}) => {
                 </div>` : ''}
               </article>`
             }).join('') || '<p class="empty-state">Nessuna battuta disponibile.</p>'}
+            ${scriptItems.length > renderedScriptItems.length ? '<div class="script-load-sentinel" data-script-sentinel><button type="button" data-load-script>Carica altre battute</button></div>' : ''}
           </div>
         </div>
       </div>
@@ -428,14 +461,27 @@ const renderShare = (updateMessage = '', uiState = {}) => {
     const open = panel?.classList.toggle('is-open', characterMenuOpen) ?? false
     toggle.setAttribute('aria-expanded', String(open))
   })
-  root.querySelector('[data-character-search]')?.addEventListener('input', (event) => {
+  root.querySelectorAll('[data-character-search]').forEach((input) => input.addEventListener('input', (event) => {
     const query = String(event.currentTarget.value || '').trim().toLowerCase()
+    characterSearchQuery = query
+    root.querySelectorAll('[data-character-search]').forEach((item) => {
+      if (item !== event.currentTarget) item.value = query
+    })
     root.querySelectorAll('[data-character-option]').forEach((option) => {
       option.hidden = query && !String(option.dataset.characterName || '').includes(query)
     })
-  })
-  root.querySelector('[data-dialogue-search]')?.addEventListener('input', (event) => {
+  }))
+  root.querySelectorAll('[data-dialogue-search]').forEach((input) => input.addEventListener('input', (event) => {
     const query = String(event.currentTarget.value || '').trim().toLowerCase()
+    dialogueSearchQuery = query
+    root.querySelectorAll('[data-dialogue-search]').forEach((item) => {
+      if (item !== event.currentTarget) item.value = query
+    })
+    if (query && scriptRenderLimit < scriptItems.length) {
+      scriptRenderLimit = scriptItems.length
+      renderShare('', { scrollY: window.scrollY, focusDialogueSearch: true })
+      return
+    }
     const matchingIds = new Set()
     root.querySelectorAll('.actor-dialogue').forEach((dialogue) => {
       const matches = !query || String(dialogue.dataset.dialogueSearch || '').includes(query)
@@ -446,7 +492,7 @@ const renderShare = (updateMessage = '', uiState = {}) => {
       const ownerId = note.dataset.dialogueId
       note.classList.toggle('is-search-hidden', Boolean(query && ownerId && !matchingIds.has(ownerId)))
     })
-  })
+  }))
   root.querySelectorAll('.character-option input').forEach((input) => {
     input.addEventListener('change', () => {
       const scrollY = window.scrollY
@@ -503,6 +549,22 @@ const renderShare = (updateMessage = '', uiState = {}) => {
       })
     })
   })
+  const loadMoreScript = () => {
+    if (scriptRenderLimit >= scriptItems.length) return
+    scriptRenderLimit = Math.min(scriptRenderLimit + SCRIPT_BATCH_SIZE, scriptItems.length)
+    renderShare('', { scrollY: window.scrollY })
+  }
+  root.querySelector('[data-load-script]')?.addEventListener('click', loadMoreScript)
+  const scriptSentinel = root.querySelector('[data-script-sentinel]')
+  if (scriptSentinel && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return
+      observer.disconnect()
+      loadMoreScript()
+    }, { rootMargin: '560px 0px' })
+    scriptSentinel.classList.add('is-observed')
+    observer.observe(scriptSentinel)
+  }
   root.querySelector('[data-signout]')?.addEventListener('click', () => void signOut())
   if (uiState.focusCharacterId || Number.isFinite(uiState.scrollY)) {
     requestAnimationFrame(() => {
@@ -511,6 +573,13 @@ const renderShare = (updateMessage = '', uiState = {}) => {
         input?.focus({ preventScroll: true })
       }
       if (Number.isFinite(uiState.scrollY)) window.scrollTo(0, uiState.scrollY)
+    })
+  }
+  if (uiState.focusDialogueSearch) {
+    requestAnimationFrame(() => {
+      const input = Array.from(root.querySelectorAll('[data-dialogue-search]')).find((item) => item.getClientRects().length > 0)
+      input?.focus({ preventScroll: true })
+      input?.setSelectionRange(input.value.length, input.value.length)
     })
   }
 }
@@ -555,6 +624,9 @@ async function verifyPin(form) {
   }
   share = data.share
   cacheShareAccess(share, pin)
+  scriptRenderLimit = SCRIPT_BATCH_SIZE
+  dialogueSearchQuery = ''
+  characterSearchQuery = ''
   renderShare()
 }
 
@@ -566,6 +638,9 @@ async function signOut(message = '') {
   selectionInitialized = false
   filterMode = 'hide-selected'
   revealedDialogueIds = new Set()
+  scriptRenderLimit = SCRIPT_BATCH_SIZE
+  dialogueSearchQuery = ''
+  characterSearchQuery = ''
   renderAuth(message)
 }
 

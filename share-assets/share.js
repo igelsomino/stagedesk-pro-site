@@ -964,19 +964,19 @@ const renderShare = (updateMessage = '', uiState = {}) => {
     revealedDialogueIds = new Set()
     renderShare()
   })
-  root.querySelectorAll('[data-toggle-dialogue]').forEach((button) => {
-    button.addEventListener('click', () => {
-      const dialogueId = button.dataset.toggleDialogue
-      const card = button.closest('[data-dialogue-id]')
-      if (!card) return
-      const revealed = !revealedDialogueIds.has(dialogueId)
-      if (revealed) revealedDialogueIds.add(dialogueId)
-      else revealedDialogueIds.delete(dialogueId)
-      card.classList.toggle('is-dialogue-hidden', !revealed)
-      button.innerHTML = iconSvg(revealed ? 'eye-off' : 'eye')
-      button.title = revealed ? 'Nascondi battuta' : 'Mostra battuta'
-      button.setAttribute('aria-label', button.title)
-    })
+  root.querySelector('.dialogue-list')?.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-toggle-dialogue]')
+    if (!button) return
+    const dialogueId = button.dataset.toggleDialogue
+    const card = button.closest('[data-dialogue-id]')
+    if (!card) return
+    const revealed = !revealedDialogueIds.has(dialogueId)
+    if (revealed) revealedDialogueIds.add(dialogueId)
+    else revealedDialogueIds.delete(dialogueId)
+    card.classList.toggle('is-dialogue-hidden', !revealed)
+    button.innerHTML = iconSvg(revealed ? 'eye-off' : 'eye')
+    button.title = revealed ? 'Nascondi battuta' : 'Mostra battuta'
+    button.setAttribute('aria-label', button.title)
   })
   root.querySelectorAll('[data-progress]').forEach((button) => {
     button.addEventListener('click', () => {

@@ -11,3 +11,7 @@
 
 /share-assets/*
   Cache-Control: no-store
+
+/store/copioni/*.md
+  Content-Type: text/markdown; charset=utf-8
+  Content-Disposition: attachment

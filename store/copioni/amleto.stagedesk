@@ -1,0 +1,399 @@
+| Personaggio | Interprete | Presenza | Note |
+| --- | --- | --- | --- |
+| ORAZIO | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| SPETTRO | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| AMLETO | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| CLAUDIO | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| GERTRUDE | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| POLONIO | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| OFELIA | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| ROSENCRANTZ | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| GUILDENSTERN | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| LAERTE | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| MESSAGGERO | Da assegnare | In scena | Personaggio della riscrittura originale. |
+
+# Amleto
+
+> **EDIZIONE STAGEDESK**: adattamento originale integrale ispirato a un’opera di pubblico dominio. Battute e note create appositamente per StageDesk Pro e non tratte da traduzioni moderne.
+
+## Atto 1
+
+### Scena 1 — Il turno sulle mura
+
+::regia{id="note-atto-1-scena-1-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-1-scena-1" anchorId="note-atto-1-scena-1-personaggi"}
+ORAZIO, SPETTRO, AMLETO.
+::
+
+::regia{id="note-atto-1-scena-1-posizione" type="position" color="blue" title="Posizione" sceneId="atto-1-scena-1" anchorId="note-atto-1-scena-1-posizione"}
+Le mura sono suggerite da una pedana stretta e da una luce fredda.
+::
+
+::regia{id="note-atto-1-scena-1-movimento" type="movement" color="green" title="Movimento" sceneId="atto-1-scena-1" anchorId="note-atto-1-scena-1-movimento"}
+Lo Spettro attraversa il fondo senza avvicinarsi; Amleto entra dopo la chiamata di Orazio.
+::
+
+::regia{id="note-atto-1-scena-1-tono" type="tone" color="purple" title="Tono" sceneId="atto-1-scena-1" anchorId="note-atto-1-scena-1-tono"}
+Il soprannaturale e una domanda visibile, non un effetto.
+::
+
+::battuta{id="battuta-atto-1-scena-1-1" characterId="orazio" character="ORAZIO" sceneId="atto-1-scena-1"}
+La notte non passa: cambia soltanto il colore delle pietre.
+::
+
+::battuta{id="battuta-atto-1-scena-1-2" characterId="spettro" character="SPETTRO" sceneId="atto-1-scena-1"}
+Non cercate il mio volto. Cercate cio che nessuno vuole ricordare.
+::
+
+::battuta{id="battuta-atto-1-scena-1-3" characterId="amleto" character="AMLETO" sceneId="atto-1-scena-1"}
+Se sei mio padre, parla; se sei una trappola, parla ancora.
+::
+
+::battuta{id="battuta-atto-1-scena-1-4" characterId="orazio" character="ORAZIO" sceneId="atto-1-scena-1"}
+Ricordero, ma prima distinguero la verita dalla voce che la usa.
+::
+
+### Scena 2 — La corte in festa
+
+::regia{id="note-atto-1-scena-2-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-1-scena-2" anchorId="note-atto-1-scena-2-personaggi"}
+CLAUDIO, GERTRUDE, POLONIO, AMLETO.
+::
+
+::regia{id="note-atto-1-scena-2-posizione" type="position" color="blue" title="Posizione" sceneId="atto-1-scena-2" anchorId="note-atto-1-scena-2-posizione"}
+La corte e raccolta intorno a una tavola. Amleto resta ai margini con un libro chiuso.
+::
+
+::regia{id="note-atto-1-scena-2-movimento" type="movement" color="green" title="Movimento" sceneId="atto-1-scena-2" anchorId="note-atto-1-scena-2-movimento"}
+Claudio distribuisce bicchieri e sguardi; Gertrude cerca di avvicinare Amleto.
+::
+
+::regia{id="note-atto-1-scena-2-tono" type="tone" color="purple" title="Tono" sceneId="atto-1-scena-2" anchorId="note-atto-1-scena-2-tono"}
+L’ordine elegante della corte deve risultare soffocante.
+::
+
+::battuta{id="battuta-atto-1-scena-2-5" characterId="claudio" character="CLAUDIO" sceneId="atto-1-scena-2"}
+Il regno ha bisogno di un tempo nuovo, non di lutti che lo tengano fermo.
+::
+
+::battuta{id="battuta-atto-1-scena-2-6" characterId="gertrude" character="GERTRUDE" sceneId="atto-1-scena-2"}
+Il dolore non obbedisce al calendario.
+::
+
+::battuta{id="battuta-atto-1-scena-2-7" characterId="polonio" character="POLONIO" sceneId="atto-1-scena-2"}
+Anche il dolore? Allora qualcuno gli insegni a fingere bene.
+::
+
+::battuta{id="battuta-atto-1-scena-2-8" characterId="amleto" character="AMLETO" sceneId="atto-1-scena-2"}
+Le porte servono a proteggere chi e dentro, ma anche a decidere chi resta fuori.
+::
+
+### Scena 3 — Ofelia e le istruzioni
+
+::regia{id="note-atto-1-scena-3-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-1-scena-3" anchorId="note-atto-1-scena-3-personaggi"}
+OFELIA, POLONIO, AMLETO.
+::
+
+::regia{id="note-atto-1-scena-3-posizione" type="position" color="blue" title="Posizione" sceneId="atto-1-scena-3" anchorId="note-atto-1-scena-3-posizione"}
+Ofelia tiene una lettera; Polonio le indica dove stare e cosa dire.
+::
+
+::regia{id="note-atto-1-scena-3-movimento" type="movement" color="green" title="Movimento" sceneId="atto-1-scena-3" anchorId="note-atto-1-scena-3-movimento"}
+Polonio posiziona Ofelia come una pedina; lei rompe la posizione quando entra Amleto.
+::
+
+::regia{id="note-atto-1-scena-3-tono" type="tone" color="purple" title="Tono" sceneId="atto-1-scena-3" anchorId="note-atto-1-scena-3-tono"}
+Il controllo paterno e affettuoso e invasivo insieme.
+::
+
+::battuta{id="battuta-atto-1-scena-3-9" characterId="ofelia" character="OFELIA" sceneId="atto-1-scena-3"}
+Se Amleto ti parla, ascolta con prudenza e riferisci con precisione.
+::
+
+::battuta{id="battuta-atto-1-scena-3-10" characterId="polonio" character="POLONIO" sceneId="atto-1-scena-3"}
+E se mi parlasse come una persona?
+::
+
+::battuta{id="battuta-atto-1-scena-3-11" characterId="amleto" character="AMLETO" sceneId="atto-1-scena-3"}
+A corte ogni parola sembra avere un padrone.
+::
+
+::battuta{id="battuta-atto-1-scena-3-12" characterId="ofelia" character="OFELIA" sceneId="atto-1-scena-3"}
+Forse il problema non e la follia, ma la paura di parlare chiaro.
+::
+
+### Scena 4 — La compagnia arriva
+
+::regia{id="note-atto-1-scena-4-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-1-scena-4" anchorId="note-atto-1-scena-4-personaggi"}
+AMLETO, ORAZIO, ROSENCRANTZ, GUILDENSTERN.
+::
+
+::regia{id="note-atto-1-scena-4-posizione" type="position" color="blue" title="Posizione" sceneId="atto-1-scena-4" anchorId="note-atto-1-scena-4-posizione"}
+Una compagnia teatrale entra con una cassa di oggetti. Amleto costruisce un piccolo palco.
+::
+
+::regia{id="note-atto-1-scena-4-movimento" type="movement" color="green" title="Movimento" sceneId="atto-1-scena-4" anchorId="note-atto-1-scena-4-movimento"}
+Gli attori dispongono gli oggetti; Amleto li sposta fino a creare un nuovo ordine.
+::
+
+::regia{id="note-atto-1-scena-4-tono" type="tone" color="purple" title="Tono" sceneId="atto-1-scena-4" anchorId="note-atto-1-scena-4-tono"}
+Il teatro e strumento d’indagine e spazio di liberta.
+::
+
+::battuta{id="battuta-atto-1-scena-4-13" characterId="amleto" character="AMLETO" sceneId="atto-1-scena-4"}
+La distrazione e una forma gentile di sorveglianza.
+::
+
+::battuta{id="battuta-atto-1-scena-4-14" characterId="orazio" character="ORAZIO" sceneId="atto-1-scena-4"}
+Chiederemo agli attori una storia che non possa essere interrotta.
+::
+
+::battuta{id="battuta-atto-1-scena-4-15" characterId="rosencrantz" character="ROSENCRANTZ" sceneId="atto-1-scena-4"}
+Mettero in scena una domanda.
+::
+
+::battuta{id="battuta-atto-1-scena-4-16" characterId="guildenstern" character="GUILDENSTERN" sceneId="atto-1-scena-4"}
+Guarderemo chi smette di respirare quando la scena arriva al punto giusto.
+::
+
+## Atto 2
+
+### Scena 1 — Il teatro nella sala
+
+::regia{id="note-atto-2-scena-1-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-2-scena-1" anchorId="note-atto-2-scena-1-personaggi"}
+AMLETO, CLAUDIO, GERTRUDE, OFELIA, POLONIO, ORAZIO.
+::
+
+::regia{id="note-atto-2-scena-1-posizione" type="position" color="blue" title="Posizione" sceneId="atto-2-scena-1" anchorId="note-atto-2-scena-1-posizione"}
+Il palcoscenico improvvisato occupa il centro della sala.
+::
+
+::regia{id="note-atto-2-scena-1-movimento" type="movement" color="green" title="Movimento" sceneId="atto-2-scena-1" anchorId="note-atto-2-scena-1-movimento"}
+Gli attori ripetono un gesto di avvelenamento; Claudio cambia postura.
+::
+
+::regia{id="note-atto-2-scena-1-tono" type="tone" color="purple" title="Tono" sceneId="atto-2-scena-1" anchorId="note-atto-2-scena-1-tono"}
+La rappresentazione ha la precisione di un esperimento.
+::
+
+::battuta{id="battuta-atto-2-scena-1-17" characterId="amleto" character="AMLETO" sceneId="atto-2-scena-1"}
+La scena parla di un uomo che prende il posto di un altro.
+::
+
+::battuta{id="battuta-atto-2-scena-1-18" characterId="claudio" character="CLAUDIO" sceneId="atto-2-scena-1"}
+La verita non ha bisogno di essere divertente.
+::
+
+::battuta{id="battuta-atto-2-scena-1-19" characterId="gertrude" character="GERTRUDE" sceneId="atto-2-scena-1"}
+Guardate le sue mani.
+::
+
+::battuta{id="battuta-atto-2-scena-1-20" characterId="ofelia" character="OFELIA" sceneId="atto-2-scena-1"}
+Questa commedia finisce qui.
+::
+
+### Scena 2 — La preghiera interrotta
+
+::regia{id="note-atto-2-scena-2-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-2-scena-2" anchorId="note-atto-2-scena-2-personaggi"}
+CLAUDIO, AMLETO, ORAZIO.
+::
+
+::regia{id="note-atto-2-scena-2-posizione" type="position" color="blue" title="Posizione" sceneId="atto-2-scena-2" anchorId="note-atto-2-scena-2-posizione"}
+Claudio resta solo in una cappella scura; Amleto lo vede da una porta.
+::
+
+::regia{id="note-atto-2-scena-2-movimento" type="movement" color="green" title="Movimento" sceneId="atto-2-scena-2" anchorId="note-atto-2-scena-2-movimento"}
+Claudio si inginocchia senza parlare; Amleto avanza e torna nell’ombra.
+::
+
+::regia{id="note-atto-2-scena-2-tono" type="tone" color="purple" title="Tono" sceneId="atto-2-scena-2" anchorId="note-atto-2-scena-2-tono"}
+La distanza fra decisione e azione deve restare aperta.
+::
+
+::battuta{id="battuta-atto-2-scena-2-21" characterId="claudio" character="CLAUDIO" sceneId="atto-2-scena-2"}
+Le parole che devo dire non hanno ancora trovato un prezzo.
+::
+
+::battuta{id="battuta-atto-2-scena-2-22" characterId="amleto" character="AMLETO" sceneId="atto-2-scena-2"}
+Cerco un gesto che non possa essere recitato.
+::
+
+::battuta{id="battuta-atto-2-scena-2-23" characterId="orazio" character="ORAZIO" sceneId="atto-2-scena-2"}
+La vendetta non rende la verita piu chiara.
+::
+
+::battuta{id="battuta-atto-2-scena-2-24" characterId="claudio" character="CLAUDIO" sceneId="atto-2-scena-2"}
+La verita puo impedire alla vendetta di scegliere il bersaglio sbagliato.
+::
+
+### Scena 3 — Il consiglio ascolta
+
+::regia{id="note-atto-2-scena-3-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-2-scena-3" anchorId="note-atto-2-scena-3-personaggi"}
+POLONIO, LAERTE, OFELIA, CLAUDIO, GERTRUDE.
+::
+
+::regia{id="note-atto-2-scena-3-posizione" type="position" color="blue" title="Posizione" sceneId="atto-2-scena-3" anchorId="note-atto-2-scena-3-posizione"}
+Polonio convoca la famiglia; Laerte rompe la linea imposta dal padre.
+::
+
+::regia{id="note-atto-2-scena-3-movimento" type="movement" color="green" title="Movimento" sceneId="atto-2-scena-3" anchorId="note-atto-2-scena-3-movimento"}
+Polonio ordina gli altri; Laerte si avvicina a Ofelia; Gertrude interrompe.
+::
+
+::regia{id="note-atto-2-scena-3-tono" type="tone" color="purple" title="Tono" sceneId="atto-2-scena-3" anchorId="note-atto-2-scena-3-tono"}
+La disciplina diventa un modo per non ascoltare.
+::
+
+::battuta{id="battuta-atto-2-scena-3-25" characterId="polonio" character="POLONIO" sceneId="atto-2-scena-3"}
+La corte deve evitare voci, incontri e lettere non autorizzate.
+::
+
+::battuta{id="battuta-atto-2-scena-3-26" characterId="laerte" character="LAERTE" sceneId="atto-2-scena-3"}
+Le voci nascono quando la corte smette di dire la verita.
+::
+
+::battuta{id="battuta-atto-2-scena-3-27" characterId="ofelia" character="OFELIA" sceneId="atto-2-scena-3"}
+Non sono un messaggio da consegnare.
+::
+
+::battuta{id="battuta-atto-2-scena-3-28" characterId="claudio" character="CLAUDIO" sceneId="atto-2-scena-3"}
+La famiglia non deve diventare un’altra scena.
+::
+
+### Scena 4 — La lettera verso il mare
+
+::regia{id="note-atto-2-scena-4-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-2-scena-4" anchorId="note-atto-2-scena-4-personaggi"}
+AMLETO, ORAZIO, ROSENCRANTZ, GUILDENSTERN, MESSAGGERO.
+::
+
+::regia{id="note-atto-2-scena-4-posizione" type="position" color="blue" title="Posizione" sceneId="atto-2-scena-4" anchorId="note-atto-2-scena-4-posizione"}
+Sul tavolo c’e una lettera con il sigillo reale; il Messaggero aspetta all’uscita.
+::
+
+::regia{id="note-atto-2-scena-4-movimento" type="movement" color="green" title="Movimento" sceneId="atto-2-scena-4" anchorId="note-atto-2-scena-4-movimento"}
+Amleto legge in piedi; i cortigiani si alternano fra lui e la porta.
+::
+
+::regia{id="note-atto-2-scena-4-tono" type="tone" color="purple" title="Tono" sceneId="atto-2-scena-4" anchorId="note-atto-2-scena-4-tono"}
+La partenza e presentata come salvezza ma ha la forma di un ordine.
+::
+
+::battuta{id="battuta-atto-2-scena-4-29" characterId="amleto" character="AMLETO" sceneId="atto-2-scena-4"}
+Quando un ordine dice di non temere, ha gia scelto il pericolo.
+::
+
+::battuta{id="battuta-atto-2-scena-4-30" characterId="orazio" character="ORAZIO" sceneId="atto-2-scena-4"}
+La lealta richiede di sapere a chi si obbedisce.
+::
+
+::battuta{id="battuta-atto-2-scena-4-31" characterId="rosencrantz" character="ROSENCRANTZ" sceneId="atto-2-scena-4"}
+Portero con me soltanto cio che posso leggere da solo.
+::
+
+::battuta{id="battuta-atto-2-scena-4-32" characterId="guildenstern" character="GUILDENSTERN" sceneId="atto-2-scena-4"}
+Partiro, ma non smettero di guardare indietro.
+::
+
+## Atto 3
+
+### Scena 1 — Il ritorno di Laerte
+
+::regia{id="note-atto-3-scena-1-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-3-scena-1" anchorId="note-atto-3-scena-1-personaggi"}
+LAERTE, CLAUDIO, GERTRUDE, AMLETO, ORAZIO.
+::
+
+::regia{id="note-atto-3-scena-1-posizione" type="position" color="blue" title="Posizione" sceneId="atto-3-scena-1" anchorId="note-atto-3-scena-1-posizione"}
+Laerte entra con una folla fuori scena e chiede una risposta sulla morte del padre.
+::
+
+::regia{id="note-atto-3-scena-1-movimento" type="movement" color="green" title="Movimento" sceneId="atto-3-scena-1" anchorId="note-atto-3-scena-1-movimento"}
+Laerte prende il centro; Gertrude si mette fra i due giovani.
+::
+
+::regia{id="note-atto-3-scena-1-tono" type="tone" color="purple" title="Tono" sceneId="atto-3-scena-1" anchorId="note-atto-3-scena-1-tono"}
+Il lutto puo diventare accusa, ma non deve cancellare la domanda.
+::
+
+::battuta{id="battuta-atto-3-scena-1-33" characterId="laerte" character="LAERTE" sceneId="atto-3-scena-1"}
+Mio padre e morto e la corte parla di incidente.
+::
+
+::battuta{id="battuta-atto-3-scena-1-34" characterId="claudio" character="CLAUDIO" sceneId="atto-3-scena-1"}
+Sono arrivato per chiedere una risposta, non una guerra.
+::
+
+::battuta{id="battuta-atto-3-scena-1-35" characterId="gertrude" character="GERTRUDE" sceneId="atto-3-scena-1"}
+La casa non reggera un altro segreto.
+::
+
+::battuta{id="battuta-atto-3-scena-1-36" characterId="amleto" character="AMLETO" sceneId="atto-3-scena-1"}
+Il dovere e non confondere la giustizia con il desiderio di colpire.
+::
+
+### Scena 2 — La prova della lama
+
+::regia{id="note-atto-3-scena-2-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-3-scena-2" anchorId="note-atto-3-scena-2-personaggi"}
+AMLETO, LAERTE, CLAUDIO, GERTRUDE, ORAZIO.
+::
+
+::regia{id="note-atto-3-scena-2-posizione" type="position" color="blue" title="Posizione" sceneId="atto-3-scena-2" anchorId="note-atto-3-scena-2-posizione"}
+Due spade da esercizio sono appoggiate a un tavolo; Claudio presenta il duello come riconciliazione.
+::
+
+::regia{id="note-atto-3-scena-2-movimento" type="movement" color="green" title="Movimento" sceneId="atto-3-scena-2" anchorId="note-atto-3-scena-2-movimento"}
+Amleto e Laerte si muovono in cerchio; Orazio controlla le armi.
+::
+
+::regia{id="note-atto-3-scena-2-tono" type="tone" color="purple" title="Tono" sceneId="atto-3-scena-2" anchorId="note-atto-3-scena-2-tono"}
+La prova deve mostrare che le regole sono gia state alterate.
+::
+
+::battuta{id="battuta-atto-3-scena-2-37" characterId="amleto" character="AMLETO" sceneId="atto-3-scena-2"}
+Un duello amichevole puo chiudere una frattura.
+::
+
+::battuta{id="battuta-atto-3-scena-2-38" characterId="laerte" character="LAERTE" sceneId="atto-3-scena-2"}
+Non voglio un vincitore: voglio sapere chi ha deciso le regole.
+::
+
+::battuta{id="battuta-atto-3-scena-2-39" characterId="claudio" character="CLAUDIO" sceneId="atto-3-scena-2"}
+Le lame sono diverse.
+::
+
+::battuta{id="battuta-atto-3-scena-2-40" characterId="gertrude" character="GERTRUDE" sceneId="atto-3-scena-2"}
+Fermatevi: il veleno non aspetta il finale.
+::
+
+### Scena 3 — Il silenzio della corte
+
+::regia{id="note-atto-3-scena-3-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-3-scena-3" anchorId="note-atto-3-scena-3-personaggi"}
+AMLETO, CLAUDIO, GERTRUDE, OFELIA, LAERTE, ORAZIO.
+::
+
+::regia{id="note-atto-3-scena-3-posizione" type="position" color="blue" title="Posizione" sceneId="atto-3-scena-3" anchorId="note-atto-3-scena-3-posizione"}
+La sala e spoglia e il tavolo e coperto da un telo chiaro.
+::
+
+::regia{id="note-atto-3-scena-3-movimento" type="movement" color="green" title="Movimento" sceneId="atto-3-scena-3" anchorId="note-atto-3-scena-3-movimento"}
+Amleto attraversa lo spazio e si ferma davanti a ogni persona.
+::
+
+::regia{id="note-atto-3-scena-3-tono" type="tone" color="purple" title="Tono" sceneId="atto-3-scena-3" anchorId="note-atto-3-scena-3-tono"}
+Il finale e un avvertimento, non un trionfo.
+::
+
+::battuta{id="battuta-atto-3-scena-3-41" characterId="amleto" character="AMLETO" sceneId="atto-3-scena-3"}
+Ho cercato un colpevole e ho trovato una corte che aveva paura di parlare.
+::
+
+::battuta{id="battuta-atto-3-scena-3-42" characterId="claudio" character="CLAUDIO" sceneId="atto-3-scena-3"}
+La paura ha protetto soltanto chi comandava.
+::
+
+::battuta{id="battuta-atto-3-scena-3-43" characterId="gertrude" character="GERTRUDE" sceneId="atto-3-scena-3"}
+La responsabilita e impedire che la morte diventi una nuova legge.
+::
+
+::battuta{id="battuta-atto-3-scena-3-44" characterId="ofelia" character="OFELIA" sceneId="atto-3-scena-3"}
+Raccontatela come un avvertimento e ricordate i nomi.
+::
+
+> **Nota per la prova**: questa e una riscrittura originale modificabile. Personaggi, battute, note e cue possono essere adattati direttamente nell’editor.

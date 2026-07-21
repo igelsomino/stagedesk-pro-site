@@ -1,0 +1,399 @@
+| Personaggio | Interprete | Presenza | Note |
+| --- | --- | --- | --- |
+| PROSPERO | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| MIRANDA | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| ARIEL | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| CALIBANO | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| FERDINANDO | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| ALONSO | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| ANTONIO | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| SEBASTIANO | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| GONZALO | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| TRINCULO | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| STEFANO | Da assegnare | In scena | Personaggio della riscrittura originale. |
+
+# La tempesta
+
+> **EDIZIONE STAGEDESK**: adattamento originale integrale ispirato a un’opera di pubblico dominio. Battute e note create appositamente per StageDesk Pro e non tratte da traduzioni moderne.
+
+## Atto 1
+
+### Scena 1 — Il mare in scena
+
+::regia{id="note-atto-1-scena-1-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-1-scena-1" anchorId="note-atto-1-scena-1-personaggi"}
+PROSPERO, MIRANDA, ARIEL.
+::
+
+::regia{id="note-atto-1-scena-1-posizione" type="position" color="blue" title="Posizione" sceneId="atto-1-scena-1" anchorId="note-atto-1-scena-1-posizione"}
+Una pedana inclinata suggerisce il ponte di una nave; vento e corde costruiscono la tempesta.
+::
+
+::regia{id="note-atto-1-scena-1-movimento" type="movement" color="green" title="Movimento" sceneId="atto-1-scena-1" anchorId="note-atto-1-scena-1-movimento"}
+Ariel attraversa il pubblico e torna al centro; Prospero guida il movimento con il bastone.
+::
+
+::regia{id="note-atto-1-scena-1-tono" type="tone" color="purple" title="Tono" sceneId="atto-1-scena-1" anchorId="note-atto-1-scena-1-tono"}
+Il soprannaturale deve restare leggibile attraverso i corpi.
+::
+
+::battuta{id="battuta-atto-1-scena-1-1" characterId="prospero" character="PROSPERO" sceneId="atto-1-scena-1"}
+Il mare sembra voler inghiottire ogni cosa.
+::
+
+::battuta{id="battuta-atto-1-scena-1-2" characterId="miranda" character="MIRANDA" sceneId="atto-1-scena-1"}
+Il mare obbedisce soltanto a chi sa ascoltarne la paura.
+::
+
+::battuta{id="battuta-atto-1-scena-1-3" characterId="ariel" character="ARIEL" sceneId="atto-1-scena-1"}
+La nave e divisa dal vento, ma nessuno e ancora perduto.
+::
+
+::battuta{id="battuta-atto-1-scena-1-4" characterId="prospero" character="PROSPERO" sceneId="atto-1-scena-1"}
+Ho perso un’altra ora di liberta e oggi voglio sapere quando finira.
+::
+
+### Scena 2 — L’isola e la memoria
+
+::regia{id="note-atto-1-scena-2-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-1-scena-2" anchorId="note-atto-1-scena-2-personaggi"}
+CALIBANO, PROSPERO, MIRANDA.
+::
+
+::regia{id="note-atto-1-scena-2-posizione" type="position" color="blue" title="Posizione" sceneId="atto-1-scena-2" anchorId="note-atto-1-scena-2-posizione"}
+La spiaggia e suggerita da corde, legno e un telo scuro.
+::
+
+::regia{id="note-atto-1-scena-2-movimento" type="movement" color="green" title="Movimento" sceneId="atto-1-scena-2" anchorId="note-atto-1-scena-2-movimento"}
+Calibano segue il bordo del palco; Prospero occupa il centro; Miranda riduce la distanza.
+::
+
+::regia{id="note-atto-1-scena-2-tono" type="tone" color="purple" title="Tono" sceneId="atto-1-scena-2" anchorId="note-atto-1-scena-2-tono"}
+Il conflitto riguarda la terra prima ancora che il comando.
+::
+
+::battuta{id="battuta-atto-1-scena-2-5" characterId="calibano" character="CALIBANO" sceneId="atto-1-scena-2"}
+Questa terra conosce il mio nome prima che tu arrivassi con i tuoi libri.
+::
+
+::battuta{id="battuta-atto-1-scena-2-6" characterId="prospero" character="PROSPERO" sceneId="atto-1-scena-2"}
+Hai chiamato insegnamento cio che era comando.
+::
+
+::battuta{id="battuta-atto-1-scena-2-7" characterId="miranda" character="MIRANDA" sceneId="atto-1-scena-2"}
+Non voglio ereditare una guerra gia cominciata.
+::
+
+::battuta{id="battuta-atto-1-scena-2-8" characterId="calibano" character="CALIBANO" sceneId="atto-1-scena-2"}
+La lingua deve cominciare dal riconoscere il torto.
+::
+
+### Scena 3 — Il naufrago e la figlia
+
+::regia{id="note-atto-1-scena-3-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-1-scena-3" anchorId="note-atto-1-scena-3-personaggi"}
+FERDINANDO, MIRANDA, PROSPERO.
+::
+
+::regia{id="note-atto-1-scena-3-posizione" type="position" color="blue" title="Posizione" sceneId="atto-1-scena-3" anchorId="note-atto-1-scena-3-posizione"}
+Ferdinando entra portando legna; Miranda lo osserva da una distanza imposta e scelta.
+::
+
+::regia{id="note-atto-1-scena-3-movimento" type="movement" color="green" title="Movimento" sceneId="atto-1-scena-3" anchorId="note-atto-1-scena-3-movimento"}
+Ferdinando depone la legna; Miranda lo aiuta; Prospero separa i due.
+::
+
+::regia{id="note-atto-1-scena-3-tono" type="tone" color="purple" title="Tono" sceneId="atto-1-scena-3" anchorId="note-atto-1-scena-3-tono"}
+Il lavoro rende visibile la fiducia.
+::
+
+::battuta{id="battuta-atto-1-scena-3-9" characterId="ferdinando" character="FERDINANDO" sceneId="atto-1-scena-3"}
+Ho conosciuto molte sale, ma nessuna ha la luce di questa riva.
+::
+
+::battuta{id="battuta-atto-1-scena-3-10" characterId="miranda" character="MIRANDA" sceneId="atto-1-scena-3"}
+Ho conosciuto una sola riva e credevo che il mondo finisse qui.
+::
+
+::battuta{id="battuta-atto-1-scena-3-11" characterId="prospero" character="PROSPERO" sceneId="atto-1-scena-3"}
+Restare e piu difficile che promettere.
+::
+
+::battuta{id="battuta-atto-1-scena-3-12" characterId="ferdinando" character="FERDINANDO" sceneId="atto-1-scena-3"}
+La legna non mi spaventa; mi spaventa perderti prima di conoscerti.
+::
+
+### Scena 4 — La banda dei naufraghi
+
+::regia{id="note-atto-1-scena-4-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-1-scena-4" anchorId="note-atto-1-scena-4-personaggi"}
+ALONSO, ANTONIO, SEBASTIANO, GONZALO.
+::
+
+::regia{id="note-atto-1-scena-4-posizione" type="position" color="blue" title="Posizione" sceneId="atto-1-scena-4" anchorId="note-atto-1-scena-4-posizione"}
+I naufraghi arrivano su una parte asciutta dell’isola.
+::
+
+::regia{id="note-atto-1-scena-4-movimento" type="movement" color="green" title="Movimento" sceneId="atto-1-scena-4" anchorId="note-atto-1-scena-4-movimento"}
+Gonzalo distribuisce acqua; Antonio e Sebastiano esplorano l’orizzonte.
+::
+
+::regia{id="note-atto-1-scena-4-tono" type="tone" color="purple" title="Tono" sceneId="atto-1-scena-4" anchorId="note-atto-1-scena-4-tono"}
+La crisi fa riapparire vecchi progetti di potere.
+::
+
+::battuta{id="battuta-atto-1-scena-4-13" characterId="alonso" character="ALONSO" sceneId="atto-1-scena-4"}
+Il mare non restituisce cio che prende.
+::
+
+::battuta{id="battuta-atto-1-scena-4-14" characterId="antonio" character="ANTONIO" sceneId="atto-1-scena-4"}
+Il mare ci ha restituiti tutti: dobbiamo ancora riconoscerci.
+::
+
+::battuta{id="battuta-atto-1-scena-4-15" characterId="sebastiano" character="SEBASTIANO" sceneId="atto-1-scena-4"}
+Un’isola senza padrone sarebbe una fortuna.
+::
+
+::battuta{id="battuta-atto-1-scena-4-16" characterId="gonzalo" character="GONZALO" sceneId="atto-1-scena-4"}
+La terra non diventa libera solo perche cambiate il nome del padrone.
+::
+
+## Atto 2
+
+### Scena 1 — Il lavoro dell’aria
+
+::regia{id="note-atto-2-scena-1-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-2-scena-1" anchorId="note-atto-2-scena-1-personaggi"}
+ARIEL, PROSPERO, CALIBANO.
+::
+
+::regia{id="note-atto-2-scena-1-posizione" type="position" color="blue" title="Posizione" sceneId="atto-2-scena-1" anchorId="note-atto-2-scena-1-posizione"}
+Ariel prepara gli oggetti della prova; Calibano porta una rete e la lascia al centro.
+::
+
+::regia{id="note-atto-2-scena-1-movimento" type="movement" color="green" title="Movimento" sceneId="atto-2-scena-1" anchorId="note-atto-2-scena-1-movimento"}
+Ariel compone una figura con nastri; Calibano la rompe; Prospero ascolta.
+::
+
+::regia{id="note-atto-2-scena-1-tono" type="tone" color="purple" title="Tono" sceneId="atto-2-scena-1" anchorId="note-atto-2-scena-1-tono"}
+La richiesta di liberta deve precedere la promessa.
+::
+
+::battuta{id="battuta-atto-2-scena-1-17" characterId="ariel" character="ARIEL" sceneId="atto-2-scena-1"}
+Ho guidato il vento, spento il fuoco e nascosto una nave.
+::
+
+::battuta{id="battuta-atto-2-scena-1-18" characterId="prospero" character="PROSPERO" sceneId="atto-2-scena-1"}
+Serviva a te. Io ho bisogno di sapere quando finisce.
+::
+
+::battuta{id="battuta-atto-2-scena-1-19" characterId="calibano" character="CALIBANO" sceneId="atto-2-scena-1"}
+La bacchetta non e il potere: e il segno che il potere esiste.
+::
+
+::battuta{id="battuta-atto-2-scena-1-20" characterId="ariel" character="ARIEL" sceneId="atto-2-scena-1"}
+Promesse e prove servono solo se qualcuno ascolta davvero.
+::
+
+### Scena 2 — Il banchetto invisibile
+
+::regia{id="note-atto-2-scena-2-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-2-scena-2" anchorId="note-atto-2-scena-2-personaggi"}
+ALONSO, GONZALO, ANTONIO, SEBASTIANO, ARIEL.
+::
+
+::regia{id="note-atto-2-scena-2-posizione" type="position" color="blue" title="Posizione" sceneId="atto-2-scena-2" anchorId="note-atto-2-scena-2-posizione"}
+Un tavolo vuoto suggerisce un banchetto che nessuno riesce a toccare.
+::
+
+::regia{id="note-atto-2-scena-2-movimento" type="movement" color="green" title="Movimento" sceneId="atto-2-scena-2" anchorId="note-atto-2-scena-2-movimento"}
+I nobili siedono uno alla volta; Ariel appare alle loro spalle.
+::
+
+::regia{id="note-atto-2-scena-2-tono" type="tone" color="purple" title="Tono" sceneId="atto-2-scena-2" anchorId="note-atto-2-scena-2-tono"}
+Le colpe entrano in scena come bagagli che nessuno vuole aprire.
+::
+
+::battuta{id="battuta-atto-2-scena-2-21" characterId="alonso" character="ALONSO" sceneId="atto-2-scena-2"}
+Questo tavolo e vuoto, eppure profuma di una casa che non meritavamo.
+::
+
+::battuta{id="battuta-atto-2-scena-2-22" characterId="gonzalo" character="GONZALO" sceneId="atto-2-scena-2"}
+La colpa non riempie lo stomaco.
+::
+
+::battuta{id="battuta-atto-2-scena-2-23" characterId="antonio" character="ANTONIO" sceneId="atto-2-scena-2"}
+Siete arrivati portando le vostre colpe come bagagli.
+::
+
+::battuta{id="battuta-atto-2-scena-2-24" characterId="sebastiano" character="SEBASTIANO" sceneId="atto-2-scena-2"}
+Cerchiamo la verita prima di costruire un altro trono.
+::
+
+### Scena 3 — La proposta di Stefano
+
+::regia{id="note-atto-2-scena-3-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-2-scena-3" anchorId="note-atto-2-scena-3-personaggi"}
+TRINCULO, STEFANO, CALIBANO.
+::
+
+::regia{id="note-atto-2-scena-3-posizione" type="position" color="blue" title="Posizione" sceneId="atto-2-scena-3" anchorId="note-atto-2-scena-3-posizione"}
+Trinculo e Stefano trovano una bottiglia e una vecchia bandiera; Calibano li osserva.
+::
+
+::regia{id="note-atto-2-scena-3-movimento" type="movement" color="green" title="Movimento" sceneId="atto-2-scena-3" anchorId="note-atto-2-scena-3-movimento"}
+Stefano sale su una cassa; Trinculo gli tiene la bottiglia; Calibano entra.
+::
+
+::regia{id="note-atto-2-scena-3-tono" type="tone" color="purple" title="Tono" sceneId="atto-2-scena-3" anchorId="note-atto-2-scena-3-tono"}
+La farsa politica deve mostrare quanto sia facile confondere liberta e comando.
+::
+
+::battuta{id="battuta-atto-2-scena-3-25" characterId="trinculo" character="TRINCULO" sceneId="atto-2-scena-3"}
+Ho una bevanda, una bandiera e un’isola senza controllo.
+::
+
+::battuta{id="battuta-atto-2-scena-3-26" characterId="stefano" character="STEFANO" sceneId="atto-2-scena-3"}
+Manca soltanto qualcuno disposto a seguirti.
+::
+
+::battuta{id="battuta-atto-2-scena-3-27" characterId="calibano" character="CALIBANO" sceneId="atto-2-scena-3"}
+Non confondete la liberta con il cambio di padrone.
+::
+
+::battuta{id="battuta-atto-2-scena-3-28" characterId="trinculo" character="TRINCULO" sceneId="atto-2-scena-3"}
+Io regno, tu consigli, Trinculo serve: e un piano perfetto.
+::
+
+### Scena 4 — La rivelazione
+
+::regia{id="note-atto-2-scena-4-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-2-scena-4" anchorId="note-atto-2-scena-4-personaggi"}
+PROSPERO, ALONSO, MIRANDA, FERDINANDO, ANTONIO.
+::
+
+::regia{id="note-atto-2-scena-4-posizione" type="position" color="blue" title="Posizione" sceneId="atto-2-scena-4" anchorId="note-atto-2-scena-4-posizione"}
+Prospero conduce Alonso davanti a una tenda chiusa; Miranda e Ferdinando sono dietro il tessuto.
+::
+
+::regia{id="note-atto-2-scena-4-movimento" type="movement" color="green" title="Movimento" sceneId="atto-2-scena-4" anchorId="note-atto-2-scena-4-movimento"}
+Prospero tiene tutti a distanza, poi apre la tenda senza cerimonia.
+::
+
+::regia{id="note-atto-2-scena-4-tono" type="tone" color="purple" title="Tono" sceneId="atto-2-scena-4" anchorId="note-atto-2-scena-4-tono"}
+Il riconoscimento e una possibilità, non una ricompensa automatica.
+::
+
+::battuta{id="battuta-atto-2-scena-4-29" characterId="prospero" character="PROSPERO" sceneId="atto-2-scena-4"}
+Il mare mi aveva tolto anche la speranza di pronunciare il tuo nome.
+::
+
+::battuta{id="battuta-atto-2-scena-4-30" characterId="alonso" character="ALONSO" sceneId="atto-2-scena-4"}
+La speranza non era nel mare: era sulla riva.
+::
+
+::battuta{id="battuta-atto-2-scena-4-31" characterId="miranda" character="MIRANDA" sceneId="atto-2-scena-4"}
+Questa e mia figlia e il mondo e arrivato da lei.
+::
+
+::battuta{id="battuta-atto-2-scena-4-32" characterId="ferdinando" character="FERDINANDO" sceneId="atto-2-scena-4"}
+Voglio decidere se la vendetta deve ancora scegliere al posto mio.
+::
+
+## Atto 3
+
+### Scena 1 — Il confronto
+
+::regia{id="note-atto-3-scena-1-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-3-scena-1" anchorId="note-atto-3-scena-1-personaggi"}
+PROSPERO, ANTONIO, ALONSO, GONZALO, ARIEL.
+::
+
+::regia{id="note-atto-3-scena-1-posizione" type="position" color="blue" title="Posizione" sceneId="atto-3-scena-1" anchorId="note-atto-3-scena-1-posizione"}
+Il centro dell’isola diventa un’aula; Prospero depone il bastone sul tavolo.
+::
+
+::regia{id="note-atto-3-scena-1-movimento" type="movement" color="green" title="Movimento" sceneId="atto-3-scena-1" anchorId="note-atto-3-scena-1-movimento"}
+Antonio e Prospero si fronteggiano; Gonzalo interviene quando il passato rischia di diventare gesto.
+::
+
+::regia{id="note-atto-3-scena-1-tono" type="tone" color="purple" title="Tono" sceneId="atto-3-scena-1" anchorId="note-atto-3-scena-1-tono"}
+Il perdono non cancella il danno e non chiede di fingere.
+::
+
+::battuta{id="battuta-atto-3-scena-1-33" characterId="prospero" character="PROSPERO" sceneId="atto-3-scena-1"}
+Mi hai tolto il ducato mentre studiavo.
+::
+
+::battuta{id="battuta-atto-3-scena-1-34" characterId="antonio" character="ANTONIO" sceneId="atto-3-scena-1"}
+Ho governato mentre tu dimenticavi il mondo.
+::
+
+::battuta{id="battuta-atto-3-scena-1-35" characterId="alonso" character="ALONSO" sceneId="atto-3-scena-1"}
+Ho permesso che accadesse e non posso nascondermi dietro la colpa altrui.
+::
+
+::battuta{id="battuta-atto-3-scena-1-36" characterId="gonzalo" character="GONZALO" sceneId="atto-3-scena-1"}
+Il futuro comincia dal riconoscere il danno senza chiedere che venga dimenticato.
+::
+
+### Scena 2 — La liberta di Ariel
+
+::regia{id="note-atto-3-scena-2-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-3-scena-2" anchorId="note-atto-3-scena-2-personaggi"}
+ARIEL, PROSPERO, MIRANDA, CALIBANO.
+::
+
+::regia{id="note-atto-3-scena-2-posizione" type="position" color="blue" title="Posizione" sceneId="atto-3-scena-2" anchorId="note-atto-3-scena-2-posizione"}
+La luce si apre; il bastone e sul tavolo; Ariel lo guarda da lontano.
+::
+
+::regia{id="note-atto-3-scena-2-movimento" type="movement" color="green" title="Movimento" sceneId="atto-3-scena-2" anchorId="note-atto-3-scena-2-movimento"}
+Ariel compie un ultimo giro; Miranda accompagna Calibano verso il margine dell’isola.
+::
+
+::regia{id="note-atto-3-scena-2-tono" type="tone" color="purple" title="Tono" sceneId="atto-3-scena-2" anchorId="note-atto-3-scena-2-tono"}
+La liberta e un’azione concreta, non una parola finale.
+::
+
+::battuta{id="battuta-atto-3-scena-2-37" characterId="ariel" character="ARIEL" sceneId="atto-3-scena-2"}
+La nave e pronta e il vento ha smesso di chiedere ordini.
+::
+
+::battuta{id="battuta-atto-3-scena-2-38" characterId="prospero" character="PROSPERO" sceneId="atto-3-scena-2"}
+Dillo senza tenere il bastone.
+::
+
+::battuta{id="battuta-atto-3-scena-2-39" characterId="miranda" character="MIRANDA" sceneId="atto-3-scena-2"}
+La terra resta e le promesse passano.
+::
+
+::battuta{id="battuta-atto-3-scena-2-40" characterId="calibano" character="CALIBANO" sceneId="atto-3-scena-2"}
+Tornero solo se la mia voce sara desiderata.
+::
+
+### Scena 3 — Il ritorno
+
+::regia{id="note-atto-3-scena-3-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-3-scena-3" anchorId="note-atto-3-scena-3-personaggi"}
+PROSPERO, MIRANDA, FERDINANDO, ALONSO, GONZALO, ANTONIO, CALIBANO, ARIEL.
+::
+
+::regia{id="note-atto-3-scena-3-posizione" type="position" color="blue" title="Posizione" sceneId="atto-3-scena-3" anchorId="note-atto-3-scena-3-posizione"}
+La nave e suggerita da una vela chiara; l’isola resta visibile dietro il gruppo.
+::
+
+::regia{id="note-atto-3-scena-3-movimento" type="movement" color="green" title="Movimento" sceneId="atto-3-scena-3" anchorId="note-atto-3-scena-3-movimento"}
+Prospero saluta l’isola senza voltarle le spalle; Ariel attraversa lo spazio in alto.
+::
+
+::regia{id="note-atto-3-scena-3-tono" type="tone" color="purple" title="Tono" sceneId="atto-3-scena-3" anchorId="note-atto-3-scena-3-tono"}
+Finale corale e aperto: il futuro non appartiene a nessun padrone.
+::
+
+::battuta{id="battuta-atto-3-scena-3-41" characterId="prospero" character="PROSPERO" sceneId="atto-3-scena-3"}
+Torneremo in una terra piena di strade e persone.
+::
+
+::battuta{id="battuta-atto-3-scena-3-42" characterId="miranda" character="MIRANDA" sceneId="atto-3-scena-3"}
+Dovremo imparare a non perdere l’isola dentro di noi.
+::
+
+::battuta{id="battuta-atto-3-scena-3-43" characterId="ferdinando" character="FERDINANDO" sceneId="atto-3-scena-3"}
+Prometto di ascoltare prima di governare.
+::
+
+::battuta{id="battuta-atto-3-scena-3-44" characterId="alonso" character="ALONSO" sceneId="atto-3-scena-3"}
+La nave puo partire quando tutti hanno lasciato a terra il proprio padrone.
+::
+
+> **Nota per la prova**: questa e una riscrittura originale modificabile. Personaggi, battute, note e cue possono essere adattati direttamente nell’editor.

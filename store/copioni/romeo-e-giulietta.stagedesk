@@ -1,0 +1,398 @@
+| Personaggio | Interprete | Presenza | Note |
+| --- | --- | --- | --- |
+| ROMEO | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| BENVOLIO | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| MERCUZIO | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| TEBALDO | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| CAPULETO | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| GIULIETTA | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| NUTRICE | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| FRATE LORENZO | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| PARIDE | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| MESSAGGERO | Da assegnare | In scena | Personaggio della riscrittura originale. |
+
+# Romeo e Giulietta
+
+> **EDIZIONE STAGEDESK**: adattamento originale integrale ispirato a un’opera di pubblico dominio. Battute e note create appositamente per StageDesk Pro e non tratte da traduzioni moderne.
+
+## Atto 1
+
+### Scena 1 — La piazza divisa
+
+::regia{id="note-atto-1-scena-1-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-1-scena-1" anchorId="note-atto-1-scena-1-personaggi"}
+ROMEO, BENVOLIO, MERCUZIO, TEBALDO, CAPULETO.
+::
+
+::regia{id="note-atto-1-scena-1-posizione" type="position" color="blue" title="Posizione" sceneId="atto-1-scena-1" anchorId="note-atto-1-scena-1-posizione"}
+La piazza e divisa da due gruppi di servi. Romeo osserva da lontano.
+::
+
+::regia{id="note-atto-1-scena-1-movimento" type="movement" color="green" title="Movimento" sceneId="atto-1-scena-1" anchorId="note-atto-1-scena-1-movimento"}
+I gruppi avanzano e arretrano senza toccarsi; Tebaldo traccia il confine.
+::
+
+::regia{id="note-atto-1-scena-1-tono" type="tone" color="purple" title="Tono" sceneId="atto-1-scena-1" anchorId="note-atto-1-scena-1-tono"}
+La violenza deve sembrare un’abitudine prima ancora che una scelta.
+::
+
+::battuta{id="battuta-atto-1-scena-1-1" characterId="romeo" character="ROMEO" sceneId="atto-1-scena-1"}
+Non chiamatela rissa: una rissa finisce quando qualcuno torna a casa.
+::
+
+::battuta{id="battuta-atto-1-scena-1-2" characterId="benvolio" character="BENVOLIO" sceneId="atto-1-scena-1"}
+Questa ha gia una casa per ogni insulto e un insulto per ogni casa.
+::
+
+::battuta{id="battuta-atto-1-scena-1-3" characterId="mercuzio" character="MERCUZIO" sceneId="atto-1-scena-1"}
+Fate un passo indietro, Montecchi.
+::
+
+::battuta{id="battuta-atto-1-scena-1-4" characterId="tebaldo" character="TEBALDO" sceneId="atto-1-scena-1"}
+Forse la citta aspetta soltanto che qualcuno smetta di chiamarla campo di battaglia.
+::
+
+### Scena 2 — La festa dei Capuleti
+
+::regia{id="note-atto-1-scena-2-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-1-scena-2" anchorId="note-atto-1-scena-2-personaggi"}
+GIULIETTA, NUTRICE, CAPULETO, ROMEO, MERCUZIO.
+::
+
+::regia{id="note-atto-1-scena-2-posizione" type="position" color="blue" title="Posizione" sceneId="atto-1-scena-2" anchorId="note-atto-1-scena-2-posizione"}
+Una festa mascherata occupa il cortile; Romeo entra sul margine della luce.
+::
+
+::regia{id="note-atto-1-scena-2-movimento" type="movement" color="green" title="Movimento" sceneId="atto-1-scena-2" anchorId="note-atto-1-scena-2-movimento"}
+Le maschere creano incontri brevi e impediscono ai nomi di dominare la scena.
+::
+
+::regia{id="note-atto-1-scena-2-tono" type="tone" color="purple" title="Tono" sceneId="atto-1-scena-2" anchorId="note-atto-1-scena-2-tono"}
+La festa e luminosa ma attraversata da un presagio.
+::
+
+::battuta{id="battuta-atto-1-scena-2-5" characterId="giulietta" character="GIULIETTA" sceneId="atto-1-scena-2"}
+Questa sera chi entra lascia il proprio nome alla porta.
+::
+
+::battuta{id="battuta-atto-1-scena-2-6" characterId="nutrice" character="NUTRICE" sceneId="atto-1-scena-2"}
+E se il volto non volesse la maschera?
+::
+
+::battuta{id="battuta-atto-1-scena-2-7" characterId="capuleto" character="CAPULETO" sceneId="atto-1-scena-2"}
+Non ho mai visto una stanza cosi piena e una sola persona cosi sola.
+::
+
+::battuta{id="battuta-atto-1-scena-2-8" characterId="romeo" character="ROMEO" sceneId="atto-1-scena-2"}
+Chiamami con la voce che useresti se non avessi paura della risposta.
+::
+
+### Scena 3 — Il giardino e il balcone
+
+::regia{id="note-atto-1-scena-3-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-1-scena-3" anchorId="note-atto-1-scena-3-personaggi"}
+ROMEO, GIULIETTA, NUTRICE.
+::
+
+::regia{id="note-atto-1-scena-3-posizione" type="position" color="blue" title="Posizione" sceneId="atto-1-scena-3" anchorId="note-atto-1-scena-3-posizione"}
+Il giardino e separato dal balcone da una fascia di luce; Romeo ascolta dal basso.
+::
+
+::regia{id="note-atto-1-scena-3-movimento" type="movement" color="green" title="Movimento" sceneId="atto-1-scena-3" anchorId="note-atto-1-scena-3-movimento"}
+Romeo si muove nell’ombra, Giulietta sul balcone, la Nutrice interrompe il momento.
+::
+
+::regia{id="note-atto-1-scena-3-tono" type="tone" color="purple" title="Tono" sceneId="atto-1-scena-3" anchorId="note-atto-1-scena-3-tono"}
+Desiderio e ascolto devono avere piu spazio delle dichiarazioni.
+::
+
+::battuta{id="battuta-atto-1-scena-3-9" characterId="romeo" character="ROMEO" sceneId="atto-1-scena-3"}
+La notte nasconde il nome, ma non la voce di chi lo porta.
+::
+
+::battuta{id="battuta-atto-1-scena-3-10" characterId="giulietta" character="GIULIETTA" sceneId="atto-1-scena-3"}
+Se il mio nome e una porta chiusa, posso lasciarlo fuori e restare qui.
+::
+
+::battuta{id="battuta-atto-1-scena-3-11" characterId="nutrice" character="NUTRICE" sceneId="atto-1-scena-3"}
+Prometti poco: le promesse troppo grandi fanno rumore.
+::
+
+::battuta{id="battuta-atto-1-scena-3-12" characterId="romeo" character="ROMEO" sceneId="atto-1-scena-3"}
+Prometto di tornare quando la citta sara silenziosa.
+::
+
+### Scena 4 — Il patto segreto
+
+::regia{id="note-atto-1-scena-4-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-1-scena-4" anchorId="note-atto-1-scena-4-personaggi"}
+ROMEO, GIULIETTA, FRATE LORENZO.
+::
+
+::regia{id="note-atto-1-scena-4-posizione" type="position" color="blue" title="Posizione" sceneId="atto-1-scena-4" anchorId="note-atto-1-scena-4-posizione"}
+La cella del frate ha un tavolo e due sedie; i giovani entrano separati.
+::
+
+::regia{id="note-atto-1-scena-4-movimento" type="movement" color="green" title="Movimento" sceneId="atto-1-scena-4" anchorId="note-atto-1-scena-4-movimento"}
+Il Frate avvicina lentamente le sedie, senza cancellare la distanza.
+::
+
+::regia{id="note-atto-1-scena-4-tono" type="tone" color="purple" title="Tono" sceneId="atto-1-scena-4" anchorId="note-atto-1-scena-4-tono"}
+La speranza e necessaria ma non ingenua; il rischio deve essere visibile.
+::
+
+::battuta{id="battuta-atto-1-scena-4-13" characterId="romeo" character="ROMEO" sceneId="atto-1-scena-4"}
+Unire due persone non cancella la citta che le divide.
+::
+
+::battuta{id="battuta-atto-1-scena-4-14" characterId="giulietta" character="GIULIETTA" sceneId="atto-1-scena-4"}
+Non voglio che il nostro amore diventi un’altra arma nelle mani degli adulti.
+::
+
+::battuta{id="battuta-atto-1-scena-4-15" characterId="frate-lorenzo" character="FRATE LORENZO" sceneId="atto-1-scena-4"}
+Allora non usatelo per vincere: usatelo per smettere di obbedire all’odio.
+::
+
+::battuta{id="battuta-atto-1-scena-4-16" characterId="romeo" character="ROMEO" sceneId="atto-1-scena-4"}
+Parlare chiaro, agire presto e non credere che il segreto sia eterno.
+::
+
+## Atto 2
+
+### Scena 1 — La festa interrotta
+
+::regia{id="note-atto-2-scena-1-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-2-scena-1" anchorId="note-atto-2-scena-1-personaggi"}
+TEBALDO, MERCUZIO, ROMEO, BENVOLIO, CAPULETO.
+::
+
+::regia{id="note-atto-2-scena-1-posizione" type="position" color="blue" title="Posizione" sceneId="atto-2-scena-1" anchorId="note-atto-2-scena-1-posizione"}
+La festa diventa inquieta quando Tebaldo riconosce la voce di Romeo.
+::
+
+::regia{id="note-atto-2-scena-1-movimento" type="movement" color="green" title="Movimento" sceneId="atto-2-scena-1" anchorId="note-atto-2-scena-1-movimento"}
+Mercuzio si mette fra Tebaldo e Romeo; Capuleto tenta di spostare il conflitto.
+::
+
+::regia{id="note-atto-2-scena-1-tono" type="tone" color="purple" title="Tono" sceneId="atto-2-scena-1" anchorId="note-atto-2-scena-1-tono"}
+La minaccia deve restare sempre a un passo dalla rissa.
+::
+
+::battuta{id="battuta-atto-2-scena-1-17" characterId="tebaldo" character="TEBALDO" sceneId="atto-2-scena-1"}
+Quella voce appartiene a un Montecchi.
+::
+
+::battuta{id="battuta-atto-2-scena-1-18" characterId="mercuzio" character="MERCUZIO" sceneId="atto-2-scena-1"}
+Questa sera non sono venuto come nemico.
+::
+
+::battuta{id="battuta-atto-2-scena-1-19" characterId="romeo" character="ROMEO" sceneId="atto-2-scena-1"}
+Un nemico che cambia maschera resta un nemico.
+::
+
+::battuta{id="battuta-atto-2-scena-1-20" characterId="benvolio" character="BENVOLIO" sceneId="atto-2-scena-1"}
+La tua pace e un insulto per chi ha perso un fratello.
+::
+
+### Scena 2 — La scelta di Giulietta
+
+::regia{id="note-atto-2-scena-2-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-2-scena-2" anchorId="note-atto-2-scena-2-personaggi"}
+GIULIETTA, NUTRICE, CAPULETO, PARIDE.
+::
+
+::regia{id="note-atto-2-scena-2-posizione" type="position" color="blue" title="Posizione" sceneId="atto-2-scena-2" anchorId="note-atto-2-scena-2-posizione"}
+Giulietta riceve la proposta di matrimonio e non si siede sulla sedia preparata per Paride.
+::
+
+::regia{id="note-atto-2-scena-2-movimento" type="movement" color="green" title="Movimento" sceneId="atto-2-scena-2" anchorId="note-atto-2-scena-2-movimento"}
+Capuleto porta la sedia al centro; Giulietta la sposta ai margini.
+::
+
+::regia{id="note-atto-2-scena-2-tono" type="tone" color="purple" title="Tono" sceneId="atto-2-scena-2" anchorId="note-atto-2-scena-2-tono"}
+Il padre confonde il futuro della figlia con la propria sicurezza.
+::
+
+::battuta{id="battuta-atto-2-scena-2-21" characterId="giulietta" character="GIULIETTA" sceneId="atto-2-scena-2"}
+Paride ha una casa, un nome e una pazienza che non mettera mai alla prova.
+::
+
+::battuta{id="battuta-atto-2-scena-2-22" characterId="nutrice" character="NUTRICE" sceneId="atto-2-scena-2"}
+Non posso sposare una lista di qualita.
+::
+
+::battuta{id="battuta-atto-2-scena-2-23" characterId="capuleto" character="CAPULETO" sceneId="atto-2-scena-2"}
+Hai scelto pensando alla paura di vedermi scegliere da sola.
+::
+
+::battuta{id="battuta-atto-2-scena-2-24" characterId="paride" character="PARIDE" sceneId="atto-2-scena-2"}
+Il tempo chiarisce solo cio che qualcuno ha il coraggio di guardare.
+::
+
+### Scena 3 — La lettera perduta
+
+::regia{id="note-atto-2-scena-3-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-2-scena-3" anchorId="note-atto-2-scena-3-personaggi"}
+ROMEO, BENVOLIO, MESSAGGERO, FRATE LORENZO.
+::
+
+::regia{id="note-atto-2-scena-3-posizione" type="position" color="blue" title="Posizione" sceneId="atto-2-scena-3" anchorId="note-atto-2-scena-3-posizione"}
+Un messaggero porta una lettera mai consegnata; Romeo attende in una stanza spoglia.
+::
+
+::regia{id="note-atto-2-scena-3-movimento" type="movement" color="green" title="Movimento" sceneId="atto-2-scena-3" anchorId="note-atto-2-scena-3-movimento"}
+Il Messaggero percorre lo spazio come se ogni porta portasse a una versione diversa dei fatti.
+::
+
+::regia{id="note-atto-2-scena-3-tono" type="tone" color="purple" title="Tono" sceneId="atto-2-scena-3" anchorId="note-atto-2-scena-3-tono"}
+L’errore cresce attraverso dettagli concreti e silenzi.
+::
+
+::battuta{id="battuta-atto-2-scena-3-25" characterId="romeo" character="ROMEO" sceneId="atto-2-scena-3"}
+La strada era chiusa e la lettera non ha trovato nessuno.
+::
+
+::battuta{id="battuta-atto-2-scena-3-26" characterId="benvolio" character="BENVOLIO" sceneId="atto-2-scena-3"}
+La lettera conteneva una sola istruzione.
+::
+
+::battuta{id="battuta-atto-2-scena-3-27" characterId="messaggero" character="MESSAGGERO" sceneId="atto-2-scena-3"}
+Una sola istruzione puo bastare a rovinare una citta.
+::
+
+::battuta{id="battuta-atto-2-scena-3-28" characterId="frate-lorenzo" character="FRATE LORENZO" sceneId="atto-2-scena-3"}
+Restare significa lasciare che gli altri decidano il finale.
+::
+
+### Scena 4 — Il duello
+
+::regia{id="note-atto-2-scena-4-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-2-scena-4" anchorId="note-atto-2-scena-4-personaggi"}
+ROMEO, MERCUZIO, TEBALDO, BENVOLIO.
+::
+
+::regia{id="note-atto-2-scena-4-posizione" type="position" color="blue" title="Posizione" sceneId="atto-2-scena-4" anchorId="note-atto-2-scena-4-posizione"}
+La strada e vuota dopo la festa. Mercuzio e Tebaldo si incontrano prima di Romeo.
+::
+
+::regia{id="note-atto-2-scena-4-movimento" type="movement" color="green" title="Movimento" sceneId="atto-2-scena-4" anchorId="note-atto-2-scena-4-movimento"}
+Mercuzio traccia un cerchio; Romeo entra e rompe la linea.
+::
+
+::regia{id="note-atto-2-scena-4-tono" type="tone" color="purple" title="Tono" sceneId="atto-2-scena-4" anchorId="note-atto-2-scena-4-tono"}
+Il duello e l’ultimo momento in cui fermarsi e ancora possibile.
+::
+
+::battuta{id="battuta-atto-2-scena-4-29" characterId="romeo" character="ROMEO" sceneId="atto-2-scena-4"}
+Non ho mai capito perche l’onore abbia bisogno di una spada.
+::
+
+::battuta{id="battuta-atto-2-scena-4-30" characterId="mercuzio" character="MERCUZIO" sceneId="atto-2-scena-4"}
+Le parole non fanno paura a chi ha deciso di non ascoltare.
+::
+
+::battuta{id="battuta-atto-2-scena-4-31" characterId="tebaldo" character="TEBALDO" sceneId="atto-2-scena-4"}
+Non combattero contro il cugino della donna che amo.
+::
+
+::battuta{id="battuta-atto-2-scena-4-32" characterId="benvolio" character="BENVOLIO" sceneId="atto-2-scena-4"}
+La citta avra cio che noi le consegniamo.
+::
+
+## Atto 3
+
+### Scena 1 — La stanza chiusa
+
+::regia{id="note-atto-3-scena-1-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-3-scena-1" anchorId="note-atto-3-scena-1-personaggi"}
+GIULIETTA, NUTRICE, FRATE LORENZO.
+::
+
+::regia{id="note-atto-3-scena-1-posizione" type="position" color="blue" title="Posizione" sceneId="atto-3-scena-1" anchorId="note-atto-3-scena-1-posizione"}
+La stanza ha una porta chiusa e una candela sul pavimento.
+::
+
+::regia{id="note-atto-3-scena-1-movimento" type="movement" color="green" title="Movimento" sceneId="atto-3-scena-1" anchorId="note-atto-3-scena-1-movimento"}
+Giulietta resta al centro; la Nutrice gira intorno alla porta; il Frate entra tardi.
+::
+
+::regia{id="note-atto-3-scena-1-tono" type="tone" color="purple" title="Tono" sceneId="atto-3-scena-1" anchorId="note-atto-3-scena-1-tono"}
+La paura e concreta, ma Giulietta mantiene il controllo.
+::
+
+::battuta{id="battuta-atto-3-scena-1-33" characterId="giulietta" character="GIULIETTA" sceneId="atto-3-scena-1"}
+Se mi chiudete in una stanza, la stanza diventera il luogo in cui scelgo.
+::
+
+::battuta{id="battuta-atto-3-scena-1-34" characterId="nutrice" character="NUTRICE" sceneId="atto-3-scena-1"}
+Tuo padre vuole il matrimonio entro due giorni.
+::
+
+::battuta{id="battuta-atto-3-scena-1-35" characterId="frate-lorenzo" character="FRATE LORENZO" sceneId="atto-3-scena-1"}
+Non vi chiedo una garanzia: vi chiedo di non lasciarmi sola nella scelta.
+::
+
+::battuta{id="battuta-atto-3-scena-1-36" characterId="giulietta" character="GIULIETTA" sceneId="atto-3-scena-1"}
+Organizzate il silenzio. Io organizzero il coraggio.
+::
+
+### Scena 2 — Il risveglio
+
+::regia{id="note-atto-3-scena-2-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-3-scena-2" anchorId="note-atto-3-scena-2-personaggi"}
+ROMEO, GIULIETTA, FRATE LORENZO, MESSAGGERO.
+::
+
+::regia{id="note-atto-3-scena-2-posizione" type="position" color="blue" title="Posizione" sceneId="atto-3-scena-2" anchorId="note-atto-3-scena-2-posizione"}
+La tomba e suggerita da luce bassa e spazio vuoto; il Messaggero arriva tardi.
+::
+
+::regia{id="note-atto-3-scena-2-movimento" type="movement" color="green" title="Movimento" sceneId="atto-3-scena-2" anchorId="note-atto-3-scena-2-movimento"}
+Romeo corre e rallenta davanti a Giulietta; il Frate tenta di fermarlo.
+::
+
+::regia{id="note-atto-3-scena-2-tono" type="tone" color="purple" title="Tono" sceneId="atto-3-scena-2" anchorId="note-atto-3-scena-2-tono"}
+L’errore e tragico, ma il riconoscimento apre una possibilità diversa.
+::
+
+::battuta{id="battuta-atto-3-scena-2-37" characterId="romeo" character="ROMEO" sceneId="atto-3-scena-2"}
+La citta mi ha detto che eri morta e io le ho creduto perche avevo paura.
+::
+
+::battuta{id="battuta-atto-3-scena-2-38" characterId="giulietta" character="GIULIETTA" sceneId="atto-3-scena-2"}
+La lettera e arrivata: troppo tardi, ma e arrivata.
+::
+
+::battuta{id="battuta-atto-3-scena-2-39" characterId="frate-lorenzo" character="FRATE LORENZO" sceneId="atto-3-scena-2"}
+Non lasciamo che la loro paura abbia anche il nostro silenzio.
+::
+
+::battuta{id="battuta-atto-3-scena-2-40" characterId="messaggero" character="MESSAGGERO" sceneId="atto-3-scena-2"}
+Che entrino. Questa volta nessuno parlera al posto nostro.
+::
+
+### Scena 3 — La piazza dopo la notte
+
+::regia{id="note-atto-3-scena-3-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-3-scena-3" anchorId="note-atto-3-scena-3-personaggi"}
+ROMEO, GIULIETTA, CAPULETO, BENVOLIO, TEBALDO, NUTRICE.
+::
+
+::regia{id="note-atto-3-scena-3-posizione" type="position" color="blue" title="Posizione" sceneId="atto-3-scena-3" anchorId="note-atto-3-scena-3-posizione"}
+La piazza e la stessa dell’inizio, ma senza le linee che dividevano i gruppi.
+::
+
+::regia{id="note-atto-3-scena-3-movimento" type="movement" color="green" title="Movimento" sceneId="atto-3-scena-3" anchorId="note-atto-3-scena-3-movimento"}
+I simboli delle due case vengono deposti a terra; il centro appartiene alla citta.
+::
+
+::regia{id="note-atto-3-scena-3-tono" type="tone" color="purple" title="Tono" sceneId="atto-3-scena-3" anchorId="note-atto-3-scena-3-tono"}
+La pace e un gesto ripetuto, non una promessa eterna.
+::
+
+::battuta{id="battuta-atto-3-scena-3-41" characterId="romeo" character="ROMEO" sceneId="atto-3-scena-3"}
+Ho chiamato guerra cio che non avevo il coraggio di ascoltare.
+::
+
+::battuta{id="battuta-atto-3-scena-3-42" characterId="giulietta" character="GIULIETTA" sceneId="atto-3-scena-3"}
+La responsabilita e non ricominciare.
+::
+
+::battuta{id="battuta-atto-3-scena-3-43" characterId="capuleto" character="CAPULETO" sceneId="atto-3-scena-3"}
+Resta la possibilita di vivere senza nascondersi.
+::
+
+::battuta{id="battuta-atto-3-scena-3-44" characterId="benvolio" character="BENVOLIO" sceneId="atto-3-scena-3"}
+Lasciamo alla citta una piazza senza confini.
+::
+
+> **Nota per la prova**: questa e una riscrittura originale modificabile. Personaggi, battute, note e cue possono essere adattati direttamente nell’editor.

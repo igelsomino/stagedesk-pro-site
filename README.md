@@ -46,9 +46,15 @@ come variabili/segreti dell'ambiente Cloudflare Pages. Non inserire mai una serv
 frontend. L'importazione diretta è mostrata solo quando lo Store è aperto dentro StageDesk Pro; in un browser normale
 restano disponibili consultazione, ricerca e download.
 
-### Inizializzazione del copione demo
+### Inizializzazione del catalogo demo
 
-Il copione demo `Il malato immaginario` viene caricato nel catalogo e nel bucket con lo script
+Lo script `scripts/seed-store-demo.mjs` pubblica nel catalogo cinque copioni completi in formato StageDesk:
+`Il malato immaginario`, `Il servitore di due padroni`, `Romeo e Giulietta`, `Amleto` e `La tempesta`.
+Per ciascun titolo vengono caricati il pacchetto del copione, la copertina originale e i metadati di catalogo.
+I testi dei quattro classici aggiuntivi sono adattamenti originali ispirati a opere di pubblico dominio e non
+copiano traduzioni moderne protette.
+
+Il catalogo viene caricato nel bucket con lo script
 `scripts/seed-store-demo.mjs`. Eseguirlo dalla root del repository con variabili d'ambiente temporanee:
 
 ```sh

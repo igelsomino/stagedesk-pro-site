@@ -1,0 +1,433 @@
+| Personaggio | Interprete | Presenza | Note |
+| --- | --- | --- | --- |
+| TRUFFALDINO | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| BRIGHELLA | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| BEATRICE | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| PANTALONE | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| CLARICE | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| SILVIO | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| FLORINDO | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| SMERALDINA | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| CAMERIERE | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| BERALDO | Da assegnare | In scena | Personaggio della riscrittura originale. |
+| TUTTI | Da assegnare | In scena | Personaggio della riscrittura originale. |
+
+# Il servitore di due padroni
+
+> **EDIZIONE STAGEDESK**: adattamento originale integrale ispirato a un’opera di pubblico dominio. Battute e note create appositamente per StageDesk Pro e non tratte da traduzioni moderne.
+
+## Atto 1
+
+### Scena 1 — L’arrivo del secondo padrone
+
+::regia{id="note-atto-1-scena-1-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-1-scena-1" anchorId="note-atto-1-scena-1-personaggi"}
+TRUFFALDINO, BRIGHELLA.
+::
+
+::regia{id="note-atto-1-scena-1-posizione" type="position" color="blue" title="Posizione" sceneId="atto-1-scena-1" anchorId="note-atto-1-scena-1-posizione"}
+Truffaldino attende davanti all’albergo con due bauli e nessuna istruzione chiara.
+::
+
+::regia{id="note-atto-1-scena-1-movimento" type="movement" color="green" title="Movimento" sceneId="atto-1-scena-1" anchorId="note-atto-1-scena-1-movimento"}
+Sposta i bauli da una parte all’altra ogni volta che sente un nome.
+::
+
+::regia{id="note-atto-1-scena-1-tono" type="tone" color="purple" title="Tono" sceneId="atto-1-scena-1" anchorId="note-atto-1-scena-1-tono"}
+Ritmo fisico e fame sono i motori della commedia.
+::
+
+::battuta{id="battuta-atto-1-scena-1-1" characterId="truffaldino" character="TRUFFALDINO" sceneId="atto-1-scena-1"}
+Ho accettato un padrone per lavorare meno e ora ne ho due per non sapere dove stare.
+::
+
+::battuta{id="battuta-atto-1-scena-1-2" characterId="brighella" character="BRIGHELLA" sceneId="atto-1-scena-1"}
+Se mi pagano entrambi, il problema non e il lavoro: e la tua memoria.
+::
+
+::battuta{id="battuta-atto-1-scena-1-3" characterId="truffaldino" character="TRUFFALDINO" sceneId="atto-1-scena-1"}
+La memoria costa energia e l’energia costa pranzo.
+::
+
+::battuta{id="battuta-atto-1-scena-1-4" characterId="brighella" character="BRIGHELLA" sceneId="atto-1-scena-1"}
+Nascondi i bauli e non confondere le vite.
+::
+
+### Scena 2 — La persona non riconosciuta
+
+::regia{id="note-atto-1-scena-2-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-1-scena-2" anchorId="note-atto-1-scena-2-personaggi"}
+BEATRICE, TRUFFALDINO, BRIGHELLA.
+::
+
+::regia{id="note-atto-1-scena-2-posizione" type="position" color="blue" title="Posizione" sceneId="atto-1-scena-2" anchorId="note-atto-1-scena-2-posizione"}
+Beatrice entra in abiti maschili e cerca Florindo senza rivelare il proprio nome.
+::
+
+::regia{id="note-atto-1-scena-2-movimento" type="movement" color="green" title="Movimento" sceneId="atto-1-scena-2" anchorId="note-atto-1-scena-2-movimento"}
+Beatrice controlla la strada; Truffaldino gira la lettera al contrario cercando di capirla.
+::
+
+::regia{id="note-atto-1-scena-2-tono" type="tone" color="purple" title="Tono" sceneId="atto-1-scena-2" anchorId="note-atto-1-scena-2-tono"}
+La tensione dell’identita nascosta contrasta con la concretezza del servo.
+::
+
+::battuta{id="battuta-atto-1-scena-2-5" characterId="beatrice" character="BEATRICE" sceneId="atto-1-scena-2"}
+Cerco Florindo. Nessuno deve sapere che sono qui.
+::
+
+::battuta{id="battuta-atto-1-scena-2-6" characterId="truffaldino" character="TRUFFALDINO" sceneId="atto-1-scena-2"}
+Nessuno lo sapra, se prima mi dite chi non devo informare.
+::
+
+::battuta{id="battuta-atto-1-scena-2-7" characterId="brighella" character="BRIGHELLA" sceneId="atto-1-scena-2"}
+Un uomo con una cicatrice e una valigia scura.
+::
+
+::battuta{id="battuta-atto-1-scena-2-8" characterId="beatrice" character="BEATRICE" sceneId="atto-1-scena-2"}
+Qui gli uomini con valigia scura sono almeno tre e hanno tutti una storia diversa.
+::
+
+### Scena 3 — Il matrimonio deciso
+
+::regia{id="note-atto-1-scena-3-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-1-scena-3" anchorId="note-atto-1-scena-3-personaggi"}
+PANTALONE, CLARICE, SILVIO.
+::
+
+::regia{id="note-atto-1-scena-3-posizione" type="position" color="blue" title="Posizione" sceneId="atto-1-scena-3" anchorId="note-atto-1-scena-3-posizione"}
+Pantalone mostra a Clarice una carta mentre Silvio attende una risposta.
+::
+
+::regia{id="note-atto-1-scena-3-movimento" type="movement" color="green" title="Movimento" sceneId="atto-1-scena-3" anchorId="note-atto-1-scena-3-movimento"}
+Clarice piega il contratto e lo restituisce senza leggerlo; Silvio prova a parlare.
+::
+
+::regia{id="note-atto-1-scena-3-tono" type="tone" color="purple" title="Tono" sceneId="atto-1-scena-3" anchorId="note-atto-1-scena-3-tono"}
+Il conflitto familiare e concreto: Clarice deve scegliere la propria voce.
+::
+
+::battuta{id="battuta-atto-1-scena-3-9" characterId="pantalone" character="PANTALONE" sceneId="atto-1-scena-3"}
+La carta e pronta, le famiglie sono d’accordo e il futuro ha gia una firma.
+::
+
+::battuta{id="battuta-atto-1-scena-3-10" characterId="clarice" character="CLARICE" sceneId="atto-1-scena-3"}
+Peccato che io non abbia ancora messo la mia.
+::
+
+::battuta{id="battuta-atto-1-scena-3-11" characterId="silvio" character="SILVIO" sceneId="atto-1-scena-3"}
+Non sono qui per assistere a una pratica: sono qui per dirti che ti amo.
+::
+
+::battuta{id="battuta-atto-1-scena-3-12" characterId="pantalone" character="PANTALONE" sceneId="atto-1-scena-3"}
+Io non sono una consegna, e nessuna dote puo decidere per me.
+::
+
+### Scena 4 — Due bauli, due nomi
+
+::regia{id="note-atto-1-scena-4-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-1-scena-4" anchorId="note-atto-1-scena-4-personaggi"}
+FLORINDO, TRUFFALDINO, BEATRICE.
+::
+
+::regia{id="note-atto-1-scena-4-posizione" type="position" color="blue" title="Posizione" sceneId="atto-1-scena-4" anchorId="note-atto-1-scena-4-posizione"}
+Florindo entra con una valigia e riconosce il cappello di Beatrice.
+::
+
+::regia{id="note-atto-1-scena-4-movimento" type="movement" color="green" title="Movimento" sceneId="atto-1-scena-4" anchorId="note-atto-1-scena-4-movimento"}
+Truffaldino si mette fra i due e sposta la valigia ogni volta che la verita rischia di apparire.
+::
+
+::regia{id="note-atto-1-scena-4-tono" type="tone" color="purple" title="Tono" sceneId="atto-1-scena-4" anchorId="note-atto-1-scena-4-tono"}
+Il pericolo del riconoscimento resta sempre a un passo dalla comicita.
+::
+
+::battuta{id="battuta-atto-1-scena-4-13" characterId="florindo" character="FLORINDO" sceneId="atto-1-scena-4"}
+Cerco un servo che sappia consegnare una lettera senza fare domande.
+::
+
+::battuta{id="battuta-atto-1-scena-4-14" characterId="truffaldino" character="TRUFFALDINO" sceneId="atto-1-scena-4"}
+Sono proprio io, ma oggi faccio domande solo per mestiere.
+::
+
+::battuta{id="battuta-atto-1-scena-4-15" characterId="beatrice" character="BEATRICE" sceneId="atto-1-scena-4"}
+Uno dei bauli e mio e l’altro e suo.
+::
+
+::battuta{id="battuta-atto-1-scena-4-16" characterId="florindo" character="FLORINDO" sceneId="atto-1-scena-4"}
+Portero questa valigia nella stanza giusta appena avro capito quale vita devo servire.
+::
+
+## Atto 2
+
+### Scena 1 — Una lettera per ciascuno
+
+::regia{id="note-atto-2-scena-1-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-2-scena-1" anchorId="note-atto-2-scena-1-personaggi"}
+TRUFFALDINO, SMERALDINA, CAMERIERE.
+::
+
+::regia{id="note-atto-2-scena-1-posizione" type="position" color="blue" title="Posizione" sceneId="atto-2-scena-1" anchorId="note-atto-2-scena-1-posizione"}
+Smeraldina trova due lettere con lo stesso sigillo e due destinatari diversi.
+::
+
+::regia{id="note-atto-2-scena-1-movimento" type="movement" color="green" title="Movimento" sceneId="atto-2-scena-1" anchorId="note-atto-2-scena-1-movimento"}
+Smeraldina tiene le lettere in alto; Truffaldino si muove sotto di esse come davanti a due minacce.
+::
+
+::regia{id="note-atto-2-scena-1-tono" type="tone" color="purple" title="Tono" sceneId="atto-2-scena-1" anchorId="note-atto-2-scena-1-tono"}
+La scena rivela che Smeraldina comprende il caos prima di Truffaldino.
+::
+
+::battuta{id="battuta-atto-2-scena-1-17" characterId="truffaldino" character="TRUFFALDINO" sceneId="atto-2-scena-1"}
+Queste lettere hanno lo stesso sigillo e due destinatari diversi.
+::
+
+::battuta{id="battuta-atto-2-scena-1-18" characterId="smeraldina" character="SMERALDINA" sceneId="atto-2-scena-1"}
+E una forma elegante di amicizia oppure di disastro.
+::
+
+::battuta{id="battuta-atto-2-scena-1-19" characterId="cameriere" character="CAMERIERE" sceneId="atto-2-scena-1"}
+Tu lavori per due padroni e servi la verita a nessuno.
+::
+
+::battuta{id="battuta-atto-2-scena-1-20" characterId="truffaldino" character="TRUFFALDINO" sceneId="atto-2-scena-1"}
+La verita ha tempi lunghi; io ho una fame immediata.
+::
+
+### Scena 2 — Il pranzo impossibile
+
+::regia{id="note-atto-2-scena-2-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-2-scena-2" anchorId="note-atto-2-scena-2-personaggi"}
+TRUFFALDINO, CAMERIERE, BRIGHELLA.
+::
+
+::regia{id="note-atto-2-scena-2-posizione" type="position" color="blue" title="Posizione" sceneId="atto-2-scena-2" anchorId="note-atto-2-scena-2-posizione"}
+Due tavoli vengono apparecchiati ai lati opposti, ciascuno per un padrone.
+::
+
+::regia{id="note-atto-2-scena-2-movimento" type="movement" color="green" title="Movimento" sceneId="atto-2-scena-2" anchorId="note-atto-2-scena-2-movimento"}
+Truffaldino corre fra i tavoli, scambia piatti e nasconde le posate.
+::
+
+::regia{id="note-atto-2-scena-2-tono" type="tone" color="purple" title="Tono" sceneId="atto-2-scena-2" anchorId="note-atto-2-scena-2-tono"}
+Il ritmo e musicale e crescente; ogni oggetto deve avere una traiettoria precisa.
+::
+
+::battuta{id="battuta-atto-2-scena-2-21" characterId="truffaldino" character="TRUFFALDINO" sceneId="atto-2-scena-2"}
+Questo piatto va al signore della stanza blu.
+::
+
+::battuta{id="battuta-atto-2-scena-2-22" characterId="cameriere" character="CAMERIERE" sceneId="atto-2-scena-2"}
+Nella stanza blu c’e il signore che vuole il piatto della stanza verde.
+::
+
+::battuta{id="battuta-atto-2-scena-2-23" characterId="brighella" character="BRIGHELLA" sceneId="atto-2-scena-2"}
+Allora portalo nella stanza blu della stanza verde.
+::
+
+::battuta{id="battuta-atto-2-scena-2-24" characterId="truffaldino" character="TRUFFALDINO" sceneId="atto-2-scena-2"}
+Un piatto per ciascuno e uno per me: questa e l’unica contabilita che capisco.
+::
+
+### Scena 3 — Smeraldina fa ordine
+
+::regia{id="note-atto-2-scena-3-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-2-scena-3" anchorId="note-atto-2-scena-3-personaggi"}
+SMERALDINA, CLARICE, TRUFFALDINO.
+::
+
+::regia{id="note-atto-2-scena-3-posizione" type="position" color="blue" title="Posizione" sceneId="atto-2-scena-3" anchorId="note-atto-2-scena-3-posizione"}
+Clarice cerca una stanza tranquilla e Smeraldina la guida lontano dai bauli.
+::
+
+::regia{id="note-atto-2-scena-3-movimento" type="movement" color="green" title="Movimento" sceneId="atto-2-scena-3" anchorId="note-atto-2-scena-3-movimento"}
+Smeraldina impone una linea di movimento a Truffaldino e gli impedisce di ascoltare di nascosto.
+::
+
+::regia{id="note-atto-2-scena-3-tono" type="tone" color="purple" title="Tono" sceneId="atto-2-scena-3" anchorId="note-atto-2-scena-3-tono"}
+La pausa di lucidita deve dominare il caos della casa.
+::
+
+::battuta{id="battuta-atto-2-scena-3-25" characterId="smeraldina" character="SMERALDINA" sceneId="atto-2-scena-3"}
+Cerco un luogo dove nessuno abbia gia deciso per me.
+::
+
+::battuta{id="battuta-atto-2-scena-3-26" characterId="clarice" character="CLARICE" sceneId="atto-2-scena-3"}
+Qui troverai molti luoghi, ma nessuno senza orecchie.
+::
+
+::battuta{id="battuta-atto-2-scena-3-27" characterId="truffaldino" character="TRUFFALDINO" sceneId="atto-2-scena-3"}
+Se sai qualcosa, parla prima che il disordine scelga al posto nostro.
+::
+
+::battuta{id="battuta-atto-2-scena-3-28" characterId="smeraldina" character="SMERALDINA" sceneId="atto-2-scena-3"}
+So che tutti hanno una ragione per nascondersi e io ho fame di tutte.
+::
+
+### Scena 4 — Il segreto viene a galla
+
+::regia{id="note-atto-2-scena-4-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-2-scena-4" anchorId="note-atto-2-scena-4-personaggi"}
+BEATRICE, FLORINDO, TRUFFALDINO, BERALDO.
+::
+
+::regia{id="note-atto-2-scena-4-posizione" type="position" color="blue" title="Posizione" sceneId="atto-2-scena-4" anchorId="note-atto-2-scena-4-posizione"}
+Beatrice e Florindo si incontrano; Truffaldino resta fra loro con i bauli.
+::
+
+::regia{id="note-atto-2-scena-4-movimento" type="movement" color="green" title="Movimento" sceneId="atto-2-scena-4" anchorId="note-atto-2-scena-4-movimento"}
+Gli amanti si avvicinano, ma i bauli creano una barriera sempre nuova.
+::
+
+::regia{id="note-atto-2-scena-4-tono" type="tone" color="purple" title="Tono" sceneId="atto-2-scena-4" anchorId="note-atto-2-scena-4-tono"}
+Un momento sincero affiora prima che l’equivoco riprenda il sopravvento.
+::
+
+::battuta{id="battuta-atto-2-scena-4-29" characterId="beatrice" character="BEATRICE" sceneId="atto-2-scena-4"}
+Non dovevi seguirmi.
+::
+
+::battuta{id="battuta-atto-2-scena-4-30" characterId="florindo" character="FLORINDO" sceneId="atto-2-scena-4"}
+Non seguirti sarebbe stato il modo piu sicuro per perderti.
+::
+
+::battuta{id="battuta-atto-2-scena-4-31" characterId="truffaldino" character="TRUFFALDINO" sceneId="atto-2-scena-4"}
+Perche servi il mio rivale?
+::
+
+::battuta{id="battuta-atto-2-scena-4-32" characterId="beraldo" character="BERALDO" sceneId="atto-2-scena-4"}
+Perche non sapevo fosse il vostro rivale: credevo fosse soltanto il secondo.
+::
+
+## Atto 3
+
+### Scena 1 — La soluzione di Pantalone
+
+::regia{id="note-atto-3-scena-1-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-3-scena-1" anchorId="note-atto-3-scena-1-personaggi"}
+PANTALONE, CLARICE, SILVIO, BEATRICE, FLORINDO.
+::
+
+::regia{id="note-atto-3-scena-1-posizione" type="position" color="blue" title="Posizione" sceneId="atto-3-scena-1" anchorId="note-atto-3-scena-1-posizione"}
+Tutti si riuniscono nella sala e i bauli diventano la prova materiale degli equivoci.
+::
+
+::regia{id="note-atto-3-scena-1-movimento" type="movement" color="green" title="Movimento" sceneId="atto-3-scena-1" anchorId="note-atto-3-scena-1-movimento"}
+Pantalone chiude i bauli e dispone i giovani in un semicerchio.
+::
+
+::regia{id="note-atto-3-scena-1-tono" type="tone" color="purple" title="Tono" sceneId="atto-3-scena-1" anchorId="note-atto-3-scena-1-tono"}
+La rivelazione deve essere chiara senza cancellare il piacere del disordine.
+::
+
+::battuta{id="battuta-atto-3-scena-1-33" characterId="pantalone" character="PANTALONE" sceneId="atto-3-scena-1"}
+Nessuna carta puo sostituire una promessa.
+::
+
+::battuta{id="battuta-atto-3-scena-1-34" characterId="clarice" character="CLARICE" sceneId="atto-3-scena-1"}
+Lasciate che sia io a dire chi voglio sposare.
+::
+
+::battuta{id="battuta-atto-3-scena-1-35" characterId="silvio" character="SILVIO" sceneId="atto-3-scena-1"}
+Sono pronto a rispondere delle mie scelte anche se non conosco tutte le conseguenze.
+::
+
+::battuta{id="battuta-atto-3-scena-1-36" characterId="beatrice" character="BEATRICE" sceneId="atto-3-scena-1"}
+Le conseguenze si affrontano; le bugie invece si moltiplicano.
+::
+
+### Scena 2 — Il doppio accordo
+
+::regia{id="note-atto-3-scena-2-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-3-scena-2" anchorId="note-atto-3-scena-2-personaggi"}
+BEATRICE, FLORINDO, CLARICE, SILVIO, SMERALDINA.
+::
+
+::regia{id="note-atto-3-scena-2-posizione" type="position" color="blue" title="Posizione" sceneId="atto-3-scena-2" anchorId="note-atto-3-scena-2-posizione"}
+La sala viene preparata per due promesse senza lettere nascoste sotto i piatti.
+::
+
+::regia{id="note-atto-3-scena-2-movimento" type="movement" color="green" title="Movimento" sceneId="atto-3-scena-2" anchorId="note-atto-3-scena-2-movimento"}
+I personaggi si scambiano i posti con calma; Truffaldino viene chiamato da ogni lato.
+::
+
+::regia{id="note-atto-3-scena-2-tono" type="tone" color="purple" title="Tono" sceneId="atto-3-scena-2" anchorId="note-atto-3-scena-2-tono"}
+La gioia nasce dal fatto che nessuno deve piu cambiare nome.
+::
+
+::battuta{id="battuta-atto-3-scena-2-37" characterId="beatrice" character="BEATRICE" sceneId="atto-3-scena-2"}
+Non prometto una vita senza equivoci: prometto di non lasciarti solo dentro di essi.
+::
+
+::battuta{id="battuta-atto-3-scena-2-38" characterId="florindo" character="FLORINDO" sceneId="atto-3-scena-2"}
+La nostra casa avra porte aperte e domande precise.
+::
+
+::battuta{id="battuta-atto-3-scena-2-39" characterId="clarice" character="CLARICE" sceneId="atto-3-scena-2"}
+Truffaldino, per chi lavori adesso?
+::
+
+::battuta{id="battuta-atto-3-scena-2-40" characterId="silvio" character="SILVIO" sceneId="atto-3-scena-2"}
+Per chi offre il pranzo e non chiede di mentire.
+::
+
+### Scena 3 — Il conto del servo
+
+::regia{id="note-atto-3-scena-3-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-3-scena-3" anchorId="note-atto-3-scena-3-personaggi"}
+TRUFFALDINO, SMERALDINA, BRIGHELLA.
+::
+
+::regia{id="note-atto-3-scena-3-posizione" type="position" color="blue" title="Posizione" sceneId="atto-3-scena-3" anchorId="note-atto-3-scena-3-posizione"}
+Truffaldino presenta il conto dei due servizi davanti a Brighella.
+::
+
+::regia{id="note-atto-3-scena-3-movimento" type="movement" color="green" title="Movimento" sceneId="atto-3-scena-3" anchorId="note-atto-3-scena-3-movimento"}
+Srotola un foglio interminabile; Smeraldina depenna le voci che riguardano i suoi errori.
+::
+
+::regia{id="note-atto-3-scena-3-tono" type="tone" color="purple" title="Tono" sceneId="atto-3-scena-3" anchorId="note-atto-3-scena-3-tono"}
+Il finale comico prepara la scelta di restare insieme.
+::
+
+::battuta{id="battuta-atto-3-scena-3-41" characterId="truffaldino" character="TRUFFALDINO" sceneId="atto-3-scena-3"}
+Ho servito due padroni, trasportato quattro bauli e salvato almeno tre pranzi.
+::
+
+::battuta{id="battuta-atto-3-scena-3-42" characterId="smeraldina" character="SMERALDINA" sceneId="atto-3-scena-3"}
+Hai anche perso due lettere e quasi rivelato quattro segreti.
+::
+
+::battuta{id="battuta-atto-3-scena-3-43" characterId="brighella" character="BRIGHELLA" sceneId="atto-3-scena-3"}
+Quelli sono costi di esercizio.
+::
+
+::battuta{id="battuta-atto-3-scena-3-44" characterId="truffaldino" character="TRUFFALDINO" sceneId="atto-3-scena-3"}
+Allora pagali con una promessa: niente piu bugie per ottenere il doppio.
+::
+
+### Scena 4 — Il pranzo condiviso
+
+::regia{id="note-atto-3-scena-4-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-3-scena-4" anchorId="note-atto-3-scena-4-personaggi"}
+TUTTI.
+::
+
+::regia{id="note-atto-3-scena-4-posizione" type="position" color="blue" title="Posizione" sceneId="atto-3-scena-4" anchorId="note-atto-3-scena-4-posizione"}
+Il tavolo viene apparecchiato al centro. Nessun personaggio occupa un posto privilegiato.
+::
+
+::regia{id="note-atto-3-scena-4-movimento" type="movement" color="green" title="Movimento" sceneId="atto-3-scena-4" anchorId="note-atto-3-scena-4-movimento"}
+Tutti portano una sedia; Truffaldino aspetta che siano seduti prima di prendere il proprio piatto.
+::
+
+::regia{id="note-atto-3-scena-4-tono" type="tone" color="purple" title="Tono" sceneId="atto-3-scena-4" anchorId="note-atto-3-scena-4-tono"}
+Finale corale, semplice e aperto, con una battuta conclusiva luminosa.
+::
+
+::battuta{id="battuta-atto-3-scena-4-45" characterId="tutti" character="TUTTI" sceneId="atto-3-scena-4"}
+Da oggi un solo tavolo e un solo conto.
+::
+
+::battuta{id="battuta-atto-3-scena-4-46" characterId="tutti" character="TUTTI" sceneId="atto-3-scena-4"}
+Un solo conto? Questa e una tragedia.
+::
+
+::battuta{id="battuta-atto-3-scena-4-47" characterId="tutti" character="TUTTI" sceneId="atto-3-scena-4"}
+No, e una commedia: finalmente sappiamo chi deve pagare.
+::
+
+::battuta{id="battuta-atto-3-scena-4-48" characterId="tutti" character="TUTTI" sceneId="atto-3-scena-4"}
+Se la verita arriva a tavola, lasciamole un posto.
+::
+
+> **Nota per la prova**: questa e una riscrittura originale modificabile. Personaggi, battute, note e cue possono essere adattati direttamente nell’editor.

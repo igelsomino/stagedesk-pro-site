@@ -965,11 +965,11 @@ const renderShare = (updateMessage = '', uiState = {}) => {
   })
   root.querySelectorAll('[data-toggle-dialogue]').forEach((button) => {
     button.addEventListener('click', () => {
-      const scrollY = window.scrollY
+      const scrollAnchor = captureScriptScrollAnchor()
       const dialogueId = button.dataset.toggleDialogue
       if (revealedDialogueIds.has(dialogueId)) revealedDialogueIds.delete(dialogueId)
       else revealedDialogueIds.add(dialogueId)
-      renderShare('', { scrollY })
+      renderShare('', { scrollAnchor })
     })
   })
   root.querySelectorAll('[data-progress]').forEach((button) => {

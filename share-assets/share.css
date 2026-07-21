@@ -52,6 +52,26 @@ button { cursor: pointer; }
 .share-heading p { max-width: 660px; margin: 0 auto; color: var(--muted); }
 .share-card { border: 1px solid var(--line); border-radius: 9px; background: rgba(23, 26, 27, 0.92); padding: clamp(18px, 4vw, 30px); }
 .auth-card { width: min(100%, 560px); margin: 0 auto; }
+.auth-recovery-panel { display: grid; gap: 14px; }
+.auth-recovery-link { display: inline-flex; align-items: center; justify-self: start; min-height: 24px; border: 0; border-radius: 5px; padding: 2px 6px; color: var(--accent); background: transparent; font-size: 0.8rem; font-weight: 700; text-align: left; transition: color 140ms ease, background-color 140ms ease; }
+.auth-recovery-link:hover { color: var(--text); background: var(--accent-soft); text-decoration: none; }
+.auth-recovery-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.share-profile-fields { display: grid; gap: 14px; }
+.share-profile-group { position: relative; display: grid; gap: 7px; margin: 0; padding: 0; }
+.share-profile-label { color: var(--muted); font-size: 0.78rem; font-weight: 700; }
+.share-profile-dropdown { position: relative; }
+.share-profile-dropdown summary { display: flex; align-items: center; justify-content: space-between; min-height: 34px; border: 1px solid var(--line); border-radius: 5px; padding: 6px 8px; color: var(--text); background: #101213; cursor: pointer; list-style: none; }
+.share-profile-dropdown summary::-webkit-details-marker { display: none; }
+.share-profile-dropdown summary::after { content: '⌄'; color: var(--muted); font-size: 0.9rem; }
+.share-profile-dropdown[open] summary { border-color: var(--accent); }
+.share-profile-dropdown[open] summary::after { content: '⌃'; color: var(--accent); }
+.share-choice-list { position: absolute; z-index: 5; top: calc(100% + 4px); right: 0; left: 0; display: grid; gap: 6px; max-height: 220px; overflow: auto; border: 1px solid var(--line); border-radius: 5px; padding: 6px; background: var(--panel); box-shadow: 0 10px 24px rgba(0, 0, 0, 0.34); }
+.share-choice { display: flex !important; grid-template-columns: none !important; align-items: center; gap: 7px !important; min-height: 34px; border: 1px solid var(--line); border-radius: 5px; padding: 6px 8px; color: var(--text) !important; background: #101213; cursor: pointer; }
+.share-choice input, .share-check input { width: 15px !important; min-height: 15px !important; margin: 0; padding: 0 !important; accent-color: var(--accent); }
+.share-choice:has(input:checked) { border-color: rgba(255, 91, 31, 0.5); background: var(--accent-soft); }
+.share-check { display: grid !important; grid-template-columns: 18px minmax(0, 1fr); align-items: center; gap: 8px !important; color: var(--text) !important; font-size: 0.78rem !important; font-weight: 400 !important; line-height: 1.35; }
+.share-check a { color: var(--accent); font-weight: 700; text-decoration: none; }
+.share-check a:hover { color: #ff9a70; text-decoration: underline; text-underline-offset: 2px; }
 .auth-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 16px; padding: 4px; border: 1px solid var(--line); border-radius: 7px; background: var(--panel-soft); }
 .auth-switch button, .share-link-button, .share-toggle { border: 1px solid transparent; border-radius: 5px; padding: 9px 12px; color: var(--muted); background: transparent; }
 .auth-switch button.active, .share-toggle.active { border-color: rgba(255, 91, 31, 0.45); color: var(--text); background: var(--accent-soft); }
@@ -200,6 +220,7 @@ button { cursor: pointer; }
   .share-heading { padding: 34px 0 20px; }
   .provider-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .provider-grid button { justify-content: center; }
+  .share-choice-list { grid-template-columns: 1fr; }
   .share-heading { padding-inline: 4px; }
   .share-card { width: 100%; padding: 16px; border-radius: 7px; }
   .learning-card { padding: 12px; }

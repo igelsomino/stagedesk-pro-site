@@ -5,6 +5,16 @@ const statusLabels = {
   in_studio: 'In studio',
   studiata: 'Studiata',
 }
+const profileOptions = [
+  ['regista', 'Regista'],
+  ['autore', 'Autore/Autrice'],
+  ['attore', 'Attore/Attrice'],
+  ['altro', 'Altro'],
+]
+const legalLinks = {
+  privacy: 'https://stagedesk-pro.aigconsulting.it/informativa-privacy',
+  terms: 'https://stagedesk-pro.aigconsulting.it/termini-uso',
+}
 
 let supabase
 let session
@@ -17,6 +27,7 @@ let filterMode = 'hide-selected'
 let revealedDialogueIds = new Set()
 let characterMenuOpen = false
 let authMode = 'signin'
+let passwordRecoveryMode = false
 let scriptRenderLimit = 24
 let dialogueSearchQuery = ''
 let characterSearchQuery = ''
@@ -89,6 +100,12 @@ const getBookmarkStorageKey = () => `stagedesk-share-bookmarks:${shareUid}:${ses
 const getAccessStorageKey = () => `stagedesk-share-access:v2:${shareUid}`
 const getLegacyAccessStorageKey = () => `stagedesk-share-access:${shareUid}`
 const shareAuthRedirectUrl = () => `${window.location.origin}/share/${encodeURIComponent(shareUid)}`
+const passwordRecoveryRedirectUrl = () => `${shareAuthRedirectUrl()}?mode=recovery`
+const isPasswordRecoveryCallback = () => {
+  const params = new URLSearchParams(window.location.search)
+  const hash = new URLSearchParams((window.location.hash || '').replace(/^#/, ''))
+  return params.get('mode') === 'recovery' || params.get('type') === 'recovery' || hash.get('type') === 'recovery'
+}
 const formatScriptTitle = (name) => String(name || 'Copione').trim().replace(/\.md$/i, '').trim().toUpperCase()
 const formatPublishedAt = (value) => {
   const date = new Date(value || '')
@@ -182,6 +199,10 @@ const renderBrand = (title, subtitle = '', action = '') => `
 `
 
 const renderAuth = (message = '') => {
+  if (passwordRecoveryMode) {
+    renderPasswordRecovery(message)
+    return
+  }
   renderShell(`
     ${renderBrand('Accedi al copione', 'Autenticati per inserire il PIN condiviso dal regista.')}
     <section class="share-card auth-card">
@@ -198,6 +219,26 @@ const renderAuth = (message = '') => {
       <form class="share-form" data-auth-form>
         <label>Email<input name="email" type="email" autocomplete="email" required /></label>
         <label>Password<input name="password" type="password" autocomplete="${authMode === 'signin' ? 'current-password' : 'new-password'}" minlength="8" required /></label>
+        ${authMode === 'signup' ? `
+          <div class="share-profile-fields">
+            <label>Nome<input name="first_name" type="text" autocomplete="given-name" required /></label>
+            <label>Cognome<input name="last_name" type="text" autocomplete="family-name" required /></label>
+            <label>Recapito telefonico<input name="phone" type="tel" autocomplete="tel" required /></label>
+            <div class="share-profile-group">
+              <span class="share-profile-label">Profilo</span>
+              <details class="share-profile-dropdown">
+                <summary data-profile-summary>Regista</summary>
+                <div class="share-choice-list">
+                  ${profileOptions.map(([value, label]) => `<label class="share-choice"><input data-profile-checkbox name="user_type" type="checkbox" value="${value}" ${value === 'regista' ? 'checked' : ''} />${label}</label>`).join('')}
+                </div>
+              </details>
+            </div>
+            <label class="share-check"><input name="privacy_accepted" type="checkbox" value="yes" required /><span>Accetto l’<a href="${legalLinks.privacy}" target="_blank" rel="noreferrer">informativa privacy</a></span></label>
+            <label class="share-check"><input name="terms_accepted" type="checkbox" value="yes" /><span>Accetto i <a href="${legalLinks.terms}" target="_blank" rel="noreferrer">termini d’uso</a></span></label>
+            <label class="share-check"><input name="marketing_consent" type="checkbox" value="yes" /><span>Acconsento alle comunicazioni informative</span></label>
+          </div>
+        ` : ''}
+        ${authMode === 'signin' ? '<button class="auth-recovery-link" type="button" data-forgot-password>Password dimenticata?</button>' : ''}
         <button class="share-primary" type="submit">${iconSvg('login')}${authMode === 'signin' ? 'Accedi' : 'Crea account'}</button>
       </form>
       <p class="share-message" data-message data-tone="${message ? 'error' : ''}">${escapeHtml(message)}</p>
@@ -217,6 +258,84 @@ const renderAuth = (message = '') => {
     event.preventDefault()
     void submitEmailAuth(event.currentTarget)
   })
+  const profileSummary = root.querySelector('[data-profile-summary]')
+  const profileCheckboxes = Array.from(root.querySelectorAll('[data-profile-checkbox]'))
+  const updateProfileSummary = () => {
+    const labels = profileCheckboxes.filter((input) => input.checked).map((input) => input.parentElement?.textContent?.trim()).filter(Boolean)
+    if (profileSummary) profileSummary.textContent = labels.length ? labels.join(', ') : 'Seleziona uno o più profili'
+  }
+  profileCheckboxes.forEach((input) => input.addEventListener('change', updateProfileSummary))
+  root.querySelector('[data-forgot-password]')?.addEventListener('click', () => renderPasswordResetRequest())
+}
+
+const renderPasswordResetRequest = (message = '') => {
+  renderShell(`
+    ${renderBrand('Recupera password', 'Ricevi un link per impostare una nuova password.')}
+    <section class="share-card auth-card auth-recovery-panel">
+      <form class="share-form" data-password-reset-form>
+        <label>Email<input name="email" type="email" autocomplete="email" required /></label>
+        <button class="share-primary" type="submit">Invia link di recupero</button>
+      </form>
+      <p class="share-message" data-message data-tone="${message ? 'error' : ''}">${escapeHtml(message)}</p>
+      <button class="auth-recovery-link" type="button" data-back-to-login>Torna all’accesso</button>
+    </section>
+  `)
+  root.querySelector('[data-password-reset-form]')?.addEventListener('submit', (event) => {
+    event.preventDefault()
+    void requestPasswordReset(event.currentTarget)
+  })
+  root.querySelector('[data-back-to-login]')?.addEventListener('click', () => renderAuth())
+}
+
+const requestPasswordReset = async (form) => {
+  const email = String(new FormData(form).get('email') || '').trim()
+  setMessage('Invio del link di recupero in corso...')
+  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: passwordRecoveryRedirectUrl() })
+  if (error) {
+    renderPasswordResetRequest(error.message)
+    return
+  }
+  renderPasswordResetRequest('Se l’indirizzo è registrato, riceverai un link per impostare una nuova password.')
+}
+
+const renderPasswordRecovery = (message = '') => {
+  renderShell(`
+    ${renderBrand('Reimposta password', 'Scegli una nuova password per il tuo account.')}
+    <section class="share-card auth-card auth-recovery-panel">
+      <form class="share-form" data-password-recovery-form>
+        <label>Nuova password<input name="password" type="password" autocomplete="new-password" minlength="8" required /></label>
+        <label>Conferma password<input name="confirmation" type="password" autocomplete="new-password" minlength="8" required /></label>
+        <button class="share-primary" type="submit">Salva nuova password</button>
+      </form>
+      <p class="share-message" data-message data-tone="${message ? 'error' : ''}">${escapeHtml(message)}</p>
+    </section>
+  `)
+  root.querySelector('[data-password-recovery-form]')?.addEventListener('submit', (event) => {
+    event.preventDefault()
+    void updatePassword(event.currentTarget)
+  })
+}
+
+const updatePassword = async (form) => {
+  const values = new FormData(form)
+  const password = String(values.get('password') || '')
+  const confirmation = String(values.get('confirmation') || '')
+  if (password.length < 8) {
+    renderPasswordRecovery('La password deve contenere almeno 8 caratteri.')
+    return
+  }
+  if (password !== confirmation) {
+    renderPasswordRecovery('Le password non coincidono.')
+    return
+  }
+  setMessage('Aggiornamento password in corso...')
+  const { error } = await supabase.auth.updateUser({ password })
+  if (error) {
+    renderPasswordRecovery(error.message)
+    return
+  }
+  passwordRecoveryMode = false
+  renderPinForm('Password aggiornata. Inserisci il PIN del regista.')
 }
 
 const renderPinForm = (message = '') => {
@@ -748,18 +867,59 @@ const renderShare = (updateMessage = '', uiState = {}) => {
 
 async function submitEmailAuth(form) {
   const formData = new FormData(form)
-  const email = String(formData.get('email') || '')
+  const email = String(formData.get('email') || '').trim()
   const password = String(formData.get('password') || '')
+  if (authMode === 'signup') {
+    const firstName = String(formData.get('first_name') || '').trim()
+    const lastName = String(formData.get('last_name') || '').trim()
+    const phone = String(formData.get('phone') || '').trim()
+    const userTypes = formData.getAll('user_type').map((value) => String(value)).filter(Boolean)
+    const privacyAccepted = formData.get('privacy_accepted') === 'yes'
+    const termsAccepted = formData.get('terms_accepted') === 'yes'
+    const marketingConsent = formData.get('marketing_consent') === 'yes'
+    if (!firstName || !lastName || !phone) {
+      renderAuth('Nome, cognome e recapito telefonico sono obbligatori.')
+      return
+    }
+    if (!userTypes.length) {
+      renderAuth('Seleziona almeno un profilo.')
+      return
+    }
+    if (!privacyAccepted) {
+      renderAuth('Accettazione privacy obbligatoria.')
+      return
+    }
+    const acceptedAt = new Date().toISOString()
+    setMessage('Registrazione in corso...')
+    const result = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: shareAuthRedirectUrl(),
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+          phone,
+          user_type: userTypes[0],
+          user_types: userTypes,
+          privacy_accepted_at: acceptedAt,
+          terms_accepted_at: termsAccepted ? acceptedAt : null,
+          marketing_consent_at: marketingConsent ? acceptedAt : null,
+        },
+      },
+    })
+    if (result.error) {
+      renderAuth(result.error.message)
+      return
+    }
+    if (!result.data.session) renderAuth('Registrazione creata. Controlla la mail per confermare l’account.')
+    return
+  }
   setMessage('Autenticazione in corso...')
-  const result = authMode === 'signin'
-    ? await supabase.auth.signInWithPassword({ email, password })
-    : await supabase.auth.signUp({ email, password, options: { emailRedirectTo: shareAuthRedirectUrl() } })
+  const result = await supabase.auth.signInWithPassword({ email, password })
   if (result.error) {
     renderAuth(result.error.message)
     return
-  }
-  if (authMode === 'signup' && !result.data.session) {
-    renderAuth('Registrazione creata. Controlla la mail per confermare l’account.')
   }
 }
 
@@ -809,6 +969,7 @@ async function signOut(message = '') {
   bookmarkedDialogueIds = new Set()
   bookmarksInitialized = false
   activeBookmarkId = ''
+  passwordRecoveryMode = false
   renderAuth(message)
 }
 
@@ -840,20 +1001,28 @@ async function bootstrap() {
     throw error
   }
   supabase = createClient(config.url, config.publishableKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce' } })
+  passwordRecoveryMode = isPasswordRecoveryCallback()
   const { data } = await supabase.auth.getSession()
   session = data.session
   if (session) {
     const cachedShare = readCachedAccess()
-    if (cachedShare) {
+    if (passwordRecoveryMode) renderPasswordRecovery()
+    else if (cachedShare) {
       share = cachedShare.share
       if (cachedShare.hasPin) await refreshSharedScript(true)
       else renderShare('Accesso ripristinato. Premi aggiorna per riconvalidare il PIN.')
     }
     else renderPinForm()
   }
+  else if (passwordRecoveryMode) renderShell(`${renderBrand('Reimposta password', 'Verifica del collegamento in corso...')}<section class="share-card auth-card"><p class="share-message">Attendi il completamento dell’autenticazione.</p></section>`)
   else renderAuth()
-  supabase.auth.onAuthStateChange((_event, nextSession) => {
+  supabase.auth.onAuthStateChange((event, nextSession) => {
     session = nextSession
+    if (event === 'PASSWORD_RECOVERY') {
+      passwordRecoveryMode = true
+      renderPasswordRecovery()
+      return
+    }
     if (session) {
       const cachedShare = readCachedAccess()
       if (cachedShare) {

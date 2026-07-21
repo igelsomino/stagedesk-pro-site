@@ -62,14 +62,15 @@ button { cursor: pointer; }
 .share-profile-dropdown { position: relative; }
 .share-profile-dropdown summary { display: flex; align-items: center; justify-content: space-between; min-height: 34px; border: 1px solid var(--line); border-radius: 5px; padding: 6px 8px; color: var(--text); background: #101213; cursor: pointer; list-style: none; }
 .share-profile-dropdown summary::-webkit-details-marker { display: none; }
-.share-profile-dropdown summary::after { content: '⌄'; color: var(--muted); font-size: 0.9rem; }
+.share-profile-dropdown summary::after { content: ''; display: block; flex: 0 0 7px; width: 7px; height: 7px; border-right: 1.5px solid var(--muted); border-bottom: 1.5px solid var(--muted); transform: rotate(45deg); transform-origin: center; }
 .share-profile-dropdown[open] summary { border-color: var(--accent); }
-.share-profile-dropdown[open] summary::after { content: '⌃'; color: var(--accent); }
+.share-profile-dropdown[open] summary::after { border-color: var(--accent); transform: rotate(225deg); }
 .share-choice-list { position: absolute; z-index: 5; top: calc(100% + 4px); right: 0; left: 0; display: grid; gap: 6px; max-height: 220px; overflow: auto; border: 1px solid var(--line); border-radius: 5px; padding: 6px; background: var(--panel); box-shadow: 0 10px 24px rgba(0, 0, 0, 0.34); }
-.share-choice { display: flex !important; grid-template-columns: none !important; align-items: center; gap: 7px !important; min-height: 34px; border: 1px solid var(--line); border-radius: 5px; padding: 6px 8px; color: var(--text) !important; background: #101213; cursor: pointer; }
+.share-choice { display: flex !important; grid-template-columns: none !important; align-items: center; gap: 7px !important; min-height: 34px; border: 1px solid var(--line); border-radius: 5px; padding: 6px 8px; color: var(--text) !important; background: #101213; cursor: pointer; white-space: nowrap; }
 .share-choice input, .share-check input { width: 15px !important; min-height: 15px !important; margin: 0; padding: 0 !important; accent-color: var(--accent); }
 .share-choice:has(input:checked) { border-color: rgba(255, 91, 31, 0.5); background: var(--accent-soft); }
-.share-check { display: grid !important; grid-template-columns: 18px minmax(0, 1fr); align-items: center; gap: 8px !important; color: var(--text) !important; font-size: 0.78rem !important; font-weight: 400 !important; line-height: 1.35; }
+.share-check { display: flex !important; align-items: flex-start; gap: 8px !important; color: var(--text) !important; font-size: 0.78rem !important; font-weight: 400 !important; line-height: 1.35; }
+.share-check input { flex: 0 0 15px; margin-top: 2px; }
 .share-check a { color: var(--accent); font-weight: 700; text-decoration: none; }
 .share-check a:hover { color: #ff9a70; text-decoration: underline; text-underline-offset: 2px; }
 .auth-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 16px; padding: 4px; border: 1px solid var(--line); border-radius: 7px; background: var(--panel-soft); }

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Autenticazione completata - StageDesk Pro</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #101214;
+        color: #f5f1eb;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        display: grid;
+        min-height: 100vh;
+        margin: 0;
+        place-items: center;
+        background:
+          linear-gradient(180deg, rgba(16, 18, 20, 0.66), rgba(16, 18, 20, 0.96)),
+          url("../assets/theatre-hero.jpg") center / cover,
+          #101214;
+      }
+
+      main {
+        width: min(480px, calc(100vw - 32px));
+        border: 1px solid rgba(245, 241, 235, 0.15);
+        border-left: 3px solid #f1602b;
+        border-radius: 8px;
+        padding: 30px;
+        background: rgba(23, 26, 28, 0.9);
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.46);
+        backdrop-filter: blur(16px);
+      }
+
+      .eyebrow {
+        margin: 0 0 10px;
+        color: #ff7a42;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h1 { margin: 0 0 10px; font-size: 1.45rem; }
+      p:not(.eyebrow) { margin: 0 0 20px; color: #b4b8b9; line-height: 1.55; }
+      a { color: #ff9a70; font-weight: 750; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="eyebrow">StageDesk Pro</p>
+      <h1>Autenticazione completata</h1>
+      <p id="status">StageDesk Pro sta completando l'accesso. Puoi chiudere questa finestra dopo l'apertura dell'app.</p>
+      <a id="open-app" href="stagedeskpro://auth-callback">Riapri StageDesk Pro</a>
+    </main>
+    <script>
+      const callbackPath = `${window.location.search || ""}${window.location.hash || ""}`;
+      const appUrl = `stagedeskpro://auth-callback${callbackPath}`;
+      const link = document.getElementById("open-app");
+      const status = document.getElementById("status");
+      link.href = appUrl;
+      window.setTimeout(() => {
+        link.click();
+        window.setTimeout(() => {
+          status.textContent = "StageDesk Pro è stato aperto. Ora puoi chiudere questa finestra del browser.";
+        }, 1200);
+      }, 300);
+    </script>
+  </body>
+</html>

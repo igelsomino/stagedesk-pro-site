@@ -59,7 +59,7 @@
       <a id="open-app" href="stagedeskpro://auth-callback">Riapri StageDesk Pro</a>
       <iframe id="app-launch" title="Avvio StageDesk Pro" hidden></iframe>
     </main>
-    <script>
+    <script data-cfasync="false">
       const callbackPath = `${window.location.search || ""}${window.location.hash || ""}`;
       const appUrl = `stagedeskpro://auth-callback${callbackPath}`;
       const link = document.getElementById("open-app");
@@ -67,8 +67,11 @@
       const launcher = document.getElementById("app-launch");
       link.href = appUrl;
       window.setTimeout(() => {
-        status.textContent = "Autenticazione completata. StageDesk Pro sta per aprirsi; dopo l'apertura puoi chiudere questa finestra del browser.";
+        status.textContent = "Autenticazione completata. Ora puoi chiudere questa finestra del browser dopo l'apertura di StageDesk Pro.";
         launcher.src = appUrl;
+        window.setTimeout(() => {
+          status.textContent = "Se StageDesk Pro non si è aperto, fai clic su Riapri StageDesk Pro. Dopo l'apertura puoi chiudere questa finestra del browser.";
+        }, 1800);
       }, 300);
     </script>
   </body>

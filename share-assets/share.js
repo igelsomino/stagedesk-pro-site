@@ -978,8 +978,9 @@ const renderShare = (updateMessage = '', uiState = {}) => {
     button.title = revealed ? 'Nascondi battuta' : 'Mostra battuta'
     button.setAttribute('aria-label', button.title)
   })
-  root.querySelectorAll('[data-progress]').forEach((button) => {
-    button.addEventListener('click', () => {
+  root.querySelector('.dialogue-list')?.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-progress]')
+    if (!button) return
       const next = JSON.parse(localStorage.getItem(getPinStorageKey()) || '{}')
       next[button.dataset.progress] = button.dataset.status
       localStorage.setItem(getPinStorageKey(), JSON.stringify(next))
@@ -1010,7 +1011,6 @@ const renderShare = (updateMessage = '', uiState = {}) => {
         item.classList.toggle('is-active', active)
         item.setAttribute('aria-pressed', String(active))
       })
-    })
   })
   let scriptObserver = null
   const observeScriptSentinel = () => {

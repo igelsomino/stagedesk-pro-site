@@ -199,6 +199,41 @@ const renderBrand = (title, subtitle = '', action = '') => `
   </div>
 `
 
+const characterKey = (value) => String(value ?? '').normalize('NFKC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('it-IT')
+
+const normalizeCharacterData = (rawCharacters, rawDialogues) => {
+  const characters = []
+  const byName = new Map()
+  const aliases = new Map()
+
+  rawCharacters.forEach((rawCharacter, index) => {
+    if (!rawCharacter || typeof rawCharacter !== 'object') return
+    const name = String(rawCharacter.name ?? '').trim()
+    const id = String(rawCharacter.id ?? `character-${index}`).trim()
+    if (!name || !id) return
+
+    const key = characterKey(name)
+    const existing = byName.get(key)
+    if (existing) {
+      aliases.set(id, existing.id)
+      return
+    }
+
+    const character = { ...rawCharacter, id, name }
+    characters.push(character)
+    byName.set(key, character)
+    aliases.set(id, id)
+  })
+
+  const dialogues = rawDialogues.map((dialogue) => {
+    const characterId = aliases.get(String(dialogue.characterId ?? ''))
+      || byName.get(characterKey(dialogue.characterName ?? dialogue.character))?.id
+    return characterId ? { ...dialogue, characterId } : dialogue
+  })
+
+  return { characters, dialogues }
+}
+
 const profileTypesFromMetadata = (user) => {
   const metadata = user?.user_metadata || {}
   const values = Array.isArray(metadata.user_types) ? metadata.user_types : [metadata.user_type]
@@ -634,8 +669,12 @@ async function refreshSharedScript(fromBootstrap = false) {
 
 const renderShare = (updateMessage = '', uiState = {}) => {
   const payload = share?.payload || {}
-  const characters = Array.isArray(payload.characters) ? payload.characters : []
-  const dialogues = Array.isArray(payload.dialogues) ? payload.dialogues : []
+  const characterData = normalizeCharacterData(
+    Array.isArray(payload.characters) ? payload.characters : [],
+    Array.isArray(payload.dialogues) ? payload.dialogues : [],
+  )
+  const characters = characterData.characters
+  const dialogues = characterData.dialogues
   const notes = Array.isArray(payload.notes) ? payload.notes : []
   const items = Array.isArray(payload.items) ? payload.items : []
   const progress = JSON.parse(localStorage.getItem(getPinStorageKey()) || '{}')

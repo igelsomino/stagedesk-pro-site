@@ -163,6 +163,7 @@ function showUpload() {
 function updateAccountUi() {
   const account = $('#account-action')
   const publish = $('#publish-action')
+  account.hidden = state.canImport
   if (state.session) {
     account.textContent = 'Esci'
     publish.hidden = false
@@ -314,6 +315,7 @@ async function initSupabase() {
 window.addEventListener('message', (event) => {
   if (event.source !== window.parent || event.data?.type !== CONTEXT_MESSAGE) return
   state.canImport = event.data.canImport === true
+  updateAccountUi()
   renderSections()
   if (state.selectedBook && $('#detail-dialog')?.open) {
     $('#detail-content').innerHTML = detailMarkup(state.selectedBook)

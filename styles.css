@@ -2143,3 +2143,8 @@ h1 {
     display: none;
   }
 }
+
+/* Keep the Store brand inset when it is rendered inside the desktop viewer. */
+.store-page .site-header {
+  padding-inline: clamp(22px, 5vw, 72px);
+}

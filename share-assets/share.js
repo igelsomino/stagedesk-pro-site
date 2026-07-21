@@ -184,6 +184,20 @@ const renderShell = (content) => {
   if (root) root.innerHTML = content
 }
 
+const captureScriptScrollAnchor = () => {
+  const elements = Array.from(root?.querySelectorAll('[data-dialogue-id]') || [])
+  const visible = elements.find((element) => {
+    const rect = element.getBoundingClientRect()
+    return rect.bottom > 0 && rect.top >= 0
+  }) || elements.find((element) => element.getBoundingClientRect().bottom > 0)
+  if (!visible) return { scrollY: window.scrollY }
+  return {
+    scrollY: window.scrollY,
+    dialogueId: visible.dataset.dialogueId || '',
+    top: visible.getBoundingClientRect().top,
+  }
+}
+
 const renderBrand = (title, subtitle = '', action = '') => `
   <header class="share-header">
     <a class="share-brand" href="/" aria-label="StageDesk Pro">
@@ -994,8 +1008,9 @@ const renderShare = (updateMessage = '', uiState = {}) => {
   })
   const loadMoreScript = () => {
     if (scriptRenderLimit >= scriptItems.length) return
+    const scrollAnchor = captureScriptScrollAnchor()
     scriptRenderLimit = Math.min(scriptRenderLimit + SCRIPT_BATCH_SIZE, scriptItems.length)
-    renderShare('', { scrollY: window.scrollY })
+    renderShare('', { scrollAnchor })
   }
   root.querySelector('[data-load-script]')?.addEventListener('click', loadMoreScript)
   const scriptSentinel = root.querySelector('[data-script-sentinel]')
@@ -1009,13 +1024,21 @@ const renderShare = (updateMessage = '', uiState = {}) => {
     observer.observe(scriptSentinel)
   }
   root.querySelector('[data-signout]')?.addEventListener('click', () => void signOut())
-  if (uiState.focusCharacterId || Number.isFinite(uiState.scrollY)) {
+  if (uiState.focusCharacterId || uiState.scrollAnchor || Number.isFinite(uiState.scrollY)) {
     requestAnimationFrame(() => {
       if (uiState.focusCharacterId) {
         const input = Array.from(root.querySelectorAll('.character-option input')).find((item) => item.value === uiState.focusCharacterId)
         input?.focus({ preventScroll: true })
       }
-      if (Number.isFinite(uiState.scrollY)) window.scrollTo(0, uiState.scrollY)
+      if (uiState.scrollAnchor) {
+        const anchor = Array.from(root.querySelectorAll('[data-dialogue-id]')).find((item) => item.dataset.dialogueId === uiState.scrollAnchor.dialogueId)
+        const nextTop = anchor
+          ? window.scrollY + anchor.getBoundingClientRect().top - uiState.scrollAnchor.top
+          : uiState.scrollAnchor.scrollY
+        window.scrollTo({ top: Math.max(0, nextTop), behavior: 'auto' })
+      } else if (Number.isFinite(uiState.scrollY)) {
+        window.scrollTo({ top: uiState.scrollY, behavior: 'auto' })
+      }
     })
   }
   if (uiState.focusDialogueSearch) {

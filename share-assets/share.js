@@ -723,6 +723,33 @@ const renderShare = (updateMessage = '', uiState = {}) => {
   }, { da_studiare: 0, in_studio: 0, studiata: 0 })
   const studyTotal = Object.values(progressStats).reduce((sum, count) => sum + count, 0)
   const activityRingProgress = (status) => studyTotal ? Math.round((progressStats[status] / studyTotal) * 360) : 0
+  const renderScriptItem = ({ kind, item, dialogueIndex, dialogueId }) => {
+    if (kind === 'note') {
+      const owner = dialogues.find((dialogue) => dialogue.id === dialogueId)
+      const noteVisible = !owner || filterMode === 'hide-selected' || selectedCharacters.has(owner.characterId)
+      const ownerMatchesSearch = !dialogueSearchQuery || !owner || `${owner.characterName} ${owner.text}`.toLowerCase().includes(dialogueSearchQuery)
+      return renderNote(item, !noteVisible, dialogueId, !ownerMatchesSearch)
+    }
+    const selected = selectedCharacters.has(item.characterId)
+    const concealed = filterMode === 'hide-selected' && selected && !revealedDialogueIds.has(item.id)
+    const visible = filterMode === 'hide-selected' || selected
+    const canToggleVisibility = filterMode === 'hide-selected' && selected
+    const hasStudyControls = selected
+    const status = progress[item.id] || 'da_studiare'
+    const matchesSearch = !dialogueSearchQuery || `${item.characterName} ${item.text}`.toLowerCase().includes(dialogueSearchQuery)
+    const isBookmarked = bookmarkedDialogueIds.has(item.id)
+    return `<article class="actor-dialogue ${visible ? '' : 'is-hidden'} ${concealed ? 'is-dialogue-hidden' : ''} ${matchesSearch ? '' : 'is-search-hidden'}" data-character="${escapeHtml(item.characterId)}" data-dialogue-id="${escapeHtml(item.id)}" data-dialogue-index="${dialogueIndex}" data-dialogue-search="${escapeHtml(`${item.characterName} ${item.text}`.toLowerCase())}">
+      <div class="actor-dialogue-header">
+        <strong>${escapeHtml(item.characterName)}</strong>
+        <span class="dialogue-meta"><span class="dialogue-index">Battuta ${dialogueIndex + 1}</span><button type="button" class="dialogue-bookmark${isBookmarked ? ' is-active' : ''}" data-dialogue-bookmark title="${isBookmarked ? 'Rimuovi bookmark' : 'Aggiungi bookmark'}" aria-label="${isBookmarked ? 'Rimuovi bookmark' : 'Aggiungi bookmark'}" aria-pressed="${isBookmarked}">${iconSvg('bookmark')}</button></span>
+      </div>
+      <p class="dialogue-copy">${escapeHtml(item.text)}</p>
+      ${hasStudyControls ? `<div class="status-picker" role="group" aria-label="Stato battuta ${dialogueIndex + 1}">
+        ${Object.entries(statusLabels).map(([value, label]) => `<button type="button" title="${label}" aria-label="${label}" data-progress="${escapeHtml(item.id)}" data-status="${value}" class="status-${value} ${status === value ? 'is-active' : ''}" aria-pressed="${status === value}">${iconSvg(statusIcon[value])}</button>`).join('')}
+        ${canToggleVisibility ? `<button type="button" class="reveal-dialogue" data-toggle-dialogue="${escapeHtml(item.id)}" title="${concealed ? 'Mostra' : 'Nascondi'} battuta" aria-label="${concealed ? 'Mostra' : 'Nascondi'} battuta">${iconSvg(concealed ? 'eye' : 'eye-off')}</button>` : ''}
+      </div>` : ''}
+    </article>`
+  }
 
   renderShell(`
     ${renderBrand(scriptTitle, formatPublishedAt(share?.publishedAt || payload.publishedAt), `<div class="share-header-actions"><button type="button" class="share-header-icon" data-refresh-share title="Aggiorna copione" aria-label="Aggiorna copione">${iconSvg('refresh')}</button><button type="button" class="share-header-action" data-signout>Esci</button></div>`)}
@@ -797,33 +824,7 @@ const renderShare = (updateMessage = '', uiState = {}) => {
             <label class="dialogue-search"><span class="search-field-icon">${iconSvg('search')}</span><span class="sr-only">Cerca battuta</span><input type="search" placeholder="Cerca battuta o personaggio" value="${escapeHtml(dialogueSearchQuery)}" data-dialogue-search /></label>
           </div>
           <div class="dialogue-list">
-            ${renderedScriptItems.map(({ kind, item, index, dialogueIndex, dialogueId }) => {
-              if (kind === 'note') {
-                const owner = dialogues.find((dialogue) => dialogue.id === dialogueId)
-                const noteVisible = !owner || filterMode === 'hide-selected' || selectedCharacters.has(owner.characterId)
-                const ownerMatchesSearch = !dialogueSearchQuery || !owner || `${owner.characterName} ${owner.text}`.toLowerCase().includes(dialogueSearchQuery)
-                return renderNote(item, !noteVisible, dialogueId, !ownerMatchesSearch)
-              }
-              const selected = selectedCharacters.has(item.characterId)
-              const concealed = filterMode === 'hide-selected' && selected && !revealedDialogueIds.has(item.id)
-              const visible = filterMode === 'hide-selected' || selected
-              const canToggleVisibility = filterMode === 'hide-selected' && selected
-              const hasStudyControls = selected
-              const status = progress[item.id] || 'da_studiare'
-              const matchesSearch = !dialogueSearchQuery || `${item.characterName} ${item.text}`.toLowerCase().includes(dialogueSearchQuery)
-              const isBookmarked = bookmarkedDialogueIds.has(item.id)
-              return `<article class="actor-dialogue ${visible ? '' : 'is-hidden'} ${concealed ? 'is-dialogue-hidden' : ''} ${matchesSearch ? '' : 'is-search-hidden'}" data-character="${escapeHtml(item.characterId)}" data-dialogue-id="${escapeHtml(item.id)}" data-dialogue-index="${dialogueIndex}" data-dialogue-search="${escapeHtml(`${item.characterName} ${item.text}`.toLowerCase())}">
-                <div class="actor-dialogue-header">
-                  <strong>${escapeHtml(item.characterName)}</strong>
-                  <span class="dialogue-meta"><span class="dialogue-index">Battuta ${dialogueIndex + 1}</span><button type="button" class="dialogue-bookmark${isBookmarked ? ' is-active' : ''}" data-dialogue-bookmark title="${isBookmarked ? 'Rimuovi bookmark' : 'Aggiungi bookmark'}" aria-label="${isBookmarked ? 'Rimuovi bookmark' : 'Aggiungi bookmark'}" aria-pressed="${isBookmarked}">${iconSvg('bookmark')}</button></span>
-                </div>
-                <p class="dialogue-copy">${escapeHtml(item.text)}</p>
-                ${hasStudyControls ? `<div class="status-picker" role="group" aria-label="Stato battuta ${dialogueIndex + 1}">
-                  ${Object.entries(statusLabels).map(([value, label]) => `<button type="button" title="${label}" aria-label="${label}" data-progress="${escapeHtml(item.id)}" data-status="${value}" class="status-${value} ${status === value ? 'is-active' : ''}" aria-pressed="${status === value}">${iconSvg(statusIcon[value])}</button>`).join('')}
-                  ${canToggleVisibility ? `<button type="button" class="reveal-dialogue" data-toggle-dialogue="${escapeHtml(item.id)}" title="${concealed ? 'Mostra' : 'Nascondi'} battuta" aria-label="${concealed ? 'Mostra' : 'Nascondi'} battuta">${iconSvg(concealed ? 'eye' : 'eye-off')}</button>` : ''}
-                </div>` : ''}
-              </article>`
-            }).join('') || '<p class="empty-state">Nessuna battuta disponibile.</p>'}
+            ${renderedScriptItems.map(renderScriptItem).join('') || '<p class="empty-state">Nessuna battuta disponibile.</p>'}
             ${scriptItems.length > renderedScriptItems.length ? '<div class="script-load-sentinel" data-script-sentinel><button type="button" data-load-script>Carica altre battute</button></div>' : ''}
           </div>
         </div>
@@ -965,11 +966,16 @@ const renderShare = (updateMessage = '', uiState = {}) => {
   })
   root.querySelectorAll('[data-toggle-dialogue]').forEach((button) => {
     button.addEventListener('click', () => {
-      const scrollAnchor = captureScriptScrollAnchor()
       const dialogueId = button.dataset.toggleDialogue
-      if (revealedDialogueIds.has(dialogueId)) revealedDialogueIds.delete(dialogueId)
-      else revealedDialogueIds.add(dialogueId)
-      renderShare('', { scrollAnchor })
+      const card = button.closest('[data-dialogue-id]')
+      if (!card) return
+      const revealed = !revealedDialogueIds.has(dialogueId)
+      if (revealed) revealedDialogueIds.add(dialogueId)
+      else revealedDialogueIds.delete(dialogueId)
+      card.classList.toggle('is-dialogue-hidden', !revealed)
+      button.innerHTML = iconSvg(revealed ? 'eye-off' : 'eye')
+      button.title = revealed ? 'Nascondi battuta' : 'Mostra battuta'
+      button.setAttribute('aria-label', button.title)
     })
   })
   root.querySelectorAll('[data-progress]').forEach((button) => {
@@ -1006,23 +1012,37 @@ const renderShare = (updateMessage = '', uiState = {}) => {
       })
     })
   })
-  const loadMoreScript = () => {
-    if (scriptRenderLimit >= scriptItems.length) return
-    const scrollAnchor = captureScriptScrollAnchor()
-    scriptRenderLimit = Math.min(scriptRenderLimit + SCRIPT_BATCH_SIZE, scriptItems.length)
-    renderShare('', { scrollAnchor })
-  }
-  root.querySelector('[data-load-script]')?.addEventListener('click', loadMoreScript)
-  const scriptSentinel = root.querySelector('[data-script-sentinel]')
-  if (scriptSentinel && 'IntersectionObserver' in window) {
-    const observer = new IntersectionObserver((entries) => {
+  let scriptObserver = null
+  const observeScriptSentinel = () => {
+    const nextSentinel = root.querySelector('[data-script-sentinel]')
+    if (!nextSentinel || !('IntersectionObserver' in window)) return
+    scriptObserver?.disconnect()
+    scriptObserver = new IntersectionObserver((entries) => {
       if (!entries.some((entry) => entry.isIntersecting)) return
-      observer.disconnect()
+      scriptObserver?.disconnect()
+      scriptObserver = null
       loadMoreScript()
     }, { rootMargin: '560px 0px' })
-    scriptSentinel.classList.add('is-observed')
-    observer.observe(scriptSentinel)
+    nextSentinel.classList.add('is-observed')
+    scriptObserver.observe(nextSentinel)
   }
+  const loadMoreScript = () => {
+    if (scriptRenderLimit >= scriptItems.length) return
+    const previousLimit = Math.max(SCRIPT_BATCH_SIZE, scriptRenderLimit)
+    scriptRenderLimit = Math.min(previousLimit + SCRIPT_BATCH_SIZE, scriptItems.length)
+    const nextItems = scriptItems.slice(previousLimit, scriptRenderLimit)
+    const list = root.querySelector('.dialogue-list')
+    const sentinel = root.querySelector('[data-script-sentinel]')
+    if (list && nextItems.length) {
+      const html = nextItems.map(renderScriptItem).join('')
+      if (sentinel) sentinel.insertAdjacentHTML('beforebegin', html)
+      else list.insertAdjacentHTML('beforeend', html)
+    }
+    if (scriptRenderLimit >= scriptItems.length) sentinel?.remove()
+    else observeScriptSentinel()
+  }
+  root.querySelector('[data-load-script]')?.addEventListener('click', loadMoreScript)
+  observeScriptSentinel()
   root.querySelector('[data-signout]')?.addEventListener('click', () => void signOut())
   if (uiState.focusCharacterId || uiState.scrollAnchor || Number.isFinite(uiState.scrollY)) {
     requestAnimationFrame(() => {

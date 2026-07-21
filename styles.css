@@ -1032,6 +1032,19 @@ footer {
   color: #1b110b;
 }
 
+.store-import-button {
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.store-import-hint {
+  margin: 12px 0 0;
+  color: var(--faint);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
 .store-info-card {
   display: flex;
   flex-direction: column;

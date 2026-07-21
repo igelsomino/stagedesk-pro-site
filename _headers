@@ -12,6 +12,6 @@
 /share-assets/*
   Cache-Control: no-store
 
-/store/copioni/*.md
-  Content-Type: text/markdown; charset=utf-8
+/store/copioni/*.stagedesk
+  Content-Type: application/vnd.stagedesk.script; charset=utf-8
   Content-Disposition: attachment

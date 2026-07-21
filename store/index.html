@@ -46,9 +46,16 @@
                 <span>Formato StageDesk</span>
                 <span>Note di regia</span>
               </div>
-              <a class="store-download-button" href="./copioni/il-malato-immaginario-riscrittura.md" download>
-                Scarica il copione
-              </a>
+              <button
+                type="button"
+                class="store-download-button store-import-button"
+                data-store-package="./copioni/il-malato-immaginario-riscrittura.stagedesk"
+                data-store-title="Il malato immaginario"
+                hidden
+              >
+                Importa in StageDesk Pro
+              </button>
+              <p class="store-import-hint">Disponibile per l'importazione diretta nell'app StageDesk Pro.</p>
             </article>
             <aside class="store-info-card">
               <span class="store-info-label">Compatibile con</span>
@@ -63,5 +70,30 @@
         </div>
       </section>
     </main>
+    <script>
+      (() => {
+        const importButton = document.querySelector('[data-store-package]')
+        if (!(importButton instanceof HTMLButtonElement)) return
+
+        const parentWindow = window.parent
+        const storeContextMessage = 'stagedesk-store-context'
+        const storeImportMessage = 'stagedesk-store-import'
+
+        window.addEventListener('message', (event) => {
+          if (event.source !== parentWindow || event.data?.type !== storeContextMessage) return
+          importButton.hidden = event.data.canImport !== true
+        })
+
+        importButton.addEventListener('click', () => {
+          const packagePath = importButton.dataset.storePackage
+          if (!packagePath) return
+          parentWindow.postMessage({
+            type: storeImportMessage,
+            url: new URL(packagePath, window.location.href).href,
+            title: importButton.dataset.storeTitle || '',
+          }, '*')
+        })
+      })()
+    </script>
   </body>
 </html>

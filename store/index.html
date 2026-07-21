@@ -3,97 +3,130 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Scarica copioni e risorse pronti per essere importati e utilizzati in StageDesk Pro."
-    />
+    <meta name="description" content="StageDesk Store: copioni pronti per la lettura, la prova e la regia." />
     <meta property="og:title" content="StageDesk Store" />
-    <meta property="og:description" content="Copioni e risorse pronti per essere importati in StageDesk Pro." />
+    <meta property="og:description" content="Scopri copioni originali e importali direttamente in StageDesk Pro." />
     <meta property="og:type" content="website" />
-    <title>StageDesk Store - Copioni e risorse</title>
+    <title>StageDesk Store</title>
     <link rel="icon" href="../assets/stagedesk-pro-icon.png" />
-    <link rel="stylesheet" href="../styles.css?v=20260721-2" />
+    <link rel="stylesheet" href="./store.css?v=20260721-1" />
   </head>
   <body class="store-page">
-    <header class="site-header">
-      <a class="brand" href="/" aria-label="StageDesk Pro">
-        <span class="brand-mark"></span>
-        <span>StageDesk Pro</span>
-      </a>
+    <header class="store-header">
+      <div class="store-header-inner">
+        <a class="store-brand" href="/" aria-label="StageDesk Pro">
+          <span class="store-brand-mark">SD</span>
+          <span>StageDesk <strong>Store</strong></span>
+        </a>
+        <nav class="store-nav" aria-label="Navigazione Store">
+          <a href="#catalogo">Catalogo</a>
+          <a href="#come-funziona">Come funziona</a>
+        </nav>
+        <div class="store-header-actions">
+          <button class="store-button store-button-quiet" id="account-action" type="button">Accedi</button>
+          <button class="store-button store-button-accent" id="publish-action" type="button" hidden>Pubblica</button>
+        </div>
+      </div>
     </header>
 
-    <main class="store-construction">
-      <section class="store-hero" aria-labelledby="store-title">
-        <div class="store-hero-media" aria-hidden="true"></div>
-        <div class="store-hero-overlay" aria-hidden="true"></div>
-        <div class="store-hero-content">
-          <p class="eyebrow">StageDesk Store</p>
-          <h1 id="store-title">Copioni pronti per la prova</h1>
-          <p class="lead">
-            Scarica materiali teatrali originali, già organizzati per personaggi, scene, battute e note di regia.
-            Importali in StageDesk Pro e porta il copione direttamente in prova.
-          </p>
-          <div class="store-catalog" aria-label="Risorse disponibili">
-            <article class="store-product-card">
-              <p class="store-product-kicker">RISORSA GRATUITA</p>
-              <h2>Il malato immaginario</h2>
-              <p>
-                Una riscrittura originale ispirata alla commedia di Molière, con tre atti, nove scene, personaggi,
-                battute e note registiche coerenti per iniziare subito una prova.
-              </p>
-              <div class="store-product-tags" aria-label="Caratteristiche del copione">
-                <span>Testo originale</span>
-                <span>Formato StageDesk</span>
-                <span>Note di regia</span>
-              </div>
-              <button
-                type="button"
-                class="store-download-button store-import-button"
-                data-store-package="./copioni/il-malato-immaginario-riscrittura.stagedesk"
-                data-store-title="Il malato immaginario"
-                hidden
-              >
-                Importa in StageDesk Pro
-              </button>
-              <p class="store-import-hint">Disponibile per l'importazione diretta nell'app StageDesk Pro.</p>
-            </article>
-            <aside class="store-info-card">
-              <span class="store-info-label">Compatibile con</span>
-              <strong>StageDesk Pro</strong>
-              <p>
-                Apri il file dall'applicazione per conservare la struttura del copione, modificare le battute e
-                aggiungere cue multimediali.
-              </p>
-              <span class="store-info-note">Nessun asset esterno richiesto</span>
-            </aside>
+    <main id="store-app" class="store-main">
+      <section class="store-intro" aria-labelledby="store-title">
+        <div>
+          <p class="store-eyebrow">COPIONI PER LA PROVA</p>
+          <h1 id="store-title">La tua prossima scena<br /><em>comincia qui.</em></h1>
+          <p class="store-intro-copy">Un catalogo curato di copioni pronti da leggere, provare e portare sul palco con StageDesk Pro.</p>
+        </div>
+        <div class="store-intro-note">
+          <span class="store-note-dot"></span>
+          <span>Testi, dati e materiali raccolti in un unico posto.</span>
+        </div>
+      </section>
+
+      <section id="catalogo" class="store-catalog-section" aria-labelledby="catalog-title">
+        <div class="store-toolbar">
+          <div>
+            <p class="store-eyebrow">CATALOGO</p>
+            <h2 id="catalog-title">Trova il copione giusto per la tua compagnia.</h2>
           </div>
+          <label class="store-search">
+            <span class="sr-only">Cerca copione</span>
+            <span class="store-search-icon" aria-hidden="true"></span>
+            <input id="catalog-search" type="search" placeholder="Cerca per titolo, autore o tema" autocomplete="off" />
+          </label>
+        </div>
+        <div class="store-filters" aria-label="Filtri catalogo">
+          <label><span>Genere</span><select id="filter-genre"><option value="">Tutti</option></select></label>
+          <label><span>Lingua</span><select id="filter-language"><option value="">Tutte</option></select></label>
+          <label><span>Attori</span><select id="filter-actors"><option value="">Qualsiasi cast</option><option value="1-3">1–3</option><option value="4-8">4–8</option><option value="9-15">9–15</option><option value="16+">16+</option></select></label>
+          <label><span>Ordina</span><select id="filter-sort"><option value="featured">In evidenza</option><option value="newest">Più recenti</option><option value="downloads">Più scaricati</option><option value="rating">Più votati</option></select></label>
+        </div>
+        <p id="catalog-status" class="store-status" role="status">Caricamento catalogo…</p>
+        <div id="catalog-sections"></div>
+      </section>
+
+      <section id="come-funziona" class="store-how-it-works" aria-labelledby="how-title">
+        <div>
+          <p class="store-eyebrow">COME FUNZIONA</p>
+          <h2 id="how-title">Dal catalogo alla prima prova.</h2>
+        </div>
+        <div class="store-steps">
+          <article><span>01</span><h3>Scegli</h3><p>Filtra per numero di attori, durata, genere e lingua.</p></article>
+          <article><span>02</span><h3>Scarica</h3><p>Ottieni il pacchetto completo con copertina e metadati.</p></article>
+          <article><span>03</span><h3>Importa</h3><p>Dentro StageDesk Pro il copione è pronto per essere adattato e provato.</p></article>
         </div>
       </section>
     </main>
-    <script>
-      (() => {
-        const importButton = document.querySelector('[data-store-package]')
-        if (!(importButton instanceof HTMLButtonElement)) return
 
-        const parentWindow = window.parent
-        const storeContextMessage = 'stagedesk-store-context'
-        const storeImportMessage = 'stagedesk-store-import'
+    <dialog id="auth-dialog" class="store-dialog">
+      <form method="dialog" class="store-dialog-card" id="auth-form">
+        <button class="store-dialog-close" value="cancel" aria-label="Chiudi">×</button>
+        <p class="store-eyebrow">ACCOUNT STAGEDESK</p>
+        <h2>Accedi allo Store</h2>
+        <p class="store-dialog-copy">Accedi per pubblicare un copione o lasciare una valutazione.</p>
+        <div class="store-auth-providers">
+          <button type="button" data-provider="google">Google</button>
+          <button type="button" data-provider="github">GitHub</button>
+          <button type="button" data-provider="azure">Azure</button>
+        </div>
+        <div class="store-divider"><span>oppure con e-mail</span></div>
+        <label class="store-field"><span>E-mail</span><input id="auth-email" type="email" required autocomplete="email" /></label>
+        <label class="store-field"><span>Password</span><input id="auth-password" type="password" required autocomplete="current-password" minlength="6" /></label>
+        <button class="store-button store-button-accent store-button-wide" type="submit">Accedi</button>
+        <p id="auth-status" class="store-form-status" role="status"></p>
+      </form>
+    </dialog>
 
-        window.addEventListener('message', (event) => {
-          if (event.source !== parentWindow || event.data?.type !== storeContextMessage) return
-          importButton.hidden = event.data.canImport !== true
-        })
+    <dialog id="upload-dialog" class="store-dialog">
+      <form method="dialog" class="store-dialog-card store-upload-card" id="upload-form">
+        <button class="store-dialog-close" value="cancel" aria-label="Chiudi">×</button>
+        <p class="store-eyebrow">NUOVO TITOLO</p>
+        <h2>Pubblica un copione</h2>
+        <p class="store-dialog-copy">Aggiungi le informazioni che aiutano registi e autori a scegliere il testo.</p>
+        <div class="store-upload-grid">
+          <label class="store-field"><span>Titolo *</span><input name="title" required /></label>
+          <label class="store-field"><span>Sottotitolo</span><input name="subtitle" /></label>
+          <label class="store-field store-field-wide"><span>Descrizione *</span><textarea name="description" rows="3" required></textarea></label>
+          <label class="store-field"><span>Autore *</span><input name="author_name" required /></label>
+          <label class="store-field"><span>Genere</span><input name="genre" value="Teatro" /></label>
+          <label class="store-field"><span>Lingua</span><input name="language" value="Italiano" /></label>
+          <label class="store-field"><span>Numero attori</span><input name="actor_count" type="number" min="0" value="0" /></label>
+          <label class="store-field"><span>Atti</span><input name="act_count" type="number" min="0" value="0" /></label>
+          <label class="store-field"><span>Scene</span><input name="scene_count" type="number" min="0" value="0" /></label>
+          <label class="store-field"><span>Durata (minuti)</span><input name="estimated_minutes" type="number" min="0" value="0" /></label>
+          <label class="store-field"><span>Diritti</span><input name="rights_label" value="Testo originale" /></label>
+          <label class="store-field"><span>Tag</span><input name="tags" placeholder="commedia, 2 attori, breve" /></label>
+          <label class="store-field store-field-wide"><span>Copertina</span><input name="cover" type="file" accept="image/png,image/jpeg,image/webp" /></label>
+          <label class="store-field store-field-wide"><span>Pacchetto StageDesk *</span><input name="package" type="file" accept=".stagedesk,text/plain" required /></label>
+        </div>
+        <button class="store-button store-button-accent store-button-wide" type="submit">Pubblica nel catalogo</button>
+        <p id="upload-status" class="store-form-status" role="status"></p>
+      </form>
+    </dialog>
 
-        importButton.addEventListener('click', () => {
-          const packagePath = importButton.dataset.storePackage
-          if (!packagePath) return
-          parentWindow.postMessage({
-            type: storeImportMessage,
-            url: new URL(packagePath, window.location.href).href,
-            title: importButton.dataset.storeTitle || '',
-          }, '*')
-        })
-      })()
-    </script>
+    <dialog id="detail-dialog" class="store-dialog">
+      <div class="store-dialog-card store-detail-card" id="detail-content"></div>
+    </dialog>
+
+    <script type="module" src="./store.js?v=20260721-1"></script>
   </body>
 </html>

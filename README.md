@@ -24,6 +24,28 @@ Repository sorgente applicazione:
 
 https://github.com/igelsomino/stagedesk-pro
 
+## StageDesk Store
+
+Il percorso `/store/` è un catalogo responsive in stile libreria digitale. La pagina legge i copioni pubblicati
+da Supabase, permette di cercare e filtrare per autore, genere, lingua, numero di attori, atti, scene e durata,
+mostra copertina e metadati, registra i download e consente agli utenti autenticati di lasciare una valutazione.
+
+I copioni vengono conservati nel bucket pubblico `store-packages`, mentre le copertine vengono conservate nel bucket
+pubblico `store-covers`. Le policy limitano caricamento, modifica e cancellazione alla cartella dell'utente autenticato.
+Il catalogo e le valutazioni restano protetti da Row Level Security; i download vengono incrementati tramite la
+funzione SQL `increment_store_download` e le valutazioni tramite `rate_store_script`.
+
+Per attivare il catalogo, eseguire nel SQL Editor di Supabase:
+
+```text
+studio-copione/docs/supabase-store.sql
+```
+
+La Pages Function `/store-config` espone alla pagina solo `SUPABASE_URL` e `SUPABASE_PUBLISHABLE_KEY`, configurati
+come variabili/segreti dell'ambiente Cloudflare Pages. Non inserire mai una service-role key nel repository o nel
+frontend. L'importazione diretta è mostrata solo quando lo Store è aperto dentro StageDesk Pro; in un browser normale
+restano disponibili consultazione, ricerca e download.
+
 ## Pagina attori condivisa
 
 Il percorso `/share/[UID]` è una pagina responsive per l'apprendimento delle battute. Richiede autenticazione

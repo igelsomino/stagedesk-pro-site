@@ -57,18 +57,18 @@
       <h1>Autenticazione completata</h1>
       <p id="status">StageDesk Pro sta completando l'accesso. Puoi chiudere questa finestra dopo l'apertura dell'app.</p>
       <a id="open-app" href="stagedeskpro://auth-callback">Riapri StageDesk Pro</a>
+      <iframe id="app-launch" title="Avvio StageDesk Pro" hidden></iframe>
     </main>
     <script>
       const callbackPath = `${window.location.search || ""}${window.location.hash || ""}`;
       const appUrl = `stagedeskpro://auth-callback${callbackPath}`;
       const link = document.getElementById("open-app");
       const status = document.getElementById("status");
+      const launcher = document.getElementById("app-launch");
       link.href = appUrl;
       window.setTimeout(() => {
-        link.click();
-        window.setTimeout(() => {
-          status.textContent = "StageDesk Pro è stato aperto. Ora puoi chiudere questa finestra del browser.";
-        }, 1200);
+        status.textContent = "Autenticazione completata. StageDesk Pro sta per aprirsi; dopo l'apertura puoi chiudere questa finestra del browser.";
+        launcher.src = appUrl;
       }, 300);
     </script>
   </body>

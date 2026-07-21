@@ -18,6 +18,7 @@ const legalLinks = {
 
 let supabase
 let session
+let userProfile = null
 let share
 let createSupabaseClient
 let cachedAccessUserId = ''
@@ -197,6 +198,131 @@ const renderBrand = (title, subtitle = '', action = '') => `
     ${subtitle ? `<p>${escapeHtml(subtitle)}</p>` : ''}
   </div>
 `
+
+const profileTypesFromMetadata = (user) => {
+  const metadata = user?.user_metadata || {}
+  const values = Array.isArray(metadata.user_types) ? metadata.user_types : [metadata.user_type]
+  return Array.from(new Set(values.filter((value) => profileOptions.some(([option]) => option === value))))
+}
+
+const profileTypesFromRecord = (profile, user) => {
+  const values = Array.isArray(profile?.user_types) && profile.user_types.length
+    ? profile.user_types
+    : profile?.user_type
+      ? [profile.user_type]
+      : profileTypesFromMetadata(user)
+  return Array.from(new Set(values.filter((value) => profileOptions.some(([option]) => option === value))))
+}
+
+const isProfileComplete = (profile, user) => Boolean(
+  profile?.first_name?.trim()
+  && profile.last_name?.trim()
+  && profile.phone?.trim()
+  && profileTypesFromRecord(profile, user).length
+  && profile.privacy_accepted_at,
+)
+
+const profileFormValues = (user, profile) => {
+  const metadata = user?.user_metadata || {}
+  const fullName = String(metadata.full_name || metadata.name || metadata.user_name || '').trim()
+  const [firstNameFromMetadata, ...lastNameFromMetadata] = fullName.split(/\s+/).filter(Boolean)
+  const userTypes = profileTypesFromRecord(profile, user)
+  return {
+    firstName: profile?.first_name || metadata.first_name || firstNameFromMetadata || '',
+    lastName: profile?.last_name || metadata.last_name || lastNameFromMetadata.join(' '),
+    phone: profile?.phone || metadata.phone || '',
+    userTypes: userTypes.length ? userTypes : ['regista'],
+    privacyAccepted: Boolean(profile?.privacy_accepted_at),
+    termsAccepted: Boolean(profile?.terms_accepted_at),
+    marketingConsent: Boolean(profile?.marketing_consent_at),
+  }
+}
+
+const isMissingUserTypesColumn = (error) => String(error?.message || error || '').includes('user_types')
+
+const loadUserProfile = async (user) => {
+  const select = 'id,email,first_name,last_name,phone,user_type,user_types,privacy_accepted_at,terms_accepted_at,marketing_consent_at,created_at,updated_at'
+  const result = await supabase.from('profiles').select(select).eq('id', user.id).maybeSingle()
+  if (result.error && isMissingUserTypesColumn(result.error)) {
+    const legacy = await supabase
+      .from('profiles')
+      .select('id,email,first_name,last_name,phone,user_type,privacy_accepted_at,terms_accepted_at,marketing_consent_at,created_at,updated_at')
+      .eq('id', user.id)
+      .maybeSingle()
+    if (legacy.error) throw legacy.error
+    return legacy.data
+  }
+  if (result.error) throw result.error
+  return result.data
+}
+
+const syncShareUserMetadata = async (user, values, acceptedAt) => {
+  const existing = user.user_metadata || {}
+  const { error } = await supabase.auth.updateUser({
+    data: {
+      ...existing,
+      first_name: values.firstName.trim(),
+      last_name: values.lastName.trim(),
+      phone: values.phone.trim(),
+      user_type: values.userTypes[0],
+      user_types: values.userTypes,
+      privacy_accepted_at: existing.privacy_accepted_at || acceptedAt,
+      terms_accepted_at: values.termsAccepted ? (existing.terms_accepted_at || acceptedAt) : null,
+      marketing_consent_at: values.marketingConsent ? (existing.marketing_consent_at || acceptedAt) : null,
+    },
+  })
+  if (error) throw error
+}
+
+const wireProfileSelector = (container) => {
+  const profileSummary = container.querySelector('[data-profile-summary]')
+  const profileCheckboxes = Array.from(container.querySelectorAll('[data-profile-checkbox]'))
+  const updateProfileSummary = () => {
+    const labels = profileCheckboxes
+      .filter((input) => input.checked)
+      .map((input) => input.parentElement?.textContent?.trim())
+      .filter(Boolean)
+    if (profileSummary) profileSummary.textContent = labels.length ? labels.join(', ') : 'Seleziona uno o più profili'
+  }
+  profileCheckboxes.forEach((input) => input.addEventListener('change', updateProfileSummary))
+  updateProfileSummary()
+}
+
+const renderCompleteProfile = (message = '') => {
+  const values = profileFormValues(session?.user, userProfile)
+  renderShell(`
+    ${renderBrand('Completa il profilo', 'Inserisci i dati richiesti per continuare.')}
+    <section class="share-card auth-card profile-completion-card">
+      <form class="share-form" data-profile-completion-form>
+        <div class="share-profile-fields">
+          <label>Nome<input name="first_name" type="text" autocomplete="given-name" value="${escapeHtml(values.firstName)}" required /></label>
+          <label>Cognome<input name="last_name" type="text" autocomplete="family-name" value="${escapeHtml(values.lastName)}" required /></label>
+          <label>Recapito telefonico<input name="phone" type="tel" autocomplete="tel" value="${escapeHtml(values.phone)}" required /></label>
+          <div class="share-profile-group">
+            <span class="share-profile-label">Profilo</span>
+            <details class="share-profile-dropdown">
+              <summary data-profile-summary></summary>
+              <div class="share-choice-list">
+                ${profileOptions.map(([value, label]) => `<label class="share-choice"><input data-profile-checkbox name="user_type" type="checkbox" value="${value}" ${values.userTypes.includes(value) ? 'checked' : ''} />${label}</label>`).join('')}
+              </div>
+            </details>
+          </div>
+          <label class="share-check"><input name="privacy_accepted" type="checkbox" value="yes" ${values.privacyAccepted ? 'checked' : ''} required /><span>Accetto l’<a href="${legalLinks.privacy}" target="_blank" rel="noreferrer">informativa privacy</a></span></label>
+          <label class="share-check"><input name="terms_accepted" type="checkbox" value="yes" ${values.termsAccepted ? 'checked' : ''} /><span>Accetto i <a href="${legalLinks.terms}" target="_blank" rel="noreferrer">termini d’uso</a></span></label>
+          <label class="share-check"><input name="marketing_consent" type="checkbox" value="yes" ${values.marketingConsent ? 'checked' : ''} /><span>Acconsento alle comunicazioni informative</span></label>
+        </div>
+        <button class="share-primary" type="submit">${iconSvg('login')}Salva e continua</button>
+      </form>
+      <p class="share-message" data-message data-tone="${message ? 'error' : ''}">${escapeHtml(message)}</p>
+    </section>
+  `)
+  wireProfileSelector(root)
+  root.querySelectorAll('.share-check a').forEach((link) => link.addEventListener('click', (event) => event.stopPropagation()))
+  root.querySelector('[data-profile-completion-form]')?.addEventListener('submit', (event) => {
+    event.preventDefault()
+    void submitProfileCompletion(event.currentTarget)
+  })
+}
 
 const renderAuth = (message = '') => {
   if (passwordRecoveryMode) {
@@ -932,6 +1058,98 @@ async function signInWithProvider(provider) {
   if (error) renderAuth(error.message)
 }
 
+const submitProfileCompletion = async (form) => {
+  const formData = new FormData(form)
+  const values = {
+    firstName: String(formData.get('first_name') || '').trim(),
+    lastName: String(formData.get('last_name') || '').trim(),
+    phone: String(formData.get('phone') || '').trim(),
+    userTypes: formData.getAll('user_type').map((value) => String(value)).filter(Boolean),
+    privacyAccepted: formData.get('privacy_accepted') === 'yes',
+    termsAccepted: formData.get('terms_accepted') === 'yes',
+    marketingConsent: formData.get('marketing_consent') === 'yes',
+  }
+  if (!values.firstName || !values.lastName || !values.phone) {
+    renderCompleteProfile('Nome, cognome e recapito telefonico sono obbligatori.')
+    return
+  }
+  if (!values.userTypes.length) {
+    renderCompleteProfile('Seleziona almeno un profilo.')
+    return
+  }
+  if (!values.privacyAccepted) {
+    renderCompleteProfile('Accettazione privacy obbligatoria.')
+    return
+  }
+  if (!session?.user) {
+    renderAuth('Sessione non disponibile. Accedi di nuovo.')
+    return
+  }
+
+  setMessage('Salvataggio profilo in corso...')
+  const acceptedAt = new Date().toISOString()
+  const payload = {
+    id: session.user.id,
+    email: session.user.email || '',
+    first_name: values.firstName,
+    last_name: values.lastName,
+    phone: values.phone,
+    user_type: values.userTypes[0],
+    user_types: values.userTypes,
+    privacy_accepted_at: userProfile?.privacy_accepted_at || acceptedAt,
+    terms_accepted_at: values.termsAccepted ? (userProfile?.terms_accepted_at || acceptedAt) : null,
+    marketing_consent_at: values.marketingConsent ? (userProfile?.marketing_consent_at || acceptedAt) : null,
+  }
+  const { data, error } = await supabase.from('profiles').upsert(payload).select().single()
+  if (error) {
+    renderCompleteProfile(isMissingUserTypesColumn(error)
+      ? 'Schema profili Supabase non aggiornato: esegui la migrazione docs/supabase-auth.sql.'
+      : error.message)
+    return
+  }
+  try {
+    await syncShareUserMetadata(session.user, values, acceptedAt)
+  } catch (error) {
+    renderCompleteProfile(error.message || String(error))
+    return
+  }
+  userProfile = data
+  await continueWithAuthenticatedSession(session)
+}
+
+const continueWithAuthenticatedSession = async (nextSession) => {
+  session = nextSession
+  if (!session) {
+    userProfile = null
+    clearCachedShareAccess()
+    renderAuth()
+    return
+  }
+  if (passwordRecoveryMode) {
+    renderPasswordRecovery()
+    return
+  }
+  try {
+    userProfile = await loadUserProfile(session.user)
+  } catch (error) {
+    renderCompleteProfile(`Profilo non disponibile: ${error.message || String(error)}`)
+    return
+  }
+  if (!isProfileComplete(userProfile, session.user)) {
+    renderCompleteProfile()
+    return
+  }
+  const cachedShare = readCachedAccess()
+  if (cachedShare) {
+    share = cachedShare.share
+    if (cachedShare.hasPin) await refreshSharedScript(true)
+    else renderShare('Accesso ripristinato. Premi aggiorna per riconvalidare il PIN.')
+  } else {
+    share = undefined
+    renderPinForm()
+  }
+}
+
 async function verifyPin(form) {
   const pin = String(new FormData(form).get('pin') || '').replace(/\D/g, '')
   setMessage('Verifica PIN in corso...')
@@ -958,6 +1176,7 @@ async function verifyPin(form) {
 async function signOut(message = '') {
   clearCachedShareAccess()
   await supabase.auth.signOut()
+  userProfile = null
   share = undefined
   clearSelectedCharacters()
   selectionInitialized = false
@@ -1004,16 +1223,7 @@ async function bootstrap() {
   passwordRecoveryMode = isPasswordRecoveryCallback()
   const { data } = await supabase.auth.getSession()
   session = data.session
-  if (session) {
-    const cachedShare = readCachedAccess()
-    if (passwordRecoveryMode) renderPasswordRecovery()
-    else if (cachedShare) {
-      share = cachedShare.share
-      if (cachedShare.hasPin) await refreshSharedScript(true)
-      else renderShare('Accesso ripristinato. Premi aggiorna per riconvalidare il PIN.')
-    }
-    else renderPinForm()
-  }
+  if (session) await continueWithAuthenticatedSession(session)
   else if (passwordRecoveryMode) renderShell(`${renderBrand('Reimposta password', 'Verifica del collegamento in corso...')}<section class="share-card auth-card"><p class="share-message">Attendi il completamento dell’autenticazione.</p></section>`)
   else renderAuth()
   supabase.auth.onAuthStateChange((event, nextSession) => {
@@ -1023,21 +1233,10 @@ async function bootstrap() {
       renderPasswordRecovery()
       return
     }
-    if (session) {
-      const cachedShare = readCachedAccess()
-      if (cachedShare) {
-        if (!share) {
-          share = cachedShare.share
-          if (cachedShare.hasPin) void refreshSharedScript(true)
-          else renderShare('Accesso ripristinato. Premi aggiorna per riconvalidare il PIN.')
-        }
-      } else {
-        share = undefined
-        renderPinForm()
-      }
-    }
+    if (session) void continueWithAuthenticatedSession(session)
     else {
       clearCachedShareAccess()
+      userProfile = null
       share = undefined
       renderAuth()
     }

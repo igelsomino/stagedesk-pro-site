@@ -1,9 +1,9 @@
-const CACHE_NAME = 'stagedesk-share-v67'
+const CACHE_NAME = 'stagedesk-share-v68'
 const APP_SHELL = [
   '/share/',
   '/share/service-worker.js',
-  '/share-assets/share.css?v=20260721-67',
-  '/share-assets/share-20260721-67.js',
+  '/share-assets/share.css?v=20260721-68',
+  '/share-assets/share-20260721-68.js',
   '/assets/stagedesk-pro-icon.png',
 ]
 

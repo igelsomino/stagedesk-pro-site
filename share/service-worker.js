@@ -3,7 +3,7 @@ const APP_SHELL = [
   '/share/',
   '/share/service-worker.js',
   '/share-assets/share.css?v=20260721-67',
-  '/share-assets/share.js?v=20260721-67',
+  '/share-assets/share-20260721-67.js',
   '/assets/stagedesk-pro-icon.png',
 ]
 

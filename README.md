@@ -46,6 +46,20 @@ come variabili/segreti dell'ambiente Cloudflare Pages. Non inserire mai una serv
 frontend. L'importazione diretta è mostrata solo quando lo Store è aperto dentro StageDesk Pro; in un browser normale
 restano disponibili consultazione, ricerca e download.
 
+### Inizializzazione del copione demo
+
+Il copione demo `Il malato immaginario` viene caricato nel catalogo e nel bucket con lo script
+`scripts/seed-store-demo.mjs`. Eseguirlo dalla root del repository con variabili d'ambiente temporanee:
+
+```sh
+SUPABASE_URL="https://<project>.supabase.co" \\
+SUPABASE_SERVICE_ROLE_KEY="<chiave solo nell'ambiente locale>" \\
+node scripts/seed-store-demo.mjs
+```
+
+La chiave di servizio non deve essere committata, inserita nel frontend o configurata come variabile pubblica di
+Cloudflare Pages. Lo script è idempotente: aggiorna il record se il percorso del pacchetto esiste già.
+
 ## Pagina attori condivisa
 
 Il percorso `/share/[UID]` è una pagina responsive per l'apprendimento delle battute. Richiede autenticazione

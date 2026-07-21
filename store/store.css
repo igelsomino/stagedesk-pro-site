@@ -74,6 +74,8 @@ a { color: inherit; }
 .store-book-author { margin: 5px 0 10px; color: var(--store-muted); font-size: 12px; }
 .store-book-facts { display: flex; flex-wrap: wrap; gap: 5px; color: var(--store-faint); font-size: 10px; }
 .store-book-facts span { padding: 4px 6px; border: 1px solid var(--store-line); border-radius: 5px; }
+.store-card-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.store-card-actions .store-button { min-height: 30px; padding: 0 10px; font-size: 11px; }
 .store-rating { color: #f4be4f; letter-spacing: .05em; }
 
 .store-how-it-works { display: grid; grid-template-columns: minmax(230px, .7fr) minmax(0, 1.3fr); gap: 55px; padding: 70px 0 100px; border-top: 1px solid var(--store-line); }

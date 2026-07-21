@@ -78,6 +78,9 @@ function coverMarkup(book, className = 'store-book-cover') {
 }
 
 function bookCard(book) {
+  const importButton = state.canImport && book.packageUrl
+    ? `<button type="button" class="store-button store-button-quiet store-card-import" data-import-card="${escapeHtml(book.id)}">Importa</button>`
+    : ''
   return `<article class="store-book-card">
     <button type="button" class="store-book-cover-button" data-detail="${escapeHtml(book.id)}" aria-label="Apri ${escapeHtml(book.title)}">${coverMarkup(book)}</button>
     <div class="store-book-meta">
@@ -88,6 +91,7 @@ function bookCard(book) {
         <span>${book.estimatedMinutes || '—'} min</span>
         <span class="store-rating" aria-label="${book.averageRating.toFixed(1)} su 5">${stars(book.averageRating)}</span>
       </div>
+      <div class="store-card-actions">${importButton}<button type="button" class="store-button store-button-quiet" data-detail="${escapeHtml(book.id)}">Dettagli</button></div>
     </div>
   </article>`
 }
@@ -310,6 +314,10 @@ async function initSupabase() {
 window.addEventListener('message', (event) => {
   if (event.source !== window.parent || event.data?.type !== CONTEXT_MESSAGE) return
   state.canImport = event.data.canImport === true
+  renderSections()
+  if (state.selectedBook && $('#detail-dialog')?.open) {
+    $('#detail-content').innerHTML = detailMarkup(state.selectedBook)
+  }
 })
 
 $('#account-action').addEventListener('click', async () => {
@@ -340,6 +348,12 @@ $('#upload-form').addEventListener('submit', submitUpload)
 $('#catalog-search').addEventListener('input', updateFilters)
 document.querySelectorAll('.store-filters select').forEach((select) => select.addEventListener('change', updateFilters))
 $('#catalog-sections').addEventListener('click', (event) => {
+  const importer = event.target.closest('[data-import-card]')
+  if (importer) {
+    const book = state.books.find((item) => item.id === importer.dataset.importCard)
+    if (book) sendImport(book)
+    return
+  }
   const detailButton = event.target.closest('[data-detail]')
   if (detailButton) {
     const book = state.books.find((item) => item.id === detailButton.dataset.detail)

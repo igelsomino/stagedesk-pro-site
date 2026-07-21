@@ -196,3 +196,169 @@ Una prescrizione così severa non l'avevo mai ricevuta. Va bene: proviamoci insi
 :::regia{id="note-finale" type="movement" color="green" title="Movimento" sceneId="atto-2-scena-2" anchorId="note-finale"}
 Tutti si avvicinano al centro. Argan lascia il taccuino sul tavolo e attraversa la stanza con gli altri. Buio morbido sul gruppo.
 ::
+
+## Scena 3
+
+:::regia{id="note-atto-2-scena-3-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-2-scena-3" anchorId="note-atto-2-scena-3-personaggi"}
+In scena: ARGAN, NOTAIO, SIGNOR DIAFOIRUS e TOINETTE. Il Notaio prepara il tavolo per il contratto mentre Diafoirus controlla i propri appunti.
+::
+
+:::regia{id="note-atto-2-scena-3-prop" type="prop" color="brown" title="Oggetto di scena" sceneId="atto-2-scena-3" anchorId="note-atto-2-scena-3-prop"}
+Sul tavolo vengono disposti contratto, calamaio, penna e un grande timbro. Il timbro può diventare un oggetto comico, usato con eccessiva solennità.
+::
+
+:::battuta{id="battuta-atto-2-scena-3-1" characterId="notaio" character="NOTAIO" sceneId="atto-2-scena-3"}
+Ho preparato il contratto in tre copie: una per chi decide, una per chi obbedisce e una per chi spera che tutto finisca presto.
+::
+
+:::battuta{id="battuta-atto-2-scena-3-2" characterId="argan" character="ARGAN" sceneId="atto-2-scena-3"}
+La terza copia è per Toinette. Lei ha sempre bisogno di qualcosa da leggere mentre io mi curo.
+::
+
+:::battuta{id="battuta-atto-2-scena-3-3" characterId="toinette" character="TOINETTE" sceneId="atto-2-scena-3"}
+La leggerò ad alta voce, così anche la casa potrà sapere chi sta per firmare.
+::
+
+:::regia{id="note-atto-2-scena-3-tone" type="tone" color="purple" title="Tono" sceneId="atto-2-scena-3" anchorId="note-atto-2-scena-3-tone"}
+La scena deve avere la precisione di una cerimonia e il ritmo di una farsa. Il Notaio resta professionale; Toinette fa saltare la solennità con osservazioni sempre pertinenti.
+::
+
+:::battuta{id="battuta-atto-2-scena-3-4" characterId="diafoirus" character="SIGNOR DIAFOIRUS" sceneId="atto-2-scena-3"}
+La famiglia ha bisogno di ordine. Un matrimonio ben ordinato è già metà di una buona diagnosi.
+::
+
+:::battuta{id="battuta-atto-2-scena-3-5" characterId="toinette" character="TOINETTE" sceneId="atto-2-scena-3"}
+E l'altra metà?
+::
+
+:::battuta{id="battuta-atto-2-scena-3-6" characterId="diafoirus" character="SIGNOR DIAFOIRUS" sceneId="atto-2-scena-3"}
+La firma del paziente.
+::
+
+:::battuta{id="battuta-atto-2-scena-3-7" characterId="toinette" character="TOINETTE" sceneId="atto-2-scena-3"}
+Allora fate attenzione: qui i pazienti sono almeno tre e nessuno vuole essere quello indicato nel contratto.
+::
+
+# Atto 3
+
+## Scena 1
+
+:::regia{id="note-atto-3-scena-1-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-3-scena-1" anchorId="note-atto-3-scena-1-personaggi"}
+In scena: TOINETTE e BERALDO. Argan ascolta nascosto dietro una tenda o appena fuori dalla porta, senza essere subito visto.
+::
+
+:::regia{id="note-atto-3-scena-1-position" type="position" color="blue" title="Posizione" sceneId="atto-3-scena-1" anchorId="note-atto-3-scena-1-position"}
+Toinette e Beraldo lavorano ai lati del tavolo, lasciando un corridoio centrale libero. Quel corridoio sarà la strada che Argan dovrà attraversare quando deciderà di uscire allo scoperto.
+::
+
+:::battuta{id="battuta-atto-3-scena-1-1" characterId="toinette" character="TOINETTE" sceneId="atto-3-scena-1"}
+Non serve convincere Argan con un discorso. Gli basta sentire che il mondo continua a muoversi senza chiedergli un certificato.
+::
+
+:::battuta{id="battuta-atto-3-scena-1-2" characterId="beraldo" character="BERALDO" sceneId="atto-3-scena-1"}
+E se non esce?
+::
+
+:::battuta{id="battuta-atto-3-scena-1-3" characterId="toinette" character="TOINETTE" sceneId="atto-3-scena-1"}
+Allora porteremo il mondo da lui. Una sedia, una finestra aperta e una domanda che non abbia il sapore di una medicina.
+::
+
+:::regia{id="note-atto-3-scena-1-movement" type="movement" color="green" title="Movimento" sceneId="atto-3-scena-1" anchorId="note-atto-3-scena-1-movement"}
+Toinette apre lentamente una finestra o una tenda. Beraldo sposta una sedia verso la luce. Argan rimane nascosto ancora per due battute, poi ascolta senza più fingere.
+::
+
+:::battuta{id="battuta-atto-3-scena-1-4" characterId="beraldo" character="BERALDO" sceneId="atto-3-scena-1"}
+Forse la cura non è smettere di avere paura, ma smettere di darle sempre la prima parola.
+::
+
+:::battuta{id="battuta-atto-3-scena-1-5" characterId="toinette" character="TOINETTE" sceneId="atto-3-scena-1"}
+La seconda parola, invece, può essere per Angelica. Quella non ha bisogno di ricette.
+::
+
+## Scena 2
+
+:::regia{id="note-atto-3-scena-2-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-3-scena-2" anchorId="note-atto-3-scena-2-personaggi"}
+In scena: ANGELICA, ARGAN e BERALDO. Angelica entra con una lettera non ancora aperta.
+::
+
+:::regia{id="note-atto-3-scena-2-light" type="light" color="yellow" title="Luce" sceneId="atto-3-scena-2" anchorId="note-atto-3-scena-2-light"}
+La luce si concentra sulla lettera e sui volti. Il resto della scena rimane disponibile, senza creare un effetto melodrammatico.
+::
+
+:::battuta{id="battuta-atto-3-scena-2-1" characterId="angelica" character="ANGELICA" sceneId="atto-3-scena-2"}
+Questa lettera dice che il mio futuro dovrebbe essere deciso entro stasera.
+::
+
+:::battuta{id="battuta-atto-3-scena-2-2" characterId="argan" character="ARGAN" sceneId="atto-3-scena-2"}
+Entro stasera? È un termine troppo vicino. Per una decisione così importante servirebbe almeno una settimana di riposo.
+::
+
+:::battuta{id="battuta-atto-3-scena-2-3" characterId="beraldo" character="BERALDO" sceneId="atto-3-scena-2"}
+E durante quella settimana Diafoirus sceglierebbe per te ogni ora, fino a quando non resterebbe più nulla da decidere.
+::
+
+:::battuta{id="battuta-atto-3-scena-2-4" characterId="argan" character="ARGAN" sceneId="atto-3-scena-2"}
+Ho passato tanto tempo a proteggermi che ho finito per non proteggere nessuno.
+::
+
+:::regia{id="note-atto-3-scena-2-tone" type="tone" color="purple" title="Tono" sceneId="atto-3-scena-2" anchorId="note-atto-3-scena-2-tone"}
+Argan raggiunge il primo momento di consapevolezza senza perdere la sua natura comica. La frase più sincera deve essere seguita da un piccolo gesto pratico, quasi imbarazzato.
+::
+
+:::battuta{id="battuta-atto-3-scena-2-5" characterId="angelica" character="ANGELICA" sceneId="atto-3-scena-2"}
+Allora proteggimi lasciandomi scegliere.
+::
+
+:::battuta{id="battuta-atto-3-scena-2-6" characterId="argan" character="ARGAN" sceneId="atto-3-scena-2"}
+Va bene. Ma se la scelta mi farà stare male, voglio almeno una sedia comoda.
+::
+
+## Scena 3
+
+:::regia{id="note-atto-3-scena-3-personaggi" type="characters" color="blue" title="Personaggi in scena" sceneId="atto-3-scena-3" anchorId="note-atto-3-scena-3-personaggi"}
+In scena: tutti i personaggi. Il Notaio porta il contratto già firmato a metà; Diafoirus conserva il proprio tono ufficiale, ma perde gradualmente il controllo della situazione.
+::
+
+:::regia{id="note-atto-3-scena-3-movement" type="movement" color="green" title="Movimento" sceneId="atto-3-scena-3" anchorId="note-atto-3-scena-3-movement"}
+Il gruppo si dispone a semicerchio. Argan non torna al centro del tavolo: rimane con gli altri, leggermente in avanti, come chi sta imparando a stare nel mondo.
+::
+
+:::battuta{id="battuta-atto-3-scena-3-1" characterId="notaio" character="NOTAIO" sceneId="atto-3-scena-3"}
+Devo sapere se il contratto resta valido.
+::
+
+:::battuta{id="battuta-atto-3-scena-3-2" characterId="toinette" character="TOINETTE" sceneId="atto-3-scena-3"}
+Resta valido il diritto di cambiare idea. È la clausola che nessuno scrive e tutti utilizzano.
+::
+
+:::battuta{id="battuta-atto-3-scena-3-3" characterId="diafoirus" character="SIGNOR DIAFOIRUS" sceneId="atto-3-scena-3"}
+Senza un metodo, la famiglia rischia di vivere secondo il caso.
+::
+
+:::battuta{id="battuta-atto-3-scena-3-4" characterId="beraldo" character="BERALDO" sceneId="atto-3-scena-3"}
+Il caso è già nella stanza. Il metodo può almeno insegnargli a non fare tutto da solo.
+::
+
+:::regia{id="note-atto-3-scena-3-object" type="prop" color="brown" title="Oggetto di scena" sceneId="atto-3-scena-3" anchorId="note-atto-3-scena-3-object"}
+Argan prende la campanella, la osserva e la ripone nel cassetto invece di suonarla. È il gesto concreto che chiude il suo rapporto con l'allarme continuo.
+::
+
+:::battuta{id="battuta-atto-3-scena-3-5" characterId="argan" character="ARGAN" sceneId="atto-3-scena-3"}
+Oggi non ho bisogno di chiamare nessuno. Se mi sentirò solo, parlerò con voi.
+::
+
+:::battuta{id="battuta-atto-3-scena-3-6" characterId="toinette" character="TOINETTE" sceneId="atto-3-scena-3"}
+È una cura costosa: richiede tempo, pazienza e persone che rispondano davvero.
+::
+
+:::battuta{id="battuta-atto-3-scena-3-7" characterId="angelica" character="ANGELICA" sceneId="atto-3-scena-3"}
+Però funziona meglio quando si prende insieme.
+::
+
+:::battuta{id="battuta-atto-3-scena-3-8" characterId="argan" character="ARGAN" sceneId="atto-3-scena-3"}
+Allora cominciamo da una passeggiata. E dopo cena, se proprio serve, controlleremo una sola volta il taccuino.
+::
+
+:::regia{id="note-atto-3-scena-3-finale" type="tone" color="purple" title="Tono" sceneId="atto-3-scena-3" anchorId="note-atto-3-scena-3-finale"}
+Il finale deve essere corale e luminoso, senza cancellare la fragilità di Argan. Una breve risata comune accompagna l'uscita; il taccuino resta chiuso sul tavolo.
+::

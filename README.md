@@ -64,6 +64,31 @@ preparati nella cartella locale `FULL_SOURCE_DIR`, mantiene l'ordine di atti, sc
 la tabella dei personaggi e aggiunge quattro note originali per ogni scena (personaggi in scena, posizione, movimento
 e tono). I pacchetti generati hanno estensione `.stagedesk` e sono caricati esclusivamente nello Storage Supabase.
 
+### Verifica struttura dei copioni
+
+I pacchetti sono stati ricontrollati sulle edizioni originali indicate nel campo `Fonte` di ciascun file. Il controllo
+verifica la sequenza degli atti e delle scene, l'assenza dei numeri editoriali residui e il riconoscimento delle
+etichette dei personaggi anche quando la fonte usa abbreviazioni. L'inventario corrente è:
+
+| Copione | Atti | Scene | Ripartizione per atto |
+| --- | ---: | ---: | --- |
+| Il malato immaginario | 3 | 16 | 4 + 4 + 8 |
+| Il servitore di due padroni | 3 | 59 | 22 + 20 + 17 |
+| Romeo e Giulietta | 5 | 24 | 5 + 6 + 5 + 5 + 3 |
+| Amleto | 5 | 20 | 5 + 2 + 4 + 7 + 2 |
+| La tempesta | 5 | 9 | 2 + 2 + 3 + 1 + 1 |
+| Macbeth | 5 | 28 | 7 + 4 + 6 + 3 + 8 |
+| L'avaro | 1 | 16 | 16 |
+| Casa di bambola | 3 | 31 | 14 + 12 + 5 |
+| Don Giovanni | 2 | 39 | 21 + 18 |
+| La commedia degli equivoci | 5 | 11 | 2 + 2 + 2 + 4 + 1 |
+
+Per `Don Giovanni` la struttura è stata verificata sull'[atto primo di Wikisource](https://it.wikisource.org/wiki/Don_Giovanni/Atto_primo)
+e sull'[atto secondo di Wikisource](https://it.wikisource.org/wiki/Don_Giovanni/Atto_secondo): il primo atto arriva
+alla scena XXI e il secondo alla scena ultima, numerata XVIII nel pacchetto StageDesk. Le traduzioni italiane già
+presenti nelle fonti sono state mantenute; la correzione riguarda segmentazione, abbreviazioni dei personaggi,
+numeri editoriali e metadati del catalogo.
+
 Il catalogo viene caricato nel bucket con lo script
 `scripts/seed-store-demo.mjs`. I pacchetti `.stagedesk` devono essere disponibili solo nella cartella locale indicata da
 `STORE_PACKAGE_DIR`: non vengono inclusi nel deploy Cloudflare e vengono serviti esclusivamente dal bucket Supabase.

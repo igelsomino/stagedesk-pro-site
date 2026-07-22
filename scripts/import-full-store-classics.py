@@ -99,10 +99,22 @@ def source_lines(work: dict) -> list[str]:
 
 
 def find_actual_acts(lines: list[str], expected: int) -> list[tuple[int, str]]:
-    matches = [(index, match.group("number")) for index, line in enumerate(lines) if (match := ACT_RE.match(line))]
-    if len(matches) > expected:
-        matches = matches[-expected:]
-    return matches
+    matches = [
+        (index, match.group("number"), line)
+        for index, line in enumerate(lines)
+        if (match := ACT_RE.match(line))
+    ]
+    # Some public-domain editions concatenate the source text with a table of
+    # contents or navigation headings. Prefer the all-caps headings used by
+    # the actual text when enough of them are available; otherwise retain the
+    # historical last-N fallback used by the other editions.
+    strong_matches = [
+        (index, number, line)
+        for index, number, line in matches
+        if line.strip() == line.strip().upper()
+    ]
+    selected = strong_matches if len(strong_matches) >= expected else matches
+    return [(index, number) for index, number, _ in selected[-expected:]]
 
 
 def heading_number(value: str) -> str:

@@ -58,15 +58,32 @@ def normalize(value: str) -> str:
     return value
 
 
-def clean_lines(text: str) -> list[str]:
+def clean_lines(text: str, strip_numbered_notes: bool = False) -> list[str]:
     lines: list[str] = []
+    skipping_numbered_note = False
     for raw in text.replace("\r", "").replace("\f", "\n").splitlines():
         line = raw.strip()
         line = re.sub(r"\s+", " ", line)
         if not line or re.fullmatch(r"\d+", line):
+            skipping_numbered_note = False
             continue
+        if strip_numbered_notes:
+            # Liber Liber places numbered translator notes in separate
+            # paragraphs. Keep the play text, discard the note paragraph.
+            if re.match(r"^\d{1,2}\s", line):
+                skipping_numbered_note = True
+                continue
+            if skipping_numbered_note:
+                continue
         if re.fullmatch(r"(?:nota|note)\s*\d+", line, re.IGNORECASE):
             continue
+        if strip_numbered_notes:
+            # Remove inline footnote markers left by the PDF text layer,
+            # while preserving the surrounding sentence.
+            line = re.sub(r"\s+[1-9]\d?\s*$", "", line)
+            line = re.sub(r"(?<=[A-Za-zÀ-ÿ])(?:[1-9]\d?)(?=(?:\s|[.,;:!?…]))", "", line)
+            line = re.sub(r"(?<=[.,;:!?…”»)\]])(?:[1-9]\d?)(?=\s|[.,;:!?…]|$)", "", line)
+            line = re.sub(r"(?<=[,.;:!?…])\s+[1-9]\d?\s+(?=[A-Za-zÀ-ÿ])", " ", line)
         lines.append(line)
     return lines
 
@@ -74,7 +91,10 @@ def clean_lines(text: str) -> list[str]:
 def source_lines(work: dict) -> list[str]:
     result: list[str] = []
     for filename in work["source_files"]:
-        result.extend(clean_lines((SOURCE_DIR / filename).read_text(encoding="utf-8", errors="ignore")))
+        result.extend(clean_lines(
+            (SOURCE_DIR / filename).read_text(encoding="utf-8", errors="ignore"),
+            strip_numbered_notes=work.get("strip_numbered_notes", False),
+        ))
     return result
 
 
@@ -336,7 +356,23 @@ WORKS = [
         "source_files": ["commedia-real.txt"], "source_url": "https://liberliber.it/autori/autori-s/william-shakespeare/la-commedia-degli-equivoci/",
         "attribution": "testo di William Shakespeare nella traduzione di Goffredo Raponi, tratto dall'edizione integrale digitale di Liber Liber, distribuita con licenza Creative Commons BY-NC-SA 4.0",
         "characters": ["ANTIFOLI DI SIRACUSA", "ANTIFOLI DI EFESO", "DROMI DI SIRACUSA", "DROMI DI EFESO", "ADRIANA", "LUCIANA", "EMILIA", "ANGELO", "EGEONE", "DUCA", "PINCH", "BALTASAR", "CORO", "TUTTI"],
-        "aliases": {},
+        "aliases": {
+            "ANTIFOLI DI SIRACUSA": ["ANTIFOLO DI S.", "ANTIFOLO DI S", "ANTIFOLO DI SIRA- CUSA", "ANTIFOLO DI SIRACUSA"],
+            "ANTIFOLI DI EFESO": ["ANTIFOLO D’E.", "ANTIFOLO D'E.", "ANTIFOLO D’E", "ANTIFOLO D'E", "ANTIFOLO DI EFESO"],
+            "DROMI DI SIRACUSA": ["DROMIO DI S.", "DROMIO DI S", "DROMIO DI SIRA- CUSA", "DROMIO DI SIRACUSA"],
+            "DROMI DI EFESO": ["DROMIO D’E.", "DROMIO D'E.", "DROMIO D’E", "DROMIO D'E", "DROMIO DI EFESO"],
+            "DUCA": ["DUCA SOLINO"],
+            "BALTASAR": ["BALDASSARRE"],
+            "PINCH": ["PINZA"],
+            "CORO": ["CORO DEI CITTADINI"],
+            "PRIMO MERCANTE": ["1° MERCANTE", "1O MERCANTE", "PRIMO MERCANTE"],
+            "SECONDO MERCANTE": ["2° MERCANTE", "2O MERCANTE", "SECONDO MERCANTE"],
+            "ETERA": ["ETÈRA", "ETERA", "ETÈRA DI EFESO"],
+            "UFFICIALE": ["UFFICIALE DI POLIZIA", "CARCERIERE"],
+            "BADESSA": ["BADESSA EMILIA"],
+            "SERVO": ["SERVO DI ADRIANA", "SERVO"],
+        },
+        "strip_numbered_notes": True,
         "package": "la-commedia-degli-equivoci.stagedesk",
     },
 ]

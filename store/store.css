@@ -70,6 +70,7 @@ a { color: inherit; }
 .store-carousel-track::-webkit-scrollbar { display: none; }
 .store-carousel-track .store-book-card { flex: 0 0 calc((100% - 54px) / 4); scroll-snap-align: start; }
 .store-book-cover-button { display: block; width: 100%; padding: 0; border: 0; background: transparent; color: inherit; text-align: left; cursor: pointer; }
+.store-book-cover-button:focus, .store-book-cover-button:focus-visible { outline: none; }
 .store-book-card { min-width: 0; }
 .store-book-cover { position: relative; display: block; aspect-ratio: 3 / 4; overflow: hidden; border: 1px solid var(--store-line); border-radius: 9px; background: linear-gradient(145deg, #282b2b, #111415 75%); cursor: pointer; }
 .store-book-cover::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,.58)); pointer-events: none; }

@@ -199,10 +199,16 @@ function sendImport(book) {
 }
 
 function detailMarkup(book) {
+  const importButton = state.canImport && book.packageUrl
+    ? `<button class="store-button store-button-accent store-detail-import" type="button" data-import-book="${escapeHtml(book.id)}"><span class="store-import-icon" aria-hidden="true">↓</span><span>Importa</span></button>`
+    : ''
   return `<button class="store-dialog-close" data-close-detail aria-label="Chiudi">×</button>
     <div class="store-detail-layout">
       <div class="store-detail-cover-column">
-        ${coverMarkup(book, 'store-detail-cover')}
+        <div class="store-detail-cover-figure">
+          ${coverMarkup(book, 'store-detail-cover')}
+          ${importButton}
+        </div>
         ${ratingMarkup(book, 'store-detail-rating')}
       </div>
       <div class="store-detail-copy">
@@ -212,9 +218,6 @@ function detailMarkup(book) {
         <p class="store-book-author">di ${escapeHtml(book.authorName)}</p>
         <p class="store-detail-description">${escapeHtml(book.description)}</p>
         <div class="store-detail-facts"><span>${book.actorCount || '—'} attori</span><span>${book.actCount || '—'} atti</span><span>${book.sceneCount || '—'} scene</span><span>${book.estimatedMinutes || '—'} min</span><span>${escapeHtml(book.language)}</span></div>
-        <div class="store-detail-actions">
-          <button class="store-button store-button-accent" type="button" data-import-book="${escapeHtml(book.id)}" ${state.canImport ? '' : 'hidden'}>Importa</button>
-        </div>
       </div>
     </div>`
 }

@@ -38,7 +38,7 @@ const demoBook = {
   downloadCount: 0,
   averageRating: 0,
   ratingCount: 0,
-  packageUrl: new URL('./copioni/il-malato-immaginario-riscrittura.stagedesk', window.location.href).href,
+  packageUrl: 'https://insoqzhjmrbrgfrsmlnj.supabase.co/storage/v1/object/public/store-packages/official/il-malato-immaginario-riscrittura.stagedesk',
   coverUrl: '',
   isDemo: true,
 }
@@ -91,9 +91,16 @@ function bookCard(book) {
         <span>${book.estimatedMinutes || '—'} min</span>
         <span class="store-rating" aria-label="${book.averageRating.toFixed(1)} su 5">${stars(book.averageRating)}</span>
       </div>
-      <div class="store-card-actions">${importButton}<button type="button" class="store-button store-button-quiet" data-detail="${escapeHtml(book.id)}">Dettagli</button></div>
+      ${importButton ? `<div class="store-card-actions">${importButton}</div>` : ''}
     </div>
   </article>`
+}
+
+function featuredCarousel(items) {
+  return `<section class="store-shelf store-featured-shelf">
+    <div class="store-shelf-heading"><div><h3>In evidenza</h3><span>Una selezione per iniziare</span></div><div class="store-carousel-controls"><button type="button" class="store-carousel-button" data-featured-prev aria-label="Copioni precedenti">‹</button><button type="button" class="store-carousel-button" data-featured-next aria-label="Copioni successivi">›</button></div></div>
+    <div class="store-featured-viewport"><div class="store-featured-track" data-featured-track>${items.map(bookCard).join('')}</div></div>
+  </section>`
 }
 
 function renderSections() {
@@ -109,7 +116,7 @@ function renderSections() {
   const rated = [...books].sort((a, b) => b.averageRating - a.averageRating)
   const shelf = (title, items, note) => `<section class="store-shelf"><div class="store-shelf-heading"><h3>${title}</h3><span>${note}</span></div><div class="store-book-grid">${items.slice(0, 4).map(bookCard).join('')}</div></section>`
   target.innerHTML = [
-    shelf('In evidenza', books, 'Una selezione per iniziare'),
+    featuredCarousel(books),
     books.length > 1 ? shelf('Più scaricati', downloaded, 'I testi più scelti') : '',
     books.length > 1 ? shelf('Nuovi arrivi', newest, 'Appena pubblicati') : '',
     books.length > 1 ? shelf('Più votati', rated, 'Le valutazioni della community') : '',
@@ -350,6 +357,12 @@ $('#upload-form').addEventListener('submit', submitUpload)
 $('#catalog-search').addEventListener('input', updateFilters)
 document.querySelectorAll('.store-filters select').forEach((select) => select.addEventListener('change', updateFilters))
 $('#catalog-sections').addEventListener('click', (event) => {
+  const carouselButton = event.target.closest('[data-featured-prev], [data-featured-next]')
+  if (carouselButton) {
+    const track = $('[data-featured-track]')
+    if (track) track.scrollBy({ left: (carouselButton.hasAttribute('data-featured-next') ? 1 : -1) * track.clientWidth * 0.86, behavior: 'smooth' })
+    return
+  }
   const importer = event.target.closest('[data-import-card]')
   if (importer) {
     const book = state.books.find((item) => item.id === importer.dataset.importCard)

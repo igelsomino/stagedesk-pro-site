@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
-const packageDir = resolve(root, 'store/copioni')
+const packageDir = resolve(root, process.env.STORE_PACKAGE_DIR || '.store-assets/copioni')
 const coverDir = resolve(root, 'store/copertine')
 
 const baseScenes = {
@@ -114,7 +114,14 @@ function coverSvg(playSlug) {
   const meta = metadata[playSlug]
   const accent = meta.colors[0]
   const dark = meta.colors[1]
-  return ['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1600" role="img" aria-labelledby="title desc">','<title id="title">' + meta.title + '</title>','<desc id="desc">Copertina originale StageDesk Store per ' + meta.title + '</desc>','<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="' + dark + '"/><stop offset="1" stop-color="#101313"/></linearGradient><radialGradient id="glow" cx="50%" cy="25%" r="70%"><stop stop-color="' + accent + '" stop-opacity=".52"/><stop offset="1" stop-color="' + accent + '" stop-opacity="0"/></radialGradient></defs>','<rect width="1200" height="1600" fill="url(#bg)"/><rect width="1200" height="1600" fill="url(#glow)"/>','<path d="M0 0h190v1600H0zM1010 0h190v1600h-190z" fill="#080b0b" opacity=".72"/>','<path d="M150 0h120v480l-120 270zM1050 0H930v480l120 270z" fill="' + accent + '" opacity=".12"/>','<ellipse cx="600" cy="1090" rx="365" ry="130" fill="' + accent + '" opacity=".11"/><path d="M380 1110h440l-65 300H445z" fill="#0c1111" stroke="' + accent + '" stroke-opacity=".55" stroke-width="4"/><path d="M470 1110v-310h260v310" fill="none" stroke="' + accent + '" stroke-opacity=".7" stroke-width="4"/><circle cx="600" cy="780" r="80" fill="' + accent + '" opacity=".2"/>','<text x="90" y="125" fill="' + accent + '" font-family="Arial,sans-serif" font-size="28" font-weight="700" letter-spacing="7">STAGEDESK CLASSICI</text>','<text x="90" y="320" fill="#f4f1eb" font-family="Georgia,serif" font-size="76" font-weight="700">' + meta.title + '</text>','<text x="90" y="420" fill="#c9c6bf" font-family="Arial,sans-serif" font-size="32">' + meta.author + '</text>','<line x1="90" y1="475" x2="1110" y2="475" stroke="' + accent + '" stroke-width="5"/><text x="90" y="1485" fill="#f4f1eb" font-family="Arial,sans-serif" font-size="25" letter-spacing="3">ADATTAMENTO ORIGINALE · FORMATO STAGEDESK</text>','</svg>'].join('\n')
+  const titleLines = meta.title.split(' ').reduce((lines, word) => {
+    const current = lines.at(-1) || ''
+    if ((current + ' ' + word).trim().length > 16) lines.push(word)
+    else lines[lines.length - 1] = (current + ' ' + word).trim()
+    return lines
+  }, [])
+  const titleMarkup = '<text x="96" y="385" fill="#f4f1eb" font-family="Georgia,serif" font-size="86" font-weight="700">' + titleLines.map((line, index) => '<tspan x="96" dy="' + (index ? 100 : 0) + '">' + line + '</tspan>').join('') + '</text>'
+  return ['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1600" role="img" aria-labelledby="title desc">','<title id="title">' + meta.title + '</title>','<desc id="desc">Copertina editoriale originale StageDesk Store per ' + meta.title + '</desc>','<defs><linearGradient id="paper" x1="0" y1="0" x2="1" y2="1"><stop stop-color="' + dark + '"/><stop offset="1" stop-color="#0c1010"/></linearGradient><linearGradient id="beam" x1="0" y1="0" x2="1" y2="1"><stop stop-color="' + accent + '" stop-opacity=".28"/><stop offset="1" stop-color="' + accent + '" stop-opacity="0"/></linearGradient></defs>','<rect width="1200" height="1600" fill="url(#paper)"/><path d="M0 0h1200v770L760 1600H0z" fill="url(#beam)"/>','<path d="M0 1180h1200M0 1225h1200M0 1270h1200" stroke="' + accent + '" stroke-opacity=".2" stroke-width="2"/><path d="M180 1450L600 710l420 740" fill="none" stroke="' + accent + '" stroke-opacity=".35" stroke-width="5"/><path d="M330 1450l270-470 270 470" fill="none" stroke="#f4f1eb" stroke-opacity=".16" stroke-width="2"/>','<rect x="96" y="94" width="72" height="7" fill="' + accent + '"/><text x="96" y="150" fill="' + accent + '" font-family="Arial,sans-serif" font-size="24" font-weight="800" letter-spacing="5">STAGEDESK / CLASSICI</text>','<text x="96" y="235" fill="#bfc5c2" font-family="Arial,sans-serif" font-size="19" font-weight="700" letter-spacing="3">COPIONE PER LA PROVA</text>',titleMarkup,'<text x="96" y="720" fill="#c9cfcb" font-family="Arial,sans-serif" font-size="30">' + meta.author + '</text>','<line x1="96" y1="780" x2="1104" y2="780" stroke="' + accent + '" stroke-width="4"/><text x="96" y="1485" fill="#aeb5b2" font-family="Arial,sans-serif" font-size="20" letter-spacing="3">ADATTAMENTO ORIGINALE · FORMATO STAGEDESK</text>','</svg>'].join('\n')
 }
 
 await mkdir(packageDir, { recursive: true })

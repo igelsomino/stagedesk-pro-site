@@ -5,6 +5,7 @@ import { resolve } from 'node:path'
 const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 const projectRoot = fileURLToPath(new URL('..', import.meta.url))
+const packageDir = resolve(projectRoot, process.env.STORE_PACKAGE_DIR || '.store-assets/copioni')
 
 if (!supabaseUrl || !serviceRoleKey) {
   throw new Error('Impostare SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY solo nell’ambiente di esecuzione.')
@@ -31,7 +32,7 @@ async function upload(path, content, contentType) {
 for (const entry of catalog) {
   const packagePath = `official/${entry.package}`
   const coverPath = `official/${entry.cover}`
-  await upload(packagePath, await readFile(resolve(projectRoot, 'store/copioni', entry.package)), 'application/vnd.stagedesk.script')
+  await upload(packagePath, await readFile(resolve(packageDir, entry.package)), 'application/vnd.stagedesk.script')
   await upload(coverPath, await readFile(resolve(projectRoot, 'store/copertine', entry.cover)), 'image/svg+xml')
 
   const query = new URL(`${supabaseUrl}/rest/v1/store_scripts`)

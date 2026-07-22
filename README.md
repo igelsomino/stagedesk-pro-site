@@ -55,9 +55,12 @@ I testi dei quattro classici aggiuntivi sono adattamenti originali ispirati a op
 copiano traduzioni moderne protette.
 
 Il catalogo viene caricato nel bucket con lo script
-`scripts/seed-store-demo.mjs`. Eseguirlo dalla root del repository con variabili d'ambiente temporanee:
+`scripts/seed-store-demo.mjs`. I pacchetti `.stagedesk` devono essere disponibili solo nella cartella locale indicata da
+`STORE_PACKAGE_DIR`: non vengono inclusi nel deploy Cloudflare e vengono serviti esclusivamente dal bucket Supabase.
+Eseguire dalla root del repository con variabili d'ambiente temporanee:
 
 ```sh
+STORE_PACKAGE_DIR="/percorso/locale/ai/pacchetti" \\
 SUPABASE_URL="https://<project>.supabase.co" \\
 SUPABASE_SERVICE_ROLE_KEY="<chiave solo nell'ambiente locale>" \\
 node scripts/seed-store-demo.mjs

@@ -4,7 +4,6 @@ import { resolve } from 'node:path'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
 const packageDir = resolve(root, process.env.STORE_PACKAGE_DIR || '.store-assets/copioni')
-const coverDir = resolve(root, 'store/copertine')
 
 const baseScenes = {
   'il-servitore-di-due-padroni': [
@@ -110,24 +109,8 @@ function buildScript(playSlug) {
   return lines.join('\n') + '\n'
 }
 
-function coverSvg(playSlug) {
-  const meta = metadata[playSlug]
-  const accent = meta.colors[0]
-  const dark = meta.colors[1]
-  const titleLines = meta.title.split(' ').reduce((lines, word) => {
-    const current = lines.at(-1) || ''
-    if ((current + ' ' + word).trim().length > 16) lines.push(word)
-    else lines[lines.length - 1] = (current + ' ' + word).trim()
-    return lines
-  }, [])
-  const titleMarkup = '<text x="96" y="385" fill="#f4f1eb" font-family="Georgia,serif" font-size="86" font-weight="700">' + titleLines.map((line, index) => '<tspan x="96" dy="' + (index ? 100 : 0) + '">' + line + '</tspan>').join('') + '</text>'
-  return ['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1600" role="img" aria-labelledby="title desc">','<title id="title">' + meta.title + '</title>','<desc id="desc">Copertina editoriale originale StageDesk Store per ' + meta.title + '</desc>','<defs><linearGradient id="paper" x1="0" y1="0" x2="1" y2="1"><stop stop-color="' + dark + '"/><stop offset="1" stop-color="#0c1010"/></linearGradient><linearGradient id="beam" x1="0" y1="0" x2="1" y2="1"><stop stop-color="' + accent + '" stop-opacity=".28"/><stop offset="1" stop-color="' + accent + '" stop-opacity="0"/></linearGradient></defs>','<rect width="1200" height="1600" fill="url(#paper)"/><path d="M0 0h1200v770L760 1600H0z" fill="url(#beam)"/>','<path d="M0 1180h1200M0 1225h1200M0 1270h1200" stroke="' + accent + '" stroke-opacity=".2" stroke-width="2"/><path d="M180 1450L600 710l420 740" fill="none" stroke="' + accent + '" stroke-opacity=".35" stroke-width="5"/><path d="M330 1450l270-470 270 470" fill="none" stroke="#f4f1eb" stroke-opacity=".16" stroke-width="2"/>','<rect x="96" y="94" width="72" height="7" fill="' + accent + '"/><text x="96" y="150" fill="' + accent + '" font-family="Arial,sans-serif" font-size="24" font-weight="800" letter-spacing="5">STAGEDESK / CLASSICI</text>','<text x="96" y="235" fill="#bfc5c2" font-family="Arial,sans-serif" font-size="19" font-weight="700" letter-spacing="3">COPIONE PER LA PROVA</text>',titleMarkup,'<text x="96" y="720" fill="#c9cfcb" font-family="Arial,sans-serif" font-size="30">' + meta.author + '</text>','<line x1="96" y1="780" x2="1104" y2="780" stroke="' + accent + '" stroke-width="4"/><text x="96" y="1485" fill="#aeb5b2" font-family="Arial,sans-serif" font-size="20" letter-spacing="3">ADATTAMENTO ORIGINALE · FORMATO STAGEDESK</text>','</svg>'].join('\n')
-}
-
 await mkdir(packageDir, { recursive: true })
-await mkdir(coverDir, { recursive: true })
 for (const playSlug of Object.keys(baseScenes)) {
   await writeFile(resolve(packageDir, playSlug + '.stagedesk'), buildScript(playSlug), 'utf8')
-  await writeFile(resolve(coverDir, playSlug + '.svg'), coverSvg(playSlug), 'utf8')
   console.log('Generato: ' + metadata[playSlug].title)
 }

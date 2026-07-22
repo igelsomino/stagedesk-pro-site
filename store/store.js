@@ -96,10 +96,10 @@ function bookCard(book) {
   </article>`
 }
 
-function featuredCarousel(items) {
-  return `<section class="store-shelf store-featured-shelf">
-    <div class="store-shelf-heading"><div><h3>In evidenza</h3><span>Una selezione per iniziare</span></div><div class="store-carousel-controls"><button type="button" class="store-carousel-button" data-featured-prev aria-label="Copioni precedenti">‹</button><button type="button" class="store-carousel-button" data-featured-next aria-label="Copioni successivi">›</button></div></div>
-    <div class="store-featured-viewport"><div class="store-featured-track" data-featured-track>${items.map(bookCard).join('')}</div></div>
+function carouselShelf(key, title, items, note) {
+  return `<section class="store-shelf store-carousel-shelf">
+    <div class="store-shelf-heading"><div><h3>${title}</h3><span>${note}</span></div><div class="store-carousel-controls"><button type="button" class="store-carousel-button" data-carousel-prev="${key}" aria-label="${title} precedenti">‹</button><button type="button" class="store-carousel-button" data-carousel-next="${key}" aria-label="${title} successivi">›</button></div></div>
+    <div class="store-carousel-viewport"><div class="store-carousel-track" data-carousel-track="${key}">${items.map(bookCard).join('')}</div></div>
   </section>`
 }
 
@@ -116,10 +116,10 @@ function renderSections() {
   const rated = [...books].sort((a, b) => b.averageRating - a.averageRating)
   const shelf = (title, items, note) => `<section class="store-shelf"><div class="store-shelf-heading"><h3>${title}</h3><span>${note}</span></div><div class="store-book-grid">${items.slice(0, 4).map(bookCard).join('')}</div></section>`
   target.innerHTML = [
-    featuredCarousel(books),
-    books.length > 1 ? shelf('Più scaricati', downloaded, 'I testi più scelti') : '',
-    books.length > 1 ? shelf('Nuovi arrivi', newest, 'Appena pubblicati') : '',
-    books.length > 1 ? shelf('Più votati', rated, 'Le valutazioni della community') : '',
+    carouselShelf('featured', 'In evidenza', books, 'Una selezione per iniziare'),
+    books.length > 1 ? carouselShelf('downloads', 'Più scaricati', downloaded, 'I testi più scelti') : '',
+    books.length > 1 ? carouselShelf('newest', 'Nuovi arrivi', newest, 'Appena pubblicati') : '',
+    books.length > 1 ? carouselShelf('rated', 'Più votati', rated, 'Le valutazioni della community') : '',
   ].join('')
 }
 
@@ -357,10 +357,11 @@ $('#upload-form').addEventListener('submit', submitUpload)
 $('#catalog-search').addEventListener('input', updateFilters)
 document.querySelectorAll('.store-filters select').forEach((select) => select.addEventListener('change', updateFilters))
 $('#catalog-sections').addEventListener('click', (event) => {
-  const carouselButton = event.target.closest('[data-featured-prev], [data-featured-next]')
+  const carouselButton = event.target.closest('[data-carousel-prev], [data-carousel-next]')
   if (carouselButton) {
-    const track = $('[data-featured-track]')
-    if (track) track.scrollBy({ left: (carouselButton.hasAttribute('data-featured-next') ? 1 : -1) * track.clientWidth * 0.86, behavior: 'smooth' })
+    const key = carouselButton.dataset.carouselNext || carouselButton.dataset.carouselPrev
+    const track = document.querySelector(`[data-carousel-track="${CSS.escape(key)}"]`)
+    if (track) track.scrollBy({ left: (carouselButton.hasAttribute('data-carousel-next') ? 1 : -1) * track.clientWidth * 0.86, behavior: 'smooth' })
     return
   }
   const importer = event.target.closest('[data-import-card]')

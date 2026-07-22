@@ -41,7 +41,8 @@ Per attivare il catalogo, eseguire nel SQL Editor di Supabase:
 studio-copione/docs/supabase-store.sql
 ```
 
-La Pages Function `/store-config` espone alla pagina solo `SUPABASE_URL` e `SUPABASE_PUBLISHABLE_KEY`, configurati
+Le copertine del catalogo sono immagini storiche in pubblico dominio, caricate nel bucket `store-covers`; le fonti
+sono indicate nella sezione finale di questo documento. La Pages Function `/store-config` espone alla pagina solo `SUPABASE_URL` e `SUPABASE_PUBLISHABLE_KEY`, configurati
 come variabili/segreti dell'ambiente Cloudflare Pages. Non inserire mai una service-role key nel repository o nel
 frontend. L'importazione diretta è mostrata solo quando lo Store è aperto dentro StageDesk Pro; in un browser normale
 restano disponibili consultazione, ricerca e download.
@@ -68,6 +69,12 @@ node scripts/seed-store-demo.mjs
 
 La chiave di servizio non deve essere committata, inserita nel frontend o configurata come variabile pubblica di
 Cloudflare Pages. Lo script è idempotente: aggiorna il record se il percorso del pacchetto esiste già.
+
+Fonti delle copertine: [Le Malade imaginaire](https://commons.wikimedia.org/wiki/File:LeMaladeImaginaire.jpg),
+[commedia dell'arte](https://commons.wikimedia.org/wiki/File:Scene_from_commedia_dell%27arte.jpg),
+[Romeo e Giulietta](https://commons.wikimedia.org/wiki/File:Romeo_at_Juliet%27s_balcony.jpg),
+[Amleto](https://commons.wikimedia.org/wiki/File:HamletSkullHCSealous.jpg) e
+[La tempesta](https://commons.wikimedia.org/wiki/File:Joseph_Vernet_-_The_Tempest_(Storm_off_the_Coast).jpg).
 
 ## Pagina attori condivisa
 

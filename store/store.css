@@ -80,6 +80,8 @@ a { color: inherit; }
 .store-book-cover-subtitle { overflow: hidden; color: rgba(244,241,235,.8); font-size: 11px; line-height: 1.25; text-overflow: ellipsis; white-space: nowrap; }
 .store-book-cover-overlay small { overflow: hidden; color: rgba(244,241,235,.68); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
 .store-book-cover-facts { color: rgba(244,241,235,.62); font-size: 10px; }
+.store-book-rating { color: var(--store-accent); font-size: 11px; font-weight: 800; letter-spacing: .01em; }
+.store-book-rating-on-cover { margin-top: 2px; }
 
 .store-how-it-works { display: grid; grid-template-columns: minmax(230px, .7fr) minmax(0, 1.3fr); gap: 55px; padding: 70px 0 100px; border-top: 1px solid var(--store-line); }
 .store-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
@@ -106,8 +108,10 @@ a { color: inherit; }
 .store-field-wide { grid-column: 1 / -1; }
 .store-detail-card { max-width: 760px; }
 .store-detail-layout { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 28px; }
+.store-detail-cover-column { display: grid; align-content: start; gap: 10px; }
 .store-detail-cover { width: 100%; aspect-ratio: 3 / 4; overflow: hidden; border-radius: 8px; background: #232827; }
 .store-detail-cover img { width: 100%; height: 100%; object-fit: cover; }
+.store-detail-rating { text-align: center; }
 .store-detail-copy h2 { margin-top: 0; }
 .store-detail-subtitle { margin: -2px 0 14px; color: var(--store-muted); font-size: 16px; }
 .store-detail-description { color: var(--store-muted); line-height: 1.6; }

@@ -69,12 +69,22 @@ function normaliseBook(row) {
   }
 }
 
+function ratingMarkup(book, className = '') {
+  const ratingCount = asNumber(book.ratingCount)
+  const rating = asNumber(book.averageRating)
+  const label = ratingCount
+    ? `${rating.toLocaleString('it-IT', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}/5 · ${ratingCount} ${ratingCount === 1 ? 'voto' : 'voti'}`
+    : 'Nessun voto'
+  return `<span class="store-book-rating ${className}">${escapeHtml(label)}</span>`
+}
+
 function coverMarkup(book, className = 'store-book-cover', withOverlay = false) {
   const overlay = withOverlay ? `<div class="store-book-cover-overlay">
     <strong>${escapeHtml(book.title)}</strong>
     <span class="store-book-cover-subtitle">${escapeHtml(book.subtitle)}</span>
     <small>${escapeHtml(book.authorName)}</small>
     <span class="store-book-cover-facts">${book.actorCount || '—'} attori · ${book.actCount || '—'} atti · ${book.sceneCount || '—'} scene</span>
+    ${ratingMarkup(book, 'store-book-rating-on-cover')}
   </div>` : ''
   if (book.coverUrl) return `<div class="${className}"><img src="${escapeHtml(book.coverUrl)}" alt="Copertina di ${escapeHtml(book.title)}" loading="lazy" />${overlay}</div>`
   return `<div class="${className}"><div class="store-book-cover-fallback"></div>${overlay}</div>`
@@ -191,7 +201,10 @@ function sendImport(book) {
 function detailMarkup(book) {
   return `<button class="store-dialog-close" data-close-detail aria-label="Chiudi">×</button>
     <div class="store-detail-layout">
-      <div>${coverMarkup(book, 'store-detail-cover')}</div>
+      <div class="store-detail-cover-column">
+        ${coverMarkup(book, 'store-detail-cover')}
+        ${ratingMarkup(book, 'store-detail-rating')}
+      </div>
       <div class="store-detail-copy">
         <p class="store-eyebrow">${escapeHtml(book.genre)} · ${escapeHtml(book.rightsLabel)}</p>
         <h2>${escapeHtml(book.title)}</h2>

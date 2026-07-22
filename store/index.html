@@ -9,7 +9,7 @@
     <meta property="og:type" content="website" />
     <title>StageDesk Store</title>
     <link rel="icon" href="../assets/stagedesk-pro-icon.png" />
-    <link rel="stylesheet" href="./store.css?v=20260722-2" />
+    <link rel="stylesheet" href="./store.css?v=20260722-4" />
   </head>
   <body class="store-page">
     <header class="store-header">
@@ -23,7 +23,6 @@
           <a href="#come-funziona">Come funziona</a>
         </nav>
         <div class="store-header-actions">
-          <button class="store-button store-button-quiet" id="account-action" type="button">Accedi</button>
           <button class="store-button store-button-accent" id="publish-action" type="button" hidden>Pubblica</button>
         </div>
       </div>
@@ -58,7 +57,7 @@
           <label><span>Genere</span><select id="filter-genre"><option value="">Tutti</option></select></label>
           <label><span>Lingua</span><select id="filter-language"><option value="">Tutte</option></select></label>
           <label><span>Attori</span><select id="filter-actors"><option value="">Qualsiasi cast</option><option value="1-3">1–3</option><option value="4-8">4–8</option><option value="9-15">9–15</option><option value="16+">16+</option></select></label>
-          <label><span>Ordina</span><select id="filter-sort"><option value="featured">In evidenza</option><option value="newest">Più recenti</option><option value="downloads">Più scaricati</option><option value="rating">Più votati</option></select></label>
+          <label><span>Ordina</span><select id="filter-sort"><option value="featured">In evidenza</option><option value="newest">Più recenti</option><option value="downloads">Più richiesti</option><option value="rating">Più votati</option></select></label>
         </div>
         <p id="catalog-status" class="store-status" role="status">Caricamento catalogo…</p>
         <div id="catalog-sections"></div>
@@ -71,30 +70,11 @@
         </div>
         <div class="store-steps">
           <article><span>01</span><h3>Scegli</h3><p>Filtra per numero di attori, durata, genere e lingua.</p></article>
-          <article><span>02</span><h3>Scarica</h3><p>Ottieni il pacchetto completo con copertina e metadati.</p></article>
+          <article><span>02</span><h3>Approfondisci</h3><p>Consulta copertina, autore, durata, cast e informazioni sulla fonte.</p></article>
           <article><span>03</span><h3>Importa</h3><p>Dentro StageDesk Pro il copione è pronto per essere adattato e provato.</p></article>
         </div>
       </section>
     </main>
-
-    <dialog id="auth-dialog" class="store-dialog">
-      <form method="dialog" class="store-dialog-card" id="auth-form">
-        <button class="store-dialog-close" value="cancel" aria-label="Chiudi">×</button>
-        <p class="store-eyebrow">ACCOUNT STAGEDESK</p>
-        <h2>Accedi allo Store</h2>
-        <p class="store-dialog-copy">Accedi per pubblicare un copione o lasciare una valutazione.</p>
-        <div class="store-auth-providers">
-          <button type="button" data-provider="google">Google</button>
-          <button type="button" data-provider="github">GitHub</button>
-          <button type="button" data-provider="azure">Azure</button>
-        </div>
-        <div class="store-divider"><span>oppure con e-mail</span></div>
-        <label class="store-field"><span>E-mail</span><input id="auth-email" type="email" required autocomplete="email" /></label>
-        <label class="store-field"><span>Password</span><input id="auth-password" type="password" required autocomplete="current-password" minlength="6" /></label>
-        <button class="store-button store-button-accent store-button-wide" type="submit">Accedi</button>
-        <p id="auth-status" class="store-form-status" role="status"></p>
-      </form>
-    </dialog>
 
     <dialog id="upload-dialog" class="store-dialog">
       <form method="dialog" class="store-dialog-card store-upload-card" id="upload-form">
@@ -127,6 +107,6 @@
       <div class="store-dialog-card store-detail-card" id="detail-content"></div>
     </dialog>
 
-    <script type="module" src="./store.js?v=20260722-2"></script>
+    <script type="module" src="./store.js?v=20260722-4"></script>
   </body>
 </html>

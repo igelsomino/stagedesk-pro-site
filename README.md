@@ -45,15 +45,24 @@ Le copertine del catalogo sono immagini storiche in pubblico dominio, caricate n
 sono indicate nella sezione finale di questo documento. La Pages Function `/store-config` espone alla pagina solo `SUPABASE_URL` e `SUPABASE_PUBLISHABLE_KEY`, configurati
 come variabili/segreti dell'ambiente Cloudflare Pages. Non inserire mai una service-role key nel repository o nel
 frontend. L'importazione diretta è mostrata solo quando lo Store è aperto dentro StageDesk Pro; in un browser normale
-restano disponibili consultazione, ricerca e download.
+restano disponibili consultazione e ricerca; l’importazione è disponibile soltanto quando la pagina è aperta dentro StageDesk Pro.
 
 ### Inizializzazione del catalogo demo
 
-Lo script `scripts/seed-store-demo.mjs` pubblica nel catalogo cinque copioni completi in formato StageDesk:
-`Il malato immaginario`, `Il servitore di due padroni`, `Romeo e Giulietta`, `Amleto` e `La tempesta`.
-Per ciascun titolo vengono caricati il pacchetto del copione, la copertina originale e i metadati di catalogo.
-I testi dei quattro classici aggiuntivi sono adattamenti originali ispirati a opere di pubblico dominio e non
-copiano traduzioni moderne protette.
+Lo script `scripts/seed-store-demo.mjs` pubblica nel catalogo dieci copioni integrali in formato StageDesk:
+`Il malato immaginario`, `Il servitore di due padroni`, `Romeo e Giulietta`, `Amleto`, `La tempesta`, `Macbeth`,
+`L'avaro`, `Casa di bambola`, `Don Giovanni` e `La commedia degli equivoci`.
+Per ciascun titolo vengono caricati il pacchetto del copione, la copertina e i metadati di catalogo. I testi sono
+edizioni integrali delle fonti indicate nel pacchetto, con le didascalie conservate e note di regia StageDesk
+originali aggiunte per il lavoro in prova. Il catalogo espone la fonte e la licenza di ogni titolo: l'edizione storica
+del `Malato immaginario` è indicata come pubblico dominio, mentre le edizioni Liber Liber e Wikisource riportano
+le rispettive licenze Creative Commons. Non vengono presentate come opere "senza copyright" le traduzioni per cui la
+fonte dichiara una licenza.
+
+La trasformazione dei testi sorgente è gestita da `scripts/import-full-store-classics.py`. Lo script legge i file
+preparati nella cartella locale `FULL_SOURCE_DIR`, mantiene l'ordine di atti, scene, didascalie e battute, costruisce
+la tabella dei personaggi e aggiunge quattro note originali per ogni scena (personaggi in scena, posizione, movimento
+e tono). I pacchetti generati hanno estensione `.stagedesk` e sono caricati esclusivamente nello Storage Supabase.
 
 Il catalogo viene caricato nel bucket con lo script
 `scripts/seed-store-demo.mjs`. I pacchetti `.stagedesk` devono essere disponibili solo nella cartella locale indicata da
@@ -75,6 +84,11 @@ Fonti delle copertine: [Le Malade imaginaire](https://commons.wikimedia.org/wiki
 [Romeo e Giulietta](https://commons.wikimedia.org/wiki/File:Romeo_at_Juliet%27s_balcony.jpg),
 [Amleto](https://commons.wikimedia.org/wiki/File:HamletSkullHCSealous.jpg) e
 [La tempesta](https://commons.wikimedia.org/wiki/File:Joseph_Vernet_-_The_Tempest_(Storm_off_the_Coast).jpg).
+Per i cinque nuovi titoli: [Macbeth](https://commons.wikimedia.org/wiki/File:John_Martin_-_Macbeth_-_Google_Art_Project.jpg),
+[Molière](https://commons.wikimedia.org/wiki/File:Moliere_Mignard.jpg),
+[Casa di bambola](https://commons.wikimedia.org/wiki/File:A_Doll%27s_House.jpeg),
+[Don Giovanni](https://commons.wikimedia.org/wiki/File:Max_Slevogt_-_Der_S%C3%A4nger_Francisco_d%27Andrade_als_Don_Giovanni_in_Mozarts_Oper_-_Google_Art_Project.jpg) e
+[La commedia degli equivoci](https://commons.wikimedia.org/wiki/File:Comedy_of_errors_IV.i.jpg).
 
 ## Pagina attori condivisa
 

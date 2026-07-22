@@ -84,7 +84,6 @@ a { color: inherit; }
 .store-book-facts span { padding: 4px 6px; border: 1px solid var(--store-line); border-radius: 5px; }
 .store-card-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .store-card-actions .store-button { min-height: 30px; padding: 0 10px; font-size: 11px; }
-.store-rating { color: #f4be4f; letter-spacing: .05em; }
 
 .store-how-it-works { display: grid; grid-template-columns: minmax(230px, .7fr) minmax(0, 1.3fr); gap: 55px; padding: 70px 0 100px; border-top: 1px solid var(--store-line); }
 .store-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
@@ -119,9 +118,6 @@ a { color: inherit; }
 .store-detail-facts { display: flex; flex-wrap: wrap; gap: 7px; margin: 18px 0; }
 .store-detail-facts span { padding: 6px 8px; border: 1px solid var(--store-line); border-radius: 6px; color: var(--store-muted); font-size: 11px; }
 .store-detail-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-.store-stars { display: flex; gap: 4px; margin: 20px 0 0; }
-.store-stars button { padding: 2px; border: 0; background: transparent; color: var(--store-faint); cursor: pointer; font-size: 20px; }
-.store-stars button:hover, .store-stars button.active { color: #f4be4f; }
 .store-empty { padding: 35px 0; color: var(--store-muted); }
 
 @media (max-width: 840px) {

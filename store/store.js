@@ -16,20 +16,15 @@ const state = {
 const $ = (selector) => document.querySelector(selector)
 const escapeHtml = (value = '') => String(value).replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char])
 const asNumber = (value) => Number.isFinite(Number(value)) ? Number(value) : 0
-const stars = (value) => {
-  const score = Math.round(asNumber(value))
-  return `${'★'.repeat(Math.max(0, Math.min(5, score)))}${'☆'.repeat(Math.max(0, 5 - score))}`
-}
-
 const demoBook = {
   id: 'demo-il-malato-immaginario',
   title: 'Il malato immaginario',
-  subtitle: 'Versione integrale originale per la prova',
-  description: 'Una riscrittura originale integrale ispirata alla commedia di Molière, con tre atti, sedici scene, personaggi, battute e note di regia già organizzati per StageDesk Pro.',
-  authorName: 'StageDesk Pro',
+  subtitle: 'Edizione integrale con note di regia originali',
+  description: 'La commedia integrale in tre atti e sedici scene, con il testo della fonte storica, le didascalie e note originali per la preparazione della prova.',
+  authorName: 'Molière · traduzione storica Niccolò di Castelli',
   language: 'Italiano',
   genre: 'Teatro',
-  rightsLabel: 'Testo originale',
+  rightsLabel: 'Edizione storica in pubblico dominio; fonte digitale UB Paderborn',
   actorCount: 11,
   actCount: 3,
   sceneCount: 16,
@@ -89,7 +84,6 @@ function bookCard(book) {
       <div class="store-book-facts">
         <span>${book.actorCount || '—'} attori</span>
         <span>${book.estimatedMinutes || '—'} min</span>
-        <span class="store-rating" aria-label="${book.averageRating.toFixed(1)} su 5">${stars(book.averageRating)}</span>
       </div>
       ${importButton ? `<div class="store-card-actions">${importButton}</div>` : ''}
     </div>
@@ -117,7 +111,7 @@ function renderSections() {
   const shelf = (title, items, note) => `<section class="store-shelf"><div class="store-shelf-heading"><h3>${title}</h3><span>${note}</span></div><div class="store-book-grid">${items.slice(0, 4).map(bookCard).join('')}</div></section>`
   target.innerHTML = [
     carouselShelf('featured', 'In evidenza', books, 'Una selezione per iniziare'),
-    books.length > 1 ? carouselShelf('downloads', 'Più scaricati', downloaded, 'I testi più scelti') : '',
+    books.length > 1 ? carouselShelf('downloads', 'Più richiesti', downloaded, 'I testi più scelti') : '',
     books.length > 1 ? carouselShelf('newest', 'Nuovi arrivi', newest, 'Appena pubblicati') : '',
     books.length > 1 ? carouselShelf('rated', 'Più votati', rated, 'Le valutazioni della community') : '',
   ].join('')
@@ -155,12 +149,8 @@ function setFormStatus(selector, message, isError = false) {
   element.style.color = isError ? '#ff8e72' : ''
 }
 
-function showAuth() {
-  $('#auth-dialog')?.showModal()
-}
-
 function showUpload() {
-  if (!state.session) return showAuth()
+  if (!state.session) return
   const metadata = state.session.user.user_metadata || {}
   const authorField = $('#upload-form [name="author_name"]')
   if (authorField && !authorField.value) authorField.value = metadata.full_name || metadata.name || metadata.display_name || state.session.user.email?.split('@')[0] || ''
@@ -168,16 +158,8 @@ function showUpload() {
 }
 
 function updateAccountUi() {
-  const account = $('#account-action')
   const publish = $('#publish-action')
-  account.hidden = state.canImport
-  if (state.session) {
-    account.textContent = 'Esci'
-    publish.hidden = false
-  } else {
-    account.textContent = 'Accedi'
-    publish.hidden = true
-  }
+  if (publish) publish.hidden = !state.session
 }
 
 async function loadCatalog() {
@@ -202,7 +184,12 @@ async function loadCatalog() {
 
 function sendImport(book) {
   if (!state.canImport || !book.packageUrl) return
-  window.parent.postMessage({ type: IMPORT_MESSAGE, url: book.packageUrl, title: book.title }, '*')
+  window.parent.postMessage({
+    type: IMPORT_MESSAGE,
+    url: book.packageUrl,
+    title: book.title,
+    scriptId: book.isDemo ? undefined : book.id,
+  }, '*')
 }
 
 function detailMarkup(book) {
@@ -216,13 +203,9 @@ function detailMarkup(book) {
         <p class="store-book-author">di ${escapeHtml(book.authorName)}</p>
         <p class="store-detail-description">${escapeHtml(book.description)}</p>
         <div class="store-detail-facts"><span>${book.actorCount || '—'} attori</span><span>${book.actCount || '—'} atti</span><span>${book.sceneCount || '—'} scene</span><span>${book.estimatedMinutes || '—'} min</span><span>${escapeHtml(book.language)}</span></div>
-        <p class="store-rating">${stars(book.averageRating)} <span>${book.averageRating ? book.averageRating.toFixed(1) : 'Nessuna'} · ${book.ratingCount} voti</span></p>
         <div class="store-detail-actions">
-          <button class="store-button store-button-accent" type="button" data-download="${escapeHtml(book.id)}">Scarica</button>
-          <button class="store-button" type="button" data-import-book="${escapeHtml(book.id)}" ${state.canImport ? '' : 'hidden'}>Importa in StageDesk Pro</button>
+          <button class="store-button store-button-accent" type="button" data-import-book="${escapeHtml(book.id)}" ${state.canImport ? '' : 'hidden'}>Importa</button>
         </div>
-        <div class="store-stars" aria-label="Valuta il copione">${[1, 2, 3, 4, 5].map((score) => `<button type="button" data-rate="${score}" aria-label="${score} stelle">★</button>`).join('')}</div>
-        <p class="store-form-status" data-detail-status></p>
       </div>
     </div>`
 }
@@ -231,26 +214,6 @@ function showDetail(book) {
   state.selectedBook = book
   $('#detail-content').innerHTML = detailMarkup(book)
   $('#detail-dialog')?.showModal()
-}
-
-async function trackDownload(book) {
-  if (!book.packageUrl) return
-  if (state.client && !book.isDemo) await state.client.rpc('increment_store_download', { p_script_id: book.id })
-  window.open(book.packageUrl, '_blank', 'noopener,noreferrer')
-}
-
-async function rateSelected(score) {
-  if (!state.client || !state.session || !state.selectedBook || state.selectedBook.isDemo) {
-    setFormStatus('[data-detail-status]', 'Accedi per lasciare una valutazione.', true)
-    return
-  }
-  const { data, error } = await state.client.rpc('rate_store_script', { p_script_id: state.selectedBook.id, p_score: score, p_comment: '' })
-  if (error) return setFormStatus('[data-detail-status]', error.message, true)
-  state.selectedBook = { ...state.selectedBook, ...normaliseBook(data) }
-  const index = state.books.findIndex((book) => book.id === state.selectedBook.id)
-  if (index >= 0) state.books[index] = state.selectedBook
-  showDetail(state.selectedBook)
-  updateFilters()
 }
 
 async function submitUpload(event) {
@@ -329,30 +292,7 @@ window.addEventListener('message', (event) => {
   }
 })
 
-$('#account-action').addEventListener('click', async () => {
-  if (!state.session) return showAuth()
-  await state.client.auth.signOut()
-  state.session = null
-  updateAccountUi()
-})
-$('#publish-action').addEventListener('click', showUpload)
-$('#auth-form').addEventListener('submit', async (event) => {
-  event.preventDefault()
-  if (!state.client) return setFormStatus('#auth-status', 'Configurazione autenticazione non disponibile.', true)
-  setFormStatus('#auth-status', 'Accesso in corso…')
-  const email = $('#auth-email').value.trim()
-  const password = $('#auth-password').value
-  const result = await state.client.auth.signInWithPassword({ email, password })
-  if (result.error) return setFormStatus('#auth-status', result.error.message, true)
-  state.session = result.data.session
-  updateAccountUi()
-  $('#auth-dialog')?.close()
-})
-document.querySelectorAll('[data-provider]').forEach((button) => button.addEventListener('click', async () => {
-  if (!state.client) return setFormStatus('#auth-status', 'Configurazione autenticazione non disponibile.', true)
-  const provider = button.dataset.provider
-  await state.client.auth.signInWithOAuth({ provider, options: { redirectTo: window.location.href } })
-}))
+$('#publish-action')?.addEventListener('click', showUpload)
 $('#upload-form').addEventListener('submit', submitUpload)
 $('#catalog-search').addEventListener('input', updateFilters)
 document.querySelectorAll('.store-filters select').forEach((select) => select.addEventListener('change', updateFilters))
@@ -378,18 +318,11 @@ $('#catalog-sections').addEventListener('click', (event) => {
 })
 $('#detail-content').addEventListener('click', async (event) => {
   if (event.target.closest('[data-close-detail]')) return $('#detail-dialog')?.close()
-  const download = event.target.closest('[data-download]')
-  if (download) {
-    const book = state.books.find((item) => item.id === download.dataset.download)
-    if (book) await trackDownload(book)
-  }
   const importer = event.target.closest('[data-import-book]')
   if (importer) {
     const book = state.books.find((item) => item.id === importer.dataset.importBook)
     if (book) sendImport(book)
   }
-  const rate = event.target.closest('[data-rate]')
-  if (rate) await rateSelected(Number(rate.dataset.rate))
 })
 
 await initSupabase()

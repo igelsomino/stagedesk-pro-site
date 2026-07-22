@@ -47,7 +47,10 @@ def slugify(value: str) -> str:
 
 
 def attr(value: str) -> str:
-    return html.escape(str(value), quote=True)
+    # StageDesk parses custom attributes directly and does not decode the HTML
+    # apostrophe entity. Escape structural characters while preserving names
+    # such as ``CONTE DELL'ISOLA`` exactly as authored.
+    return html.escape(str(value), quote=False).replace('"', "&quot;")
 
 
 def normalize(value: str) -> str:
@@ -56,6 +59,19 @@ def normalize(value: str) -> str:
     value = re.sub(r"[.(),:;!?\-—–]", " ", value)
     value = re.sub(r"\s+", " ", value).strip()
     return value
+
+
+COLLECTIVE_SPEAKER_NAMES = {
+    "TUTTI",
+    "TUTTE",
+    "CORO",
+    "ENSEMBLE",
+    "TUTTI INSIEME",
+}
+
+
+def is_collective_speaker(value: str) -> bool:
+    return normalize(value) in COLLECTIVE_SPEAKER_NAMES
 
 
 def repair_historical_ocr(line: str) -> str:
@@ -158,6 +174,17 @@ def source_lines(work: dict) -> list[str]:
             flags=re.IGNORECASE,
         )
         result = source_text.splitlines()
+    drop_source_lines = {normalize(line) for line in work.get("drop_source_lines", [])}
+    if drop_source_lines:
+        result = [line for line in result if normalize(line) not in drop_source_lines]
+    stop_pattern = work.get("stop_at")
+    if stop_pattern:
+        stop_index = next(
+            (index for index, line in enumerate(result) if re.search(stop_pattern, line)),
+            None,
+        )
+        if stop_index is not None:
+            result = result[:stop_index]
     return result
 
 
@@ -219,6 +246,23 @@ def detect_speaker(line: str, aliases: dict[str, str], bare_labels: set[str] | N
     if direct_group and (normalize(candidate) in bare_labels or direct_group == "TUTTI"):
         return direct_group
 
+    # Several Italian editions put the delivery direction between the label
+    # and the dialogue: ``ELENA (a Helmer). C'è una signora.``. Resolve the
+    # label before considering the parenthetical text.
+    parenthetical_label = re.match(r"^([^()]{1,90}?)\s+\([^)]*\)\s*(?:—|–|-|:|\.)\s*", candidate)
+    if parenthetical_label:
+        direct = aliases.get(normalize(parenthetical_label.group(1).strip()))
+        if direct:
+            return direct
+    # PDF extraction can split a long parenthetical over the next physical
+    # line, leaving no closing parenthesis in this line. The label is still
+    # unambiguous when it is immediately followed by ``(``.
+    unclosed_parenthetical_label = re.match(r"^([^()]{1,90}?)\s+\(", candidate)
+    if unclosed_parenthetical_label:
+        direct = aliases.get(normalize(unclosed_parenthetical_label.group(1).strip()))
+        if direct:
+            return direct
+
     # Prefer an explicit speaker delimiter. A period is included because the
     # historical editions use labels such as "Gio." and "NORA.".
     label_match = re.match(r"^(.{1,90}?)\s*(?:—|–|-|:|\.)\s*", candidate)
@@ -228,13 +272,17 @@ def detect_speaker(line: str, aliases: dict[str, str], bare_labels: set[str] | N
         # In old editions a stage direction can mention another character as
         # part of the sentence, for example "Lep., e finge...". The comma or
         # conjunction means this is not a new speaker label.
+        direct = aliases.get(normalize(label))
+        if direct:
+            # Once the label is known, every remainder is part of that
+            # character's source block. In particular ``NORA. Con...`` and
+            # ``NORA. E...`` were incorrectly rejected because ``CON`` and
+            # ``E`` also look like stage-direction prefixes.
+            return direct
         if remainder.startswith(",") or re.match(r"^(?:e|ed)\b", remainder, re.IGNORECASE):
             return None
         if _looks_like_stage_direction(remainder):
             return None
-        direct = aliases.get(normalize(label))
-        if direct:
-            return direct
 
     # A bare label is valid only when it is explicitly supplied by the source
     # edition. This prevents cast lists such as "Leporello, poi Don Giovanni"
@@ -269,18 +317,186 @@ def compact(text: str, limit: int = 700) -> str:
 def clean_dialogue(text: str) -> str:
     """Remove OCR punctuation leaked from a separate line before dialogue."""
     text = re.sub(r"^[ \t]*[!?:;,\)\]]+(?=\s|[A-ZÀ-Ýa-zà-ÿ])", "", text).strip()
-    return text
+    # Liber Liber extracts numbered translator-note anchors as separate
+    # parentheses. They are not part of the spoken text.
+    text = re.sub(r"\(\s*\)", "", text)
+    text = re.sub(r"\[\s*\]", "", text)
+    text = re.sub(r"\s+([,.;:!?])", r"\1", text)
+    text = re.sub(r"\s{2,}", " ", text)
+    return text.strip()
 
 
-def scene_notes(scene_text: list[str], speakers: list[str], title: str, scene_id: str) -> list[str]:
-    directions = [
-        line for line in scene_text
-        if (line.startswith(("(", "[")) or line.lower().startswith(("entr", "esce", "rient")))
-        and line.strip("()[] ").strip()
+def join_dialogue_lines(lines: list[str]) -> str:
+    """Join source lines without preserving PDF line-break hyphenation."""
+    text = " ".join(line.strip() for line in lines if line.strip())
+    return re.sub(r"(?<=[A-Za-zÀ-ÿ])-[ \t]+(?=[a-zà-ÿ])", "", text)
+
+
+def split_inline_speaker_segments(line: str, aliases: dict[str, str]) -> list[str]:
+    """Split PDF lines that contain two or more printed speaker labels.
+
+    Some editions lose a line break while extracting the PDF text, producing
+    fragments such as ``LINDE. ... NORA. E allora?``.  Labels are limited to
+    the known cast and must be followed by the same punctuation used by the
+    source, so ordinary mentions of a character remain untouched.
+    """
+    labels = sorted(aliases, key=len, reverse=True)
+    if not labels:
+        return [line]
+    label_pattern = "|".join(re.escape(label) for label in labels if label)
+    pattern = re.compile(
+        rf"(?<![A-Za-zÀ-ÿ])(?P<label>{label_pattern})"
+        r"(?:\s+\([^)]*\))?\s*(?:—|–|-|:|\.)\s*"
+    )
+    matches = list(pattern.finditer(line))
+    if not matches or (len(matches) == 1 and matches[0].start() == 0):
+        return [line]
+    segments: list[str] = []
+    for index, match in enumerate(matches):
+        if index == 0 and match.start() > 0:
+            prefix = line[:match.start()].strip()
+            if prefix:
+                segments.append(prefix)
+        start = match.start()
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(line)
+        segment = line[start:end].strip()
+        if segment:
+            segments.append(segment)
+    return segments or [line]
+
+
+def dialogue_remainder(line: str, aliases: dict[str, str], speaker: str) -> str:
+    """Return the text printed after a recognized speaker label."""
+    candidate = re.sub(r"\s+", " ", line.strip())
+    parenthetical_label = re.match(r"^([^()]{1,90}?)\s+\([^)]*\)\s*(?:—|–|-|:|\.)\s*", candidate)
+    if parenthetical_label and aliases.get(normalize(parenthetical_label.group(1).strip())) == speaker:
+        return candidate[parenthetical_label.end():].strip()
+    unclosed_parenthetical_label = re.match(r"^([^()]{1,90}?)\s+\(", candidate)
+    if unclosed_parenthetical_label and aliases.get(normalize(unclosed_parenthetical_label.group(1).strip())) == speaker:
+        return candidate[len(unclosed_parenthetical_label.group(1)):].strip()
+    label_match = re.match(r"^(.{1,90}?)\s*(?:—|–|-|:|\.)\s*", candidate)
+    if label_match and aliases.get(normalize(label_match.group(1).strip())) == speaker:
+        return candidate[label_match.end():].strip()
+    return ""
+
+
+def is_stage_direction_only(text: str) -> bool:
+    """Identify blocks that contain only parenthesized stage directions."""
+    compact_text = re.sub(r"\s+", " ", text).strip()
+    if not compact_text:
+        return True
+    without_directions = re.sub(r"\([^)]*\)", "", compact_text).strip(" .;,:-—–")
+    return not without_directions
+
+
+def is_cast_heading(line: str, aliases: dict[str, str]) -> bool:
+    """Reject cast lists accidentally parsed as scene locations.
+
+    Historical editions put the scene cast immediately below the heading and
+    use the same punctuation as a location line. A line containing known
+    character labels, especially one ending in a comma or ``poi``, is not an
+    ambientazione and must never become the position note.
+    """
+    value = re.sub(r"\s+", " ", line.strip())
+    if not value:
+        return True
+    normalized = normalize(value).rstrip(" .,;:")
+    known_names = {normalize(name) for name in aliases.values()}
+    if normalized in known_names:
+        return True
+    hits = sum(1 for name in known_names if name and re.search(rf"\b{re.escape(name)}\b", normalized))
+    if hits >= 2:
+        return True
+    if hits == 1 and (value.endswith(",") or re.search(r"\bpoi\b", value, re.IGNORECASE)):
+        return True
+    return False
+
+
+def is_standalone_direction(line: str) -> bool:
+    """Return true only for a complete stage-direction line.
+
+    Do not classify dialogue such as ``(O il Conte...). Ma ditemi...`` as a
+    direction merely because it starts with a parenthesis.
+    """
+    value = re.sub(r"\s+", " ", line.strip())
+    return bool(re.fullmatch(r"(?:\([^()]*\)|\[[^\[\]]*\])[.?!;,:-]*", value))
+
+
+def coalesce_stage_directions(lines: list[str]) -> list[str]:
+    """Join parenthetical directions split by PDF line/page extraction."""
+    result: list[str] = []
+    buffer: str | None = None
+    opener: str | None = None
+    for line in lines:
+        value = line.strip()
+        if buffer is not None:
+            buffer = f"{buffer} {value}".strip()
+            if buffer.count(opener or "(") <= buffer.count(")" if opener == "(" else "]"):
+                result.append(buffer)
+                buffer = None
+                opener = None
+            continue
+        if value.startswith(("(", "[")):
+            close = ")" if value.startswith("(") else "]"
+            if value.count(value[0]) > value.count(close):
+                buffer = value
+                opener = value[0]
+                continue
+        result.append(value)
+    if buffer is not None:
+        result.append(buffer)
+    return result
+
+
+def is_action_direction(line: str, aliases: dict[str, str]) -> bool:
+    value = re.sub(r"\s+", " ", line.strip())
+    if not value or detect_speaker(value, aliases):
+        return False
+    if is_standalone_direction(value):
+        inner = value.strip("()[] ").lower()
+        # Asides affect delivery rather than blocking, tone or position.
+        return bool(re.search(r"\b(parte|entra|entrano|esce|escono|rientra|rientrano|ritorna|si ritira|si avvicina|si allontana|si siede|si alza|in atto|va|viene|seguono)\b", inner))
+    if re.search(r"[!?](?:\s|$)", value):
+        return False
+    if re.match(r"^parte\b", value, re.IGNORECASE):
+        return bool(re.match(r"^parte(?:[.?!;,:-]*$|\s+(?:non visto|fuori|con|poi|e)\b)", value, re.IGNORECASE))
+    return bool(re.match(r"^(?:entr(?:a|ano)|esc(?:e|ono)|rientr(?:a|ano)|partono|ritorna|ritornano|si ritira|si avvicina|si allontana|si siede|si alza)\b", value, re.IGNORECASE))
+
+
+def scene_notes(scene_text: list[str], speakers: list[str], title: str, scene_id: str, aliases: dict[str, str]) -> list[str]:
+    cleaned_lines = coalesce_stage_directions([
+        re.sub(r"\s+", " ", line.strip()) for line in scene_text if line.strip()
+    ])
+    first_speaker_index = next(
+        (index for index, line in enumerate(cleaned_lines) if detect_speaker(line, aliases)),
+        len(cleaned_lines),
+    )
+    pre_dialogue = cleaned_lines[:first_speaker_index]
+    location_candidates = [
+        line for line in pre_dialogue
+        if not is_cast_heading(line, aliases)
+        and not is_action_direction(line, aliases)
+        and not detect_speaker(line, aliases)
+        and len(line) <= 240
+        and re.match(r"^[A-ZÀ-Ý]", line)
+        and not line.endswith(",")
+        and line.count(",") < 2
+        and not re.search(r"[!?]", line)
     ]
-    location = next((line for line in scene_text if not detect_speaker(line, {})), "La scena segue l'ambientazione indicata nell'edizione di riferimento.")
-    position = compact(location if location else "La scena segue l'ambientazione indicata nell'edizione di riferimento.")
-    movement = compact(" ".join(directions[:3])) if directions else "Seguire le entrate, le uscite e le azioni indicate nelle didascalie originali, mantenendo leggibili le relazioni nello spazio."
+    location = next(
+        (
+            line for line in location_candidates
+            if re.search(
+                r"\b(?:la scena|sala|stanza|camera|casa|palazzo|piazza|atrio|isola|castello|bosco|giardino|strada|luogo|campo|foresta|soggiorno|salone|cortile|recinto|mare|reggia|caverna|teatro|parco|porto|galleria|corridoio|porta|finestra|stufa|tavola|elsinore|verona|pavia|efeso)\b",
+                line,
+                re.IGNORECASE,
+            )
+        ),
+        None,
+    )
+    position = compact(location or "La scena segue l'ambientazione indicata nell'edizione di riferimento.")
+    directions = [line for line in cleaned_lines if is_action_direction(line, aliases)]
+    movement = compact("; ".join(directions[:3])) if directions else "Seguire le entrate, le uscite e le azioni indicate nelle didascalie originali, mantenendo leggibili le relazioni nello spazio."
     tone = f"La scena «{title}» conserva il ritmo e il tono dell'edizione di riferimento; le pause devono lasciare emergere il conflitto tra i personaggi."
     cast = ", ".join(dict.fromkeys(speakers)) or "Personaggi indicati nell'edizione di riferimento."
     return [
@@ -297,7 +513,10 @@ def parse_scene(scene_text: list[str], aliases: dict[str, str], fallback_charact
     current_speaker: str | None = None
     current: list[str] = []
     bare_labels = bare_labels or set()
-    for index, line in enumerate(scene_text):
+    expanded_scene: list[str] = []
+    for line in scene_text:
+        expanded_scene.extend(split_inline_speaker_segments(line, aliases))
+    for index, line in enumerate(expanded_scene):
         speaker = detect_speaker(line, aliases, bare_labels)
         # A bare source label followed by punctuation is usually part of the
         # cast description at the top of a scene, not a spoken line.
@@ -305,14 +524,15 @@ def parse_scene(scene_text: list[str], aliases: dict[str, str], fallback_charact
             line == line.upper() and not re.search(r"[—–:.;!?]", line)
         )
         if speaker and is_bare_source_label:
-            next_line = scene_text[index + 1].strip() if index + 1 < len(scene_text) else ""
+            next_line = expanded_scene[index + 1].strip() if index + 1 < len(expanded_scene) else ""
             if line.rstrip().endswith(",") or next_line.startswith((",", ".", ";", ")", "e ", "ed ", "a ", "di ", "con ", "entra", "esce", "rientra", "spavent")):
                 speaker = None
         if speaker:
             if current_speaker and current:
                 blocks.append((current_speaker, " ".join(current).strip()))
             current_speaker = speaker
-            current = []
+            remainder = dialogue_remainder(line, aliases, speaker)
+            current = [remainder] if remainder else []
             continue
         if current_speaker:
             current.append(line)
@@ -324,7 +544,12 @@ def parse_scene(scene_text: list[str], aliases: dict[str, str], fallback_charact
         text = " ".join(scene_text).strip()
         if text:
             blocks.append((fallback_character, text))
-    return [(speaker, clean_dialogue(text)) for speaker, text in blocks if text], preface
+    cleaned_blocks = []
+    for speaker, text in blocks:
+        value = clean_dialogue(join_dialogue_lines(text.splitlines()))
+        if value and not is_stage_direction_only(value):
+            cleaned_blocks.append((speaker, value))
+    return cleaned_blocks, preface
 
 
 def parse_work(work: dict) -> str:
@@ -334,8 +559,12 @@ def parse_work(work: dict) -> str:
         raise RuntimeError(f"Nessun atto riconosciuto per {work['title']}")
     aliases = speaker_aliases(work)
     bare_labels = {normalize(value) for value in work.get("bare_labels", [])}
-    characters = list(work["characters"])
-    parsed_scenes: list[tuple[int, int, str, list[str], list[tuple[str, str]], list[str]]] = []
+    # Collective voices remain dialogue speakers but are not actor rows. This
+    # keeps labels such as "TUTTI" available in the script without presenting
+    # them as a character that an actor can select.
+    characters = [character for character in work["characters"] if not is_collective_speaker(character)]
+    presence: dict[str, list[str]] = {character: [] for character in characters}
+    parsed_scenes: list[tuple[int, int, str, list[str], list[tuple[str, str]], list[str], list[str]]] = []
     for act_index, (act_start, act_number) in enumerate(acts, start=1):
         act_end = acts[act_index][0] if act_index < len(acts) else len(lines)
         act_lines = lines[act_start + 1 : act_end]
@@ -353,13 +582,22 @@ def parse_work(work: dict) -> str:
             scene_id = f"atto-{act_index}-scena-{scene_index}"
             blocks, preface = parse_scene(raw_scene, aliases, characters[0], bare_labels)
             speakers = [speaker for speaker, _ in blocks]
-            parsed_scenes.append((act_index, scene_index, scene_title, raw_scene, blocks, preface))
+            act_prologue = act_lines[:scene_start] if scene_index == 1 else []
+            parsed_scenes.append((act_index, scene_index, scene_title, raw_scene, blocks, preface, act_prologue))
             for speaker, _ in blocks:
+                if is_collective_speaker(speaker):
+                    continue
                 if speaker not in characters:
                     characters.append(speaker)
-    output = ["| Personaggio | Interprete | Presenza | Note |", "| --- | --- | --- | --- |"]
+                presence.setdefault(speaker, [])
+                scene_label = f"{act_index}/{scene_index}"
+                if scene_label not in presence[speaker]:
+                    presence[speaker].append(scene_label)
+    output = ["| Personaggio | Interprete | Presenza |", "| --- | --- | --- |"]
     for character in characters:
-        output.append(f"| {character} | Da assegnare | In scena | Personaggio dell'edizione integrale di riferimento. |")
+        locations = "; ".join(presence.get(character, []))
+        if locations:
+            output.append(f"| {character} | D/A | {locations} |")
     output.extend([
         "",
         f"# {work['title']}",
@@ -370,13 +608,14 @@ def parse_work(work: dict) -> str:
     ])
     dialogue_count = 0
     for act_index in range(1, len(acts) + 1):
-        output.extend([f"## Atto {act_index}", ""])
-        for parsed_act, scene_index, scene_title, raw_scene, blocks, preface in parsed_scenes:
+        output.extend([f"# Atto {act_index}", ""])
+        for parsed_act, scene_index, scene_title, raw_scene, blocks, preface, act_prologue in parsed_scenes:
             if parsed_act != act_index:
                 continue
             scene_id = f"atto-{act_index}-scena-{scene_index}"
-            output.extend([f"### Scena {scene_index}" + (f" — {scene_title}" if scene_title and not scene_title.lower().startswith("scena ") else ""), ""])
-            output.extend(scene_notes(preface + raw_scene, [speaker for speaker, _ in blocks], scene_title, scene_id))
+            output.extend([f"## Scena {scene_index}" + (f" — {scene_title}" if scene_title and not scene_title.lower().startswith("scena ") else ""), ""])
+            scene_source = act_prologue + raw_scene
+            output.extend(scene_notes(scene_source, [speaker for speaker, _ in blocks], scene_title, scene_id, aliases))
             output.append("")
             for speaker, text in blocks:
                 dialogue_count += 1
@@ -419,8 +658,10 @@ WORKS = [
         "slug": "romeo-e-giulietta", "title": "Romeo e Giulietta", "act_count": 5,
         "source_files": ["romeo-real.txt"], "source_url": "https://liberliber.it/autori/autori-s/william-shakespeare/romeo-e-giulietta/",
         "attribution": "testo di William Shakespeare nella traduzione di Goffredo Raponi, tratto dall'edizione integrale digitale di Liber Liber, distribuita con licenza Creative Commons BY-NC-SA 4.0",
-        "characters": ["ROMEO", "GIULIETTA", "BENVOLIO", "MERCUZIO", "TEBALDO", "CAPULETI", "MONNA CAPULETI", "MONTECCHI", "MONNA MONTECCHI", "NUTRICE", "FRATE LORENZO", "PARIDE", "PRINCIPE SCALIGERO", "MESSAGGERO", "BALTHASAR", "ABRAMO", "BALDASSARRE", "PIETRO", "CITTADINI", "TUTTI"],
-        "aliases": {"PRINCIPE SCALIGERO": ["PRINCIPE"], "NUTRICE": ["NUTRICE", "LA NUTRICE"], "FRATE LORENZO": ["FRATE LORENZO", "LORENZO"], "BALTHASAR": ["BALTASSAR", "BALDASSARRE"], "MONNA CAPULETI": ["MONNA CAPULETI"], "MONNA MONTECCHI": ["MONNA MONTECCHI"], "SANSONE": ["SANSONE"], "GREGORIO": ["GREGORIO"], "ABRAMO": ["ABRAMO"], "BALDASSARRE": ["BALDASSARRE"], "CITTADINI": ["CITTADINI"], "SPEZIALE": ["SPEZIALE"], "PAGGIO": ["PAGGIO", "PAGGETTO"]},
+        "stop_at": r"^FINE\s*$",
+        "drop_source_lines": ["William Shakespeare, Romeo e Giulietta"],
+        "characters": ["ROMEO", "GIULIETTA", "BENVOLIO", "MERCUZIO", "TEBALDO", "CAPULETI", "MONNA CAPULETI", "MONTECCHI", "MONNA MONTECCHI", "NUTRICE", "FRATE LORENZO", "PARIDE", "PRINCIPE SCALIGERO", "MESSAGGERO", "BALTHASAR", "ABRAMO", "BALDASSARRE", "PIETRO", "CITTADINI", "GUARDIA", "TUTTI"],
+        "aliases": {"PRINCIPE SCALIGERO": ["PRINCIPE"], "NUTRICE": ["NUTRICE", "LA NUTRICE"], "FRATE LORENZO": ["FRATE LORENZO", "LORENZO"], "FRATE GIOVANNI": ["FRATE GIOVANNI", "FRATEL GIOVANNI", "FRATE GIOVANNI."], "BALTHASAR": ["BALTASSAR", "BALDASSARRE"], "CAPULETI": ["CAPULETO", "CAPULETI", "SECONDO CAPULETI"], "GUARDIA": ["GUARDIA", "UNA GUARDIA", "A GUARDIA"], "GUARDIANO": ["GUARDIANO"], "SERVO": ["SERVO", "1° SERVO", "2° SERVO", "3° SERVO", "UN SERVO"], "MUSICO": ["MUSICO", "1° MUSICO", "2° MUSICO", "3° MUSICO"], "MESSAGGERO": ["MESSAGGERO", "MESSO"], "CITTADINO": ["1° CITTADINO", "2° CITTADINO", "3° CITTADINO"], "MONNA CAPULETI": ["MONNA CAPULETI"], "MONNA MONTECCHI": ["MONNA MONTECCHI"], "SANSONE": ["SANSONE"], "GREGORIO": ["GREGORIO"], "ABRAMO": ["ABRAMO"], "BALDASSARRE": ["BALDASSARRE"], "CITTADINI": ["CITTADINI"], "SPEZIALE": ["SPEZIALE"], "PAGGIO": ["PAGGIO", "PAGGETTO"]},
         "package": "romeo-e-giulietta.stagedesk",
     },
     {
@@ -428,7 +669,14 @@ WORKS = [
         "source_files": ["amleto-real.txt"], "source_url": "https://liberliber.it/autori/autori-s/william-shakespeare/amleto/",
         "attribution": "testo di William Shakespeare nella traduzione di Goffredo Raponi, tratto dall'edizione integrale digitale di Liber Liber, distribuita con licenza Creative Commons BY-NC-SA 4.0",
         "characters": ["AMLETO", "CLAUDIO", "GERTRUDE", "POLONIO", "OFELIA", "LAERTE", "ORAZIO", "SPETTRO", "ROSENCRANTZ", "GUILDENSTERN", "FORTINBRAS", "BERNARDO", "MARCELLO", "FRANCESCO", "OSRICO", "PRIMO BECCHINO", "SECONDO BECCHINO", "MESSAGGERO", "ATTORI", "TUTTI"],
-        "aliases": {"FORTINBRAS": ["FORTebraccio", "FORTBRACCIO"], "SPETTRO": ["SPETTRO DEL PADRE DI AMLETO"], "PRIMO BECCHINO": ["PRIMO BECCHINO"], "SECONDO BECCHINO": ["SECONDO BECCHINO"]},
+        "aliases": {
+            "CLAUDIO": ["RE", "RE.", "CLAUDIO", "CLAUDIO."],
+            "GERTRUDE": ["REGINA", "REGINA.", "GERTRUDE"],
+            "FORTINBRAS": ["FORTebraccio", "FORTBRACCIO"],
+            "SPETTRO": ["SPETTRO DEL PADRE DI AMLETO"],
+            "PRIMO BECCHINO": ["PRIMO BECCHINO"],
+            "SECONDO BECCHINO": ["SECONDO BECCHINO"],
+        },
         "package": "amleto.stagedesk",
     },
     {
@@ -460,7 +708,18 @@ WORKS = [
         "source_files": ["casa.txt"], "source_url": "https://liberliber.it/autori/autori-i/henrik-ibsen/casa-di-bambola/",
         "attribution": "testo di Henrik Ibsen nella traduzione autorizzata di Pietro Galletti, edizione Fratelli Treves 1928, tratta dall'edizione integrale digitale di Liber Liber, distribuita con licenza Creative Commons BY-NC-SA 4.0",
         "characters": ["NORA", "HELMER", "KROGSTAD", "SIGNORA LINDE", "DOTTOR RANK", "ELENA", "ANNE-MARIE", "IL FACCHINO", "I BAMBINI", "IL MESSO"],
-        "aliases": {"HELMER": ["HELM", "HELM."], "SIGNORA LINDE": ["LINDE", "SIGNORA LINDE"], "DOTTOR RANK": ["RANK", "DOTT. RANK"], "IL FACCHINO": ["FACC", "FACC."], "ANNE-MARIE": ["ANNA MARIA", "ANNE MARIE"]},
+        "aliases": {
+            "HELMER": ["HELM", "HELM.", "HIELM", "HIELM.", "IIELM", "IIELM."],
+            "KROGSTAD": ["KROG", "KROG."],
+            "SIGNORA LINDE": ["LINDE", "LINDE.", "SIGNORA LINDE"],
+            "DOTTOR RANK": ["RANK", "RANK.", "DOTT. RANK"],
+            "ELENA": ["ELENA", "ELENA."],
+            "NORA": ["NOIR", "NOIR."],
+            "ANNE-MARIE": ["ANNA MARIA", "ANNE MARIE", "MARIANNA", "MAR", "MAR."],
+            "IL FACCHINO": ["FACC", "FACC.", "FACCHINO", "FACCHINO."],
+            "I BAMBINI": ["BAMBINI", "I BAMBINI"],
+            "IL MESSO": ["MESSO", "MESSO."],
+        },
         "package": "casa-di-bambola.stagedesk",
     },
     {

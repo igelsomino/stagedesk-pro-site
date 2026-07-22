@@ -115,8 +115,6 @@ a { color: inherit; }
 .store-detail-cover img { width: 100%; height: 100%; object-fit: cover; }
 .store-detail-import-stack { position: absolute; right: 10px; bottom: 10px; left: 10px; display: grid; gap: 6px; }
 .store-detail-import { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 34px; padding: 0 14px; font-size: 12px; }
-.store-detail-import-panel { display: grid; gap: 2px; padding: 7px 9px; border: 1px solid rgba(244,241,235,.18); border-radius: 6px; background: rgba(10,12,12,.82); color: rgba(244,241,235,.78); font-size: 9px; line-height: 1.2; text-align: center; }
-.store-detail-import-panel strong { color: var(--store-text); font-size: 10px; }
 .store-import-icon { display: inline-grid; place-items: center; width: 19px; height: 19px; border: 1px solid currentColor; border-radius: 50%; font-size: 15px; font-weight: 900; line-height: 1; }
 .store-detail-rating { text-align: center; }
 .store-detail-copy h2 { margin-top: 0; }

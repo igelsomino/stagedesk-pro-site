@@ -200,7 +200,10 @@ function sendImport(book) {
 
 function detailMarkup(book) {
   const importButton = state.canImport && book.packageUrl
-    ? `<button class="store-button store-button-accent store-detail-import" type="button" data-import-book="${escapeHtml(book.id)}"><span class="store-import-icon" aria-hidden="true">↓</span><span>Importa</span></button>`
+    ? `<div class="store-detail-import-stack">
+        <button class="store-button store-button-accent store-detail-import" type="button" data-import-book="${escapeHtml(book.id)}"><span class="store-import-icon" aria-hidden="true">↓</span><span>Importa</span></button>
+        <div class="store-detail-import-panel"><strong>Copione pronto</strong><span>Importazione diretta in StageDesk Pro.</span></div>
+      </div>`
     : ''
   return `<button class="store-dialog-close" data-close-detail aria-label="Chiudi">×</button>
     <div class="store-detail-layout">
@@ -225,7 +228,12 @@ function detailMarkup(book) {
 function showDetail(book) {
   state.selectedBook = book
   $('#detail-content').innerHTML = detailMarkup(book)
-  $('#detail-dialog')?.showModal()
+  const dialog = $('#detail-dialog')
+  dialog?.showModal()
+  requestAnimationFrame(() => {
+    const focusTarget = dialog?.querySelector('[data-import-book]') || dialog?.querySelector('[data-close-detail]')
+    focusTarget?.focus()
+  })
 }
 
 async function submitUpload(event) {

@@ -69,24 +69,20 @@ function normaliseBook(row) {
   }
 }
 
-function coverMarkup(book, className = 'store-book-cover', withOverlay = false, importButton = '') {
+function coverMarkup(book, className = 'store-book-cover', withOverlay = false) {
   const overlay = withOverlay ? `<div class="store-book-cover-overlay">
     <strong>${escapeHtml(book.title)}</strong>
     <span class="store-book-cover-subtitle">${escapeHtml(book.subtitle)}</span>
     <small>${escapeHtml(book.authorName)}</small>
     <span class="store-book-cover-facts">${book.actorCount || '—'} attori · ${book.actCount || '—'} atti · ${book.sceneCount || '—'} scene</span>
-    ${importButton}
   </div>` : ''
   if (book.coverUrl) return `<div class="${className}"><img src="${escapeHtml(book.coverUrl)}" alt="Copertina di ${escapeHtml(book.title)}" loading="lazy" />${overlay}</div>`
   return `<div class="${className}"><div class="store-book-cover-fallback"></div>${overlay}</div>`
 }
 
 function bookCard(book) {
-  const importButton = state.canImport && book.packageUrl
-    ? `<button type="button" class="store-button store-button-accent store-card-import" data-import-card="${escapeHtml(book.id)}"><span class="store-import-icon" aria-hidden="true">↓</span><span>Importa</span></button>`
-    : ''
   return `<article class="store-book-card">
-    <div class="store-book-cover-button" data-detail="${escapeHtml(book.id)}" role="button" tabindex="0" aria-label="Apri ${escapeHtml(book.title)}">${coverMarkup(book, 'store-book-cover', true, importButton)}</div>
+    <div class="store-book-cover-button" data-detail="${escapeHtml(book.id)}" role="button" tabindex="0" aria-label="Apri ${escapeHtml(book.title)}">${coverMarkup(book, 'store-book-cover', true)}</div>
   </article>`
 }
 
@@ -302,12 +298,6 @@ $('#catalog-sections').addEventListener('click', (event) => {
     const key = carouselButton.dataset.carouselNext || carouselButton.dataset.carouselPrev
     const track = document.querySelector(`[data-carousel-track="${CSS.escape(key)}"]`)
     if (track) track.scrollBy({ left: (carouselButton.hasAttribute('data-carousel-next') ? 1 : -1) * track.clientWidth * 0.86, behavior: 'smooth' })
-    return
-  }
-  const importer = event.target.closest('[data-import-card]')
-  if (importer) {
-    const book = state.books.find((item) => item.id === importer.dataset.importCard)
-    if (book) sendImport(book)
     return
   }
   const detailButton = event.target.closest('[data-detail]')

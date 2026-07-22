@@ -80,8 +80,6 @@ a { color: inherit; }
 .store-book-cover-subtitle { overflow: hidden; color: rgba(244,241,235,.8); font-size: 11px; line-height: 1.25; text-overflow: ellipsis; white-space: nowrap; }
 .store-book-cover-overlay small { overflow: hidden; color: rgba(244,241,235,.68); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
 .store-book-cover-facts { color: rgba(244,241,235,.62); font-size: 10px; }
-.store-card-import { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 38px; margin-top: 5px; padding: 0 14px; font-size: 12px; pointer-events: auto; }
-.store-import-icon { display: inline-grid; place-items: center; width: 18px; height: 18px; border: 1px solid currentColor; border-radius: 50%; font-size: 14px; font-weight: 900; line-height: 1; }
 
 .store-how-it-works { display: grid; grid-template-columns: minmax(230px, .7fr) minmax(0, 1.3fr); gap: 55px; padding: 70px 0 100px; border-top: 1px solid var(--store-line); }
 .store-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }

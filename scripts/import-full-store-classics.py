@@ -58,14 +58,41 @@ def normalize(value: str) -> str:
     return value
 
 
-def clean_lines(text: str, strip_numbered_notes: bool = False) -> list[str]:
+def repair_historical_ocr(line: str) -> str:
+    """Repair frequent long-s OCR substitutions in the 1740 Molière scan."""
+    replacements = {
+        "voftro": "vostro", "voftra": "vostra", "quefta": "questa", "quefto": "questo",
+        "queft\u2019": "quest\u2019", "efser": "esser", "fempre": "sempre", "fopra": "sopra",
+        "fotto": "sotto", "fenza": "senza", "fuo": "suo", "fua": "sua", "fubito": "subito",
+        "fegreto": "segreto", "ftato": "stato", "ftessa": "stessa", "pafso": "passo",
+        "pafsione": "passione", "teftamento": "testamento", "bafteranno": "basteranno",
+        "bafter": "baster", "fignora": "signora", "furbatu": "furbata",
+    }
+    for source, target in replacements.items():
+        line = re.sub(rf"(?i)\b{re.escape(source)}\b", target, line)
+    return line
+
+
+def clean_lines(text: str, strip_numbered_notes: bool = False, repair_ocr: bool = False) -> list[str]:
     lines: list[str] = []
     skipping_numbered_note = False
     for raw in text.replace("\r", "").replace("\f", "\n").splitlines():
         line = raw.strip()
         line = re.sub(r"\s+", " ", line)
+        if repair_ocr:
+            line = repair_historical_ocr(line)
         if not line or re.fullmatch(r"\d+", line):
             skipping_numbered_note = False
+            continue
+        # Remove navigation and page-layer fragments present in scraped
+        # editions (for example Wikisource's [p. ... modifica] markers).
+        if (
+            re.fullmatch(r"\[?p\.?\]?", line, re.IGNORECASE)
+            or line.lower() in {"modifica", "◄", "►", "[", "]"}
+            or line.startswith("<dc:")
+            or line.startswith("</dc:")
+            or re.fullmatch(r"<[^>]+>", line)
+        ):
             continue
         if strip_numbered_notes:
             # Liber Liber places numbered translator notes in separate
@@ -91,10 +118,46 @@ def clean_lines(text: str, strip_numbered_notes: bool = False) -> list[str]:
 def source_lines(work: dict) -> list[str]:
     result: list[str] = []
     for filename in work["source_files"]:
-        result.extend(clean_lines(
+        file_lines = clean_lines(
             (SOURCE_DIR / filename).read_text(encoding="utf-8", errors="ignore"),
             strip_numbered_notes=work.get("strip_numbered_notes", False),
-        ))
+            repair_ocr=work.get("repair_ocr", False),
+        )
+        if work.get("trim_wikisource_act_files"):
+            first_act = next((index for index, line in enumerate(file_lines) if ACT_RE.match(line)), None)
+            if first_act is not None:
+                file_lines = file_lines[first_act:]
+        result.extend(file_lines)
+    if work.get("clean_wikisource_markup"):
+        cleaned: list[str] = []
+        for line in result:
+            # Wikisource exports the page footer and TeX alternatives as
+            # ordinary paragraphs. They must never enter a dialogue block.
+            if "\\displaystyle" in line:
+                continue
+            if (
+                line.startswith("Estratto da")
+                or line.startswith("https://it.wikisource.org/")
+                or line in {"\"", "fine", "—", "Informazioni sulla fonte del testo"}
+            ):
+                continue
+            cleaned.append(line)
+        result = cleaned
+        source_text = "\n".join(result)
+        source_text = re.sub(
+            r"Vieni, vieni, carin\s+o\s+a\s*,",
+            "Vieni, vieni, carino/a,",
+            source_text,
+            flags=re.IGNORECASE,
+        )
+        source_text = re.sub(r"\bChet\s+a\s+o\s+chet\s+a\s+o\s+", "Cheta, cheta, o ", source_text, flags=re.IGNORECASE)
+        source_text = re.sub(
+            r"Tutti,\s*fuorchè\s*\nGio\.\s*\ne\s*\nLep\.\s*\n",
+            "Tutti, fuorchè Gio. e Lep.\n",
+            source_text,
+            flags=re.IGNORECASE,
+        )
+        result = source_text.splitlines()
     return result
 
 
@@ -132,40 +195,55 @@ def speaker_aliases(work: dict) -> dict[str, str]:
     return aliases
 
 
-def detect_speaker(line: str, aliases: dict[str, str]) -> str | None:
+def _looks_like_stage_direction(text: str) -> bool:
+    value = normalize(text)
+    return value.startswith((
+        "ENTRA ", "ENTRANO ", "ESCE ", "ESCENO ", "RIENTRA ", "RIENTRANO ",
+        "PARTE ", "PARTONO ", "SCUOPRE ", "SCOPRE ", "SI RITIRA ",
+        "SI NASCONDE ", "CON ", "POI ", "SEGUITO ", "SEGUONO ",
+        "AL ", "IN UN ", "SPAVENTATO ",
+    )) or value.endswith((" PARTE", " PARTONO"))
+
+
+def detect_speaker(line: str, aliases: dict[str, str], bare_labels: set[str] | None = None) -> str | None:
     # Stage directions and location descriptions are never speaker labels.
     if line.startswith(("(", "[", "Entr", "Esce", "Rient", "Entra", "SCENA", "Scena")):
         return None
     candidate = re.sub(r"\s+", " ", line.strip())
-    # Prefer an explicit speaker delimiter. This also handles long dialogue
-    # lines such as "ADRIANA: ..." without imposing a character-count limit.
-    label_match = re.match(r"^(.{1,90}?)\s*(?:—|–|-|:)", candidate)
+    bare_labels = bare_labels or set()
+
+    # A line containing several abbreviated voices is an ensemble line. Keep
+    # it as one block instead of interpreting the first abbreviation as the
+    # speaker and the remaining voices as dialogue text.
+    direct_group = aliases.get(normalize(candidate))
+    if direct_group and (normalize(candidate) in bare_labels or direct_group == "TUTTI"):
+        return direct_group
+
+    # Prefer an explicit speaker delimiter. A period is included because the
+    # historical editions use labels such as "Gio." and "NORA.".
+    label_match = re.match(r"^(.{1,90}?)\s*(?:—|–|-|:|\.)\s*", candidate)
     if label_match:
         label = label_match.group(1).strip()
+        remainder = candidate[label_match.end():].strip()
+        # In old editions a stage direction can mention another character as
+        # part of the sentence, for example "Lep., e finge...". The comma or
+        # conjunction means this is not a new speaker label.
+        if remainder.startswith(",") or re.match(r"^(?:e|ed)\b", remainder, re.IGNORECASE):
+            return None
+        if _looks_like_stage_direction(remainder):
+            return None
         direct = aliases.get(normalize(label))
         if direct:
             return direct
-    candidate = re.sub(r"\s*(?:—|–|-|:)$", "", candidate).strip()
+
+    # A bare label is valid only when it is explicitly supplied by the source
+    # edition. This prevents cast lists such as "Leporello, poi Don Giovanni"
+    # from becoming empty dialogue blocks.
+    had_terminal_punctuation = bool(re.search(r"[.?!:;—–-]$", candidate))
+    candidate = re.sub(r"\s*(?:—|–|-|:|\.)$", "", candidate).strip()
     direct = aliases.get(normalize(candidate))
-    if direct:
+    if direct and (normalize(candidate) in bare_labels or candidate == candidate.upper() or had_terminal_punctuation):
         return direct
-    # A few historical editions use a name followed by a full stop.
-    candidate = re.sub(r"[.]$", "", candidate).strip()
-    direct = aliases.get(normalize(candidate))
-    if direct:
-        return direct
-    # Also accept a known label at the start when the source adds an action.
-    normalized = normalize(candidate)
-    for key, canonical in sorted(aliases.items(), key=lambda item: -len(item[0])):
-        if normalized.startswith(key + " "):
-            return canonical
-    # Older Italian editions often use a title-case name followed by a dash
-    # without listing that minor/collective role in the cast table.
-    label_match = re.fullmatch(r"([A-Za-zÀ-ÖØ-öø-ÿ][A-Za-zÀ-ÖØ-öø-ÿ .’'0-9]{1,55})\s*(?:—|–|-)", candidate)
-    if label_match:
-        label = re.sub(r"\s+", " ", label_match.group(1)).strip(" .")
-        if label and not label.lower().startswith(("entra", "esce", "rientra", "scena")):
-            return label.upper()
     return None
 
 
@@ -188,8 +266,18 @@ def compact(text: str, limit: int = 700) -> str:
     return text[: limit - 1].rstrip() + "…"
 
 
+def clean_dialogue(text: str) -> str:
+    """Remove OCR punctuation leaked from a separate line before dialogue."""
+    text = re.sub(r"^[ \t]*[!?:;,\)\]]+(?=\s|[A-ZÀ-Ýa-zà-ÿ])", "", text).strip()
+    return text
+
+
 def scene_notes(scene_text: list[str], speakers: list[str], title: str, scene_id: str) -> list[str]:
-    directions = [line for line in scene_text if line.startswith(("(", "[")) or line.lower().startswith(("entr", "esce", "rient"))]
+    directions = [
+        line for line in scene_text
+        if (line.startswith(("(", "[")) or line.lower().startswith(("entr", "esce", "rient")))
+        and line.strip("()[] ").strip()
+    ]
     location = next((line for line in scene_text if not detect_speaker(line, {})), "La scena segue l'ambientazione indicata nell'edizione di riferimento.")
     position = compact(location if location else "La scena segue l'ambientazione indicata nell'edizione di riferimento.")
     movement = compact(" ".join(directions[:3])) if directions else "Seguire le entrate, le uscite e le azioni indicate nelle didascalie originali, mantenendo leggibili le relazioni nello spazio."
@@ -203,13 +291,23 @@ def scene_notes(scene_text: list[str], speakers: list[str], title: str, scene_id
     ]
 
 
-def parse_scene(scene_text: list[str], aliases: dict[str, str], fallback_character: str) -> tuple[list[tuple[str, str]], list[str]]:
+def parse_scene(scene_text: list[str], aliases: dict[str, str], fallback_character: str, bare_labels: set[str] | None = None) -> tuple[list[tuple[str, str]], list[str]]:
     blocks: list[tuple[str, str]] = []
     preface: list[str] = []
     current_speaker: str | None = None
     current: list[str] = []
-    for line in scene_text:
-        speaker = detect_speaker(line, aliases)
+    bare_labels = bare_labels or set()
+    for index, line in enumerate(scene_text):
+        speaker = detect_speaker(line, aliases, bare_labels)
+        # A bare source label followed by punctuation is usually part of the
+        # cast description at the top of a scene, not a spoken line.
+        is_bare_source_label = normalize(line) in bare_labels or (
+            line == line.upper() and not re.search(r"[—–:.;!?]", line)
+        )
+        if speaker and is_bare_source_label:
+            next_line = scene_text[index + 1].strip() if index + 1 < len(scene_text) else ""
+            if line.rstrip().endswith(",") or next_line.startswith((",", ".", ";", ")", "e ", "ed ", "a ", "di ", "con ", "entra", "esce", "rientra", "spavent")):
+                speaker = None
         if speaker:
             if current_speaker and current:
                 blocks.append((current_speaker, " ".join(current).strip()))
@@ -226,7 +324,7 @@ def parse_scene(scene_text: list[str], aliases: dict[str, str], fallback_charact
         text = " ".join(scene_text).strip()
         if text:
             blocks.append((fallback_character, text))
-    return [(speaker, text) for speaker, text in blocks if text], preface
+    return [(speaker, clean_dialogue(text)) for speaker, text in blocks if text], preface
 
 
 def parse_work(work: dict) -> str:
@@ -235,6 +333,7 @@ def parse_work(work: dict) -> str:
     if not acts:
         raise RuntimeError(f"Nessun atto riconosciuto per {work['title']}")
     aliases = speaker_aliases(work)
+    bare_labels = {normalize(value) for value in work.get("bare_labels", [])}
     characters = list(work["characters"])
     parsed_scenes: list[tuple[int, int, str, list[str], list[tuple[str, str]], list[str]]] = []
     for act_index, (act_start, act_number) in enumerate(acts, start=1):
@@ -252,7 +351,7 @@ def parse_work(work: dict) -> str:
             if not scene_title:
                 scene_title = f"Scena {scene_index}"
             scene_id = f"atto-{act_index}-scena-{scene_index}"
-            blocks, preface = parse_scene(raw_scene, aliases, characters[0])
+            blocks, preface = parse_scene(raw_scene, aliases, characters[0], bare_labels)
             speakers = [speaker for speaker, _ in blocks]
             parsed_scenes.append((act_index, scene_index, scene_title, raw_scene, blocks, preface))
             for speaker, _ in blocks:
@@ -303,8 +402,9 @@ WORKS = [
         "source_files": ["malato-atto1.txt", "malato-atto2.txt", "malato-atto3.txt"],
         "source_url": "https://digital.ub.uni-paderborn.de/ihd/content/structure/3393377",
         "attribution": "testo di Molière nella traduzione storica di Niccolò di Castelli, tratta dalla scansione dell'edizione settecentesca conservata dalla Universitätsbibliothek Paderborn",
+        "repair_ocr": True,
         "characters": ["ARGAN", "TOINETTE", "ANGELICA", "CLEANTE", "BERALDO", "BELINA", "SIGNOR DIAFOIRUS", "TOMMASO DIAFOIRUS", "DOTTOR PURGONE", "SIGNORA FLEURANT", "NOTAIO"],
-        "aliases": {"ARGAN": ["ARGANO"], "TOINETTE": ["ANTONIETTA"], "SIGNOR DIAFOIRUS": ["DIAFOIRUS", "DOTTOR DIAFOIRUS"], "TOMMASO DIAFOIRUS": ["TOMMASO", "TOMASO"], "DOTTOR PURGONE": ["PURGONE"], "SIGNORA FLEURANT": ["FLEURANT"]},
+        "aliases": {"ARGAN": ["ARGANO", "GANO", "ARGA NO", "ARGAN O", "ARGANG"], "TOINETTE": ["ANTONIETTA", "ANTONIETT", "ANTONI TA", "TONIETTA"], "ANGELICA": ["ANG LICA", "ANGELI A"], "BELINA": ["BELTINA", "BELI", "BE LINA"], "BERALDO": ["RERALDO", "BERAL DO", "BERALD"], "CLEANTE": ["CLEA E", "CLE ANT E"], "SIGNOR DIAFOIRUS": ["DIAFOIRUS", "DIAFORIO", "DIAFORIA", "DIAFORTO", "DIAFORTIO", "DIAFORI0", "DOTTOR DIAFOIRUS"], "TOMMASO DIAFOIRUS": ["TOMMASO", "TOMASO", "TOMASO DIAFORIO", "TOMMASO DIAFORIO"], "DOTTOR PURGONE": ["PURGONE", "PURGON E"], "SIGNORA FLEURANT": ["FLEURANT", "FLORANTE"]},
         "package": "il-malato-immaginario-riscrittura.stagedesk",
     },
     {
@@ -368,7 +468,29 @@ WORKS = [
         "source_files": ["don1-clean.txt", "don2-clean.txt"], "source_url": "https://it.wikisource.org/wiki/Don_Giovanni",
         "attribution": "libretto di Lorenzo Da Ponte, edizione 1867 digitalizzata da Wikisource, distribuito con licenza CC BY-SA 3.0 e GFDL",
         "characters": ["DON GIOVANNI", "LEPORELLO", "DONNA ANNA", "DON OTTAVIO", "ELVIRA", "MASETTO", "ZERLINA", "IL COMMENDATORE", "CORO", "CONTADINI", "CAVALIERI", "TUTTI"],
-        "aliases": {"DON GIOVANNI": ["GIO", "GIO."], "LEPORELLO": ["LEP", "LEP."], "DONNA ANNA": ["ANNA", "D. ANNA"], "DON OTTAVIO": ["OTT", "OTT."], "IL COMMENDATORE": ["COM", "COM.", "COMMENDATORE"], "MASETTO": ["MAS", "MAS."], "ZERLINA": ["ZER", "ZER."]},
+        "aliases": {
+            "DON GIOVANNI": ["GIO", "GIO.", "GTO."],
+            "LEPORELLO": ["LEP", "LEP."],
+            "DONNA ANNA": ["ANNA", "D. ANNA", "ANN.", "DONN'ANNA", "DONN’ANNA"],
+            "DON OTTAVIO": ["OTT", "OTT."],
+            "IL COMMENDATORE": ["COM", "COM.", "COMMENDATORE"],
+            "MASETTO": ["MAS", "MAS."],
+            "ZERLINA": ["ZER", "ZER."],
+            "ELVIRA": ["ELV", "ELV.", "DONN'ELVIRA", "DONN’ELVIRA"],
+            "TUTTI": [
+                "GIO. E LEP.", "ZER. E MAS.", "AN. OTT.", "OTT. ELV.",
+                "ANNA, ELV.", "ANNA, OTT., ELV.", "ANNA, OTT. ELV.",
+                "ANNA, OTT. E ELV.", "ANNA, OTTAVIO E ELVIRA", "GIO. E LEP.",
+                "ZER. MAS. E LEP.", "TUTTI, FUORCHÈ GIO. E LEP.", "A 2", "TUTTI",
+            ],
+        },
+        "bare_labels": [
+            "ANNA", "LEPORELLO", "ELVIRA", "ZERLINA", "MASETTO", "OTTAVIO",
+            "DON OTTAVIO", "GIO", "LEP", "OTT", "COM", "MAS", "ZER", "ELV",
+            "TUTTI", "CORO", "CONTADINI", "CAVALIERI",
+        ],
+        "clean_wikisource_markup": True,
+        "trim_wikisource_act_files": True,
         "package": "don-giovanni.stagedesk",
     },
     {

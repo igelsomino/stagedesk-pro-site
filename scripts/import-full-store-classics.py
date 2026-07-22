@@ -125,6 +125,14 @@ def detect_speaker(line: str, aliases: dict[str, str]) -> str | None:
     if line.startswith(("(", "[", "Entr", "Esce", "Rient", "Entra", "SCENA", "Scena")):
         return None
     candidate = re.sub(r"\s+", " ", line.strip())
+    # Prefer an explicit speaker delimiter. This also handles long dialogue
+    # lines such as "ADRIANA: ..." without imposing a character-count limit.
+    label_match = re.match(r"^(.{1,90}?)\s*(?:—|–|-|:)", candidate)
+    if label_match:
+        label = label_match.group(1).strip()
+        direct = aliases.get(normalize(label))
+        if direct:
+            return direct
     candidate = re.sub(r"\s*(?:—|–|-|:)$", "", candidate).strip()
     direct = aliases.get(normalize(candidate))
     if direct:
@@ -137,7 +145,7 @@ def detect_speaker(line: str, aliases: dict[str, str]) -> str | None:
     # Also accept a known label at the start when the source adds an action.
     normalized = normalize(candidate)
     for key, canonical in sorted(aliases.items(), key=lambda item: -len(item[0])):
-        if normalized.startswith(key + " ") and len(normalized) < len(key) + 45:
+        if normalized.startswith(key + " "):
             return canonical
     # Older Italian editions often use a title-case name followed by a dash
     # without listing that minor/collective role in the cast table.
@@ -357,9 +365,9 @@ WORKS = [
         "attribution": "testo di William Shakespeare nella traduzione di Goffredo Raponi, tratto dall'edizione integrale digitale di Liber Liber, distribuita con licenza Creative Commons BY-NC-SA 4.0",
         "characters": ["ANTIFOLI DI SIRACUSA", "ANTIFOLI DI EFESO", "DROMI DI SIRACUSA", "DROMI DI EFESO", "ADRIANA", "LUCIANA", "EMILIA", "ANGELO", "EGEONE", "DUCA", "PINCH", "BALTASAR", "CORO", "TUTTI"],
         "aliases": {
-            "ANTIFOLI DI SIRACUSA": ["ANTIFOLO DI S.", "ANTIFOLO DI S", "ANTIFOLO DI SIRA- CUSA", "ANTIFOLO DI SIRACUSA"],
-            "ANTIFOLI DI EFESO": ["ANTIFOLO D’E.", "ANTIFOLO D'E.", "ANTIFOLO D’E", "ANTIFOLO D'E", "ANTIFOLO DI EFESO"],
-            "DROMI DI SIRACUSA": ["DROMIO DI S.", "DROMIO DI S", "DROMIO DI SIRA- CUSA", "DROMIO DI SIRACUSA"],
+            "ANTIFOLI DI SIRACUSA": ["ANTIFOLO DI S.", "ANTIFOLO DI S", "ANTIFOLO DI SIRA", "ANTIFOLO DI SIRA- CUSA", "ANTIFOLO DI SIRACUSA", "ANFIFOLO DI S."],
+            "ANTIFOLI DI EFESO": ["ANTIFOLO D’E.", "ANTIFOLO D'E.", "ANTIFOLO D’E", "ANTIFOLO D'E", "ANTIFOLO DI EFESO", "ANTOFOLO D’E."],
+            "DROMI DI SIRACUSA": ["DROMIO DI S.", "DROMIO DI S", "DROMO DI S.", "DROMO DI S", "DROMIO DI SIRA", "DROMIO DI SIRA- CUSA", "DROMIO DI SIRACUSA"],
             "DROMI DI EFESO": ["DROMIO D’E.", "DROMIO D'E.", "DROMIO D’E", "DROMIO D'E", "DROMIO DI EFESO"],
             "DUCA": ["DUCA SOLINO"],
             "BALTASAR": ["BALDASSARRE"],
@@ -368,7 +376,7 @@ WORKS = [
             "PRIMO MERCANTE": ["1° MERCANTE", "1O MERCANTE", "PRIMO MERCANTE"],
             "SECONDO MERCANTE": ["2° MERCANTE", "2O MERCANTE", "SECONDO MERCANTE"],
             "ETERA": ["ETÈRA", "ETERA", "ETÈRA DI EFESO"],
-            "UFFICIALE": ["UFFICIALE DI POLIZIA", "CARCERIERE"],
+            "UFFICIALE": ["UFFICIALE DI POLIZIA", "UFFIZIALE", "CARCERIERE"],
             "BADESSA": ["BADESSA EMILIA"],
             "SERVO": ["SERVO DI ADRIANA", "SERVO"],
         },

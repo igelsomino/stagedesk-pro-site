@@ -3,12 +3,14 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const IMPORT_MESSAGE = 'stagedesk-store-import'
 const CONTEXT_MESSAGE = 'stagedesk-store-context'
 const CONFIG_URL = '/store-config'
+// The Store is embedded only by StageDesk Pro; direct browser visits keep import disabled.
+const embeddedInStageDesk = window.parent !== window
 const state = {
   client: null,
   session: null,
   books: [],
   filtered: [],
-  canImport: false,
+  canImport: embeddedInStageDesk,
   selectedBook: null,
   configError: '',
 }
@@ -67,26 +69,24 @@ function normaliseBook(row) {
   }
 }
 
-function coverMarkup(book, className = 'store-book-cover') {
-  if (book.coverUrl) return `<div class="${className}"><img src="${escapeHtml(book.coverUrl)}" alt="Copertina di ${escapeHtml(book.title)}" loading="lazy" /></div>`
-  return `<div class="${className}"><div class="store-book-cover-fallback"><strong>${escapeHtml(book.title)}</strong><small>${escapeHtml(book.authorName)}</small></div></div>`
+function coverMarkup(book, className = 'store-book-cover', withOverlay = false, importButton = '') {
+  const overlay = withOverlay ? `<div class="store-book-cover-overlay">
+    <strong>${escapeHtml(book.title)}</strong>
+    <span class="store-book-cover-subtitle">${escapeHtml(book.subtitle)}</span>
+    <small>${escapeHtml(book.authorName)}</small>
+    <span class="store-book-cover-facts">${book.actorCount || '—'} attori · ${book.actCount || '—'} atti · ${book.sceneCount || '—'} scene</span>
+    ${importButton}
+  </div>` : ''
+  if (book.coverUrl) return `<div class="${className}"><img src="${escapeHtml(book.coverUrl)}" alt="Copertina di ${escapeHtml(book.title)}" loading="lazy" />${overlay}</div>`
+  return `<div class="${className}"><div class="store-book-cover-fallback"></div>${overlay}</div>`
 }
 
 function bookCard(book) {
   const importButton = state.canImport && book.packageUrl
-    ? `<button type="button" class="store-button store-button-quiet store-card-import" data-import-card="${escapeHtml(book.id)}">Importa</button>`
+    ? `<button type="button" class="store-button store-button-accent store-card-import" data-import-card="${escapeHtml(book.id)}"><span class="store-import-icon" aria-hidden="true">↓</span><span>Importa</span></button>`
     : ''
   return `<article class="store-book-card">
-    <button type="button" class="store-book-cover-button" data-detail="${escapeHtml(book.id)}" aria-label="Apri ${escapeHtml(book.title)}">${coverMarkup(book)}</button>
-    <div class="store-book-meta">
-      <h4>${escapeHtml(book.title)}</h4>
-      <p class="store-book-author">${escapeHtml(book.authorName)}</p>
-      <div class="store-book-facts">
-        <span>${book.actorCount || '—'} attori</span>
-        <span>${book.estimatedMinutes || '—'} min</span>
-      </div>
-      ${importButton ? `<div class="store-card-actions">${importButton}</div>` : ''}
-    </div>
+    <div class="store-book-cover-button" data-detail="${escapeHtml(book.id)}" role="button" tabindex="0" aria-label="Apri ${escapeHtml(book.title)}">${coverMarkup(book, 'store-book-cover', true, importButton)}</div>
   </article>`
 }
 

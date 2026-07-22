@@ -1,3 +1,4 @@
+.store-assets/
+.wrangler/
+supabase/.temp/
 .DS_Store
-.wrangler
-node_modules

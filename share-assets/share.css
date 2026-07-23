@@ -111,7 +111,7 @@ button { cursor: pointer; }
 .character-search { position: relative; display: block; margin-top: 0; }
 .character-search input { width: 100%; min-height: 36px; border: 1px solid var(--line); border-radius: 5px; padding: 7px 9px 7px 32px; color: var(--text); background: #101213; }
 .character-search input:focus { border-color: var(--accent); outline: 2px solid rgba(255, 91, 31, 0.32); outline-offset: 1px; }
-.character-options { display: grid; gap: 2px; max-height: min(42vh, 330px); margin-top: 8px; overflow: auto; padding: 3px 6px 3px 0; scrollbar-width: thin; scrollbar-color: #4a4f50 transparent; }
+.character-options { display: grid; gap: 2px; max-height: min(42vh, 330px); margin-top: 8px; overflow: auto; overscroll-behavior: contain; padding: 3px 6px 3px 0; scrollbar-gutter: stable; scrollbar-width: thin; scrollbar-color: #4a4f50 transparent; }
 .character-option { display: inline-flex; align-items: center; gap: 7px; min-height: 34px; padding: 4px 0; color: var(--text); cursor: pointer; }
 .character-option:has(input:checked) { color: var(--accent); }
 .character-option input { width: 15px; height: 15px; margin: 0; accent-color: var(--accent); }

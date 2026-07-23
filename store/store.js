@@ -237,7 +237,6 @@ function detailMarkup(book) {
   const importButton = state.canImport && book.packageUrl
     ? `<div class="store-detail-import-stack">
         <button class="store-button store-button-accent store-detail-import" type="button" data-import-book="${escapeHtml(book.id)}"><span class="store-import-icon" aria-hidden="true">↓</span><span>Importa</span></button>
-        <div class="store-detail-import-panel" aria-label="Formato del copione">Formato StageDesk</div>
       </div>`
     : ''
   return `<button class="store-dialog-close" data-close-detail aria-label="Chiudi">×</button>

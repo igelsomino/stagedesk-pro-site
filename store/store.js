@@ -3,6 +3,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const IMPORT_MESSAGE = 'stagedesk-store-import'
 const CONTEXT_MESSAGE = 'stagedesk-store-context'
 const CONFIG_URL = '/store-config'
+const COVER_ASSET_VERSION = '20260723-covers-02'
 // The Store is embedded only by StageDesk Pro; direct browser visits keep import disabled.
 const embeddedInStageDesk = window.parent !== window
 const state = {
@@ -12,6 +13,7 @@ const state = {
   filtered: [],
   canImport: embeddedInStageDesk,
   selectedBook: null,
+  pendingImport: null,
   configError: '',
 }
 
@@ -35,6 +37,8 @@ const demoBook = {
   downloadCount: 0,
   averageRating: 0,
   ratingCount: 0,
+  versionNumber: 1,
+  publishedAt: '',
   packageUrl: 'https://insoqzhjmrbrgfrsmlnj.supabase.co/storage/v1/object/public/store-packages/official/il-malato-immaginario-riscrittura.stagedesk',
   coverUrl: '',
   isDemo: true,
@@ -43,7 +47,10 @@ const demoBook = {
 function normaliseBook(row) {
   const publicUrl = (bucket, path) => {
     if (!state.client || !path) return ''
-    return state.client.storage.from(bucket).getPublicUrl(path).data.publicUrl || ''
+    const url = state.client.storage.from(bucket).getPublicUrl(path).data.publicUrl || ''
+    if (!url || bucket !== 'store-covers') return url
+    const separator = url.includes('?') ? '&' : '?'
+    return `${url}${separator}v=${COVER_ASSET_VERSION}`
   }
   return {
     id: row.id,
@@ -62,11 +69,22 @@ function normaliseBook(row) {
     downloadCount: asNumber(row.download_count),
     averageRating: asNumber(row.average_rating),
     ratingCount: asNumber(row.rating_count),
+    versionNumber: Math.max(0, asNumber(row.current_version)),
+    publishedAt: row.published_at || row.updated_at || '',
     packageUrl: publicUrl('store-packages', row.package_path),
     coverUrl: publicUrl('store-covers', row.cover_path),
     createdAt: row.created_at || '',
     isDemo: false,
   }
+}
+
+function publicationLabel(book) {
+  if (!book.versionNumber && !book.publishedAt) return ''
+  const timestamp = book.publishedAt ? Date.parse(book.publishedAt) : NaN
+  const date = Number.isNaN(timestamp)
+    ? ''
+    : new Intl.DateTimeFormat('it-IT', { dateStyle: 'medium' }).format(new Date(timestamp))
+  return `Versione ${book.versionNumber || 1}${date ? ` · pubblicata il ${date}` : ''}`
 }
 
 function ratingMarkup(book, className = '') {
@@ -75,7 +93,9 @@ function ratingMarkup(book, className = '') {
   const label = ratingCount
     ? `${rating.toLocaleString('it-IT', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}/5 · ${ratingCount} ${ratingCount === 1 ? 'voto' : 'voti'}`
     : 'Nessun voto'
-  return `<span class="store-book-rating ${className}">${escapeHtml(label)}</span>`
+  const filledStars = Math.max(0, Math.min(5, Math.round(rating)))
+  const stars = Array.from({ length: 5 }, (_, index) => `<span class="store-rating-star${index < filledStars ? ' is-filled' : ''}" aria-hidden="true">★</span>`).join('')
+  return `<span class="store-book-rating ${className}" aria-label="${escapeHtml(label)}"><span class="store-rating-stars">${stars}</span><span class="store-rating-label">${escapeHtml(label)}</span></span>`
 }
 
 function coverMarkup(book, className = 'store-book-cover', withOverlay = false) {
@@ -86,7 +106,7 @@ function coverMarkup(book, className = 'store-book-cover', withOverlay = false) 
     <span class="store-book-cover-facts">${book.actorCount || '—'} attori · ${book.actCount || '—'} atti · ${book.sceneCount || '—'} scene</span>
     ${ratingMarkup(book, 'store-book-rating-on-cover')}
   </div>` : ''
-  if (book.coverUrl) return `<div class="${className}"><img src="${escapeHtml(book.coverUrl)}" alt="Copertina di ${escapeHtml(book.title)}" loading="lazy" />${overlay}</div>`
+  if (book.coverUrl) return `<div class="${className}"><img src="${escapeHtml(book.coverUrl)}" alt="Copertina di ${escapeHtml(book.title)}" loading="lazy" decoding="async" />${overlay}</div>`
   return `<div class="${className}"><div class="store-book-cover-fallback"></div>${overlay}</div>`
 }
 
@@ -198,10 +218,26 @@ function sendImport(book) {
   }, '*')
 }
 
+function showImportConsent(book) {
+  if (!state.canImport || !book.packageUrl) return
+  state.pendingImport = book
+  const intro = $('#import-consent-intro')
+  const license = $('#import-consent-license')
+  const checkbox = $('#import-consent-accepted')
+  const status = $('#import-consent-status')
+  if (intro) intro.innerHTML = `Stai per importare <strong>${escapeHtml(book.title)}</strong> nel tuo progetto StageDesk Pro.`
+  if (license) license.textContent = book.rightsLabel || 'Non indicata nella scheda'
+  if (checkbox) checkbox.checked = false
+  if (status) status.textContent = ''
+  $('#import-consent-dialog')?.showModal()
+  requestAnimationFrame(() => checkbox?.focus())
+}
+
 function detailMarkup(book) {
   const importButton = state.canImport && book.packageUrl
     ? `<div class="store-detail-import-stack">
         <button class="store-button store-button-accent store-detail-import" type="button" data-import-book="${escapeHtml(book.id)}"><span class="store-import-icon" aria-hidden="true">↓</span><span>Importa</span></button>
+        <div class="store-detail-import-panel" aria-label="Formato del copione">Formato StageDesk</div>
       </div>`
     : ''
   return `<button class="store-dialog-close" data-close-detail aria-label="Chiudi">×</button>
@@ -220,6 +256,7 @@ function detailMarkup(book) {
         <p class="store-book-author">di ${escapeHtml(book.authorName)}</p>
         <p class="store-detail-description">${escapeHtml(book.description)}</p>
         <div class="store-detail-facts"><span>${book.actorCount || '—'} attori</span><span>${book.actCount || '—'} atti</span><span>${book.sceneCount || '—'} scene</span><span>${book.estimatedMinutes || '—'} min</span><span>${escapeHtml(book.language)}</span></div>
+        <p class="store-detail-publication">${escapeHtml(publicationLabel(book))}</p>
       </div>
     </div>`
 }
@@ -275,6 +312,8 @@ async function submitUpload(event) {
     package_path: packagePath,
     package_name: packageFile.name,
     cover_path: coverPath,
+    current_version: 1,
+    published_at: new Date().toISOString(),
     is_published: true,
   }
   const inserted = await state.client.from('store_scripts').insert(row).select().single()
@@ -320,7 +359,13 @@ $('#catalog-sections').addEventListener('click', (event) => {
   if (carouselButton) {
     const key = carouselButton.dataset.carouselNext || carouselButton.dataset.carouselPrev
     const track = document.querySelector(`[data-carousel-track="${CSS.escape(key)}"]`)
-    if (track) track.scrollBy({ left: (carouselButton.hasAttribute('data-carousel-next') ? 1 : -1) * track.clientWidth * 0.86, behavior: 'smooth' })
+    if (track) {
+      const direction = carouselButton.hasAttribute('data-carousel-next') ? 1 : -1
+      const distance = Math.max(1, Math.round(track.clientWidth * 0.86))
+      const maxScroll = track.scrollWidth - track.clientWidth
+      const target = Math.max(0, Math.min(maxScroll, track.scrollLeft + direction * distance))
+      track.scrollTo({ left: target, behavior: 'smooth' })
+    }
     return
   }
   const detailButton = event.target.closest('[data-detail]')
@@ -334,8 +379,30 @@ $('#detail-content').addEventListener('click', async (event) => {
   const importer = event.target.closest('[data-import-book]')
   if (importer) {
     const book = state.books.find((item) => item.id === importer.dataset.importBook)
-    if (book) sendImport(book)
+    if (book) showImportConsent(book)
   }
+})
+
+$('#import-consent-form').addEventListener('submit', (event) => {
+  event.preventDefault()
+  const checkbox = $('#import-consent-accepted')
+  const status = $('#import-consent-status')
+  if (!checkbox?.checked) {
+    if (status) status.textContent = 'Per importare devi confermare di aver letto e accettato le condizioni.'
+    checkbox?.focus()
+    return
+  }
+  const book = state.pendingImport
+  state.pendingImport = null
+  $('#import-consent-dialog')?.close()
+  if (book) sendImport(book)
+})
+
+document.querySelectorAll('[data-close-import-consent]').forEach((button) => {
+  button.addEventListener('click', () => {
+    state.pendingImport = null
+    $('#import-consent-dialog')?.close()
+  })
 })
 
 await initSupabase()

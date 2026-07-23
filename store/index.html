@@ -9,7 +9,7 @@
     <meta property="og:type" content="website" />
     <title>StageDesk Store</title>
     <link rel="icon" href="../assets/stagedesk-pro-icon.png" />
-    <link rel="stylesheet" href="./store.css?v=20260722-13" />
+    <link rel="stylesheet" href="./store.css?v=20260723-05" />
   </head>
   <body class="store-page">
     <header class="store-header">
@@ -107,6 +107,31 @@
       <div class="store-dialog-card store-detail-card" id="detail-content"></div>
     </dialog>
 
-    <script type="module" src="./store.js?v=20260722-13"></script>
+    <dialog id="import-consent-dialog" class="store-dialog">
+      <form method="dialog" class="store-dialog-card store-consent-card" id="import-consent-form">
+        <button class="store-dialog-close" type="button" data-close-import-consent aria-label="Chiudi">×</button>
+        <p class="store-eyebrow">IMPORTAZIONE STAGEDESK</p>
+        <h2>Prima di importare</h2>
+        <p class="store-dialog-copy" id="import-consent-intro">Stai per importare un copione nel tuo progetto StageDesk Pro.</p>
+        <div class="store-consent-notice">
+          <p><strong>Verifica il contenuto prima dell'uso.</strong> Il pacchetto può contenere errori di trascrizione, formattazione o interpretazione delle battute e delle note. Dopo l'importazione il copione deve essere controllato e adattato dall'utente prima di prove, pubblicazioni o rappresentazioni.</p>
+          <p>La licenza e le informazioni sulla fonte indicate nella scheda del copione fanno parte delle condizioni di utilizzo. Devi rispettare i diritti d'autore, le attribuzioni, le limitazioni di uso e ogni obbligo previsto dalla licenza.</p>
+          <p class="store-consent-license"><strong>Licenza dichiarata:</strong> <span id="import-consent-license">non indicata</span></p>
+          <p>StageDesk fornisce uno strumento tecnico di importazione e non garantisce completezza, accuratezza o idoneità del contenuto. L'utente resta responsabile della verifica del testo e dell'uso del copione.</p>
+        </div>
+        <p class="store-consent-legal">Per le condizioni generali consulta i <a href="https://stagedesk-pro.aigconsulting.it/termini-uso/" target="_blank" rel="noopener noreferrer">Termini d'uso</a> e l'<a href="https://stagedesk-pro.aigconsulting.it/informativa-privacy/" target="_blank" rel="noopener noreferrer">Informativa privacy</a>.</p>
+        <label class="store-consent-check">
+          <input id="import-consent-accepted" name="import_consent" type="checkbox" value="accepted" required />
+          <span>Dichiaro di aver letto e accetto queste condizioni prima di continuare.</span>
+        </label>
+        <p id="import-consent-status" class="store-form-status" role="alert" aria-live="polite"></p>
+        <div class="store-consent-actions">
+          <button class="store-button store-button-quiet" type="button" data-close-import-consent>Annulla</button>
+          <button class="store-button store-button-accent" type="submit" value="accept">Accetta e continua</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script type="module" src="./store.js?v=20260723-05"></script>
   </body>
 </html>

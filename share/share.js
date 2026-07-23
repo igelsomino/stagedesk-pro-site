@@ -247,7 +247,20 @@ const normalizeCharacterData = (rawCharacters, rawDialogues) => {
     return { ...dialogue, characterId: collective ? String(dialogue.characterId ?? 'tutti') : characterId, collective }
   })
 
-  return { characters, dialogues }
+  const orderedCharacters = [...characters].sort((left, right) => {
+    const leftOrder = Number(left.order ?? left.position ?? left.sequence ?? left.index)
+    const rightOrder = Number(right.order ?? right.position ?? right.sequence ?? right.index)
+    const hasLeftOrder = Number.isFinite(leftOrder)
+    const hasRightOrder = Number.isFinite(rightOrder)
+
+    if (hasLeftOrder && hasRightOrder && leftOrder !== rightOrder) return leftOrder - rightOrder
+    if (hasLeftOrder !== hasRightOrder) return hasLeftOrder ? -1 : 1
+
+    return left.name.localeCompare(right.name, 'it-IT', { numeric: true, sensitivity: 'base' })
+      || left.id.localeCompare(right.id, 'it-IT', { numeric: true, sensitivity: 'base' })
+  })
+
+  return { characters: orderedCharacters, dialogues }
 }
 
 const profileTypesFromMetadata = (user) => {
@@ -788,7 +801,7 @@ const renderShare = (updateMessage = '', uiState = {}) => {
               <span class="search-field-icon">${iconSvg('search')}</span>
               <input type="search" placeholder="Cerca personaggio" value="${escapeHtml(characterSearchQuery)}" data-character-search />
             </label>
-            <div class="character-options">
+            <div class="character-options" data-character-options>
               ${characters.map((character) => `
                 <label class="character-option" data-character-option data-character-name="${escapeHtml(character.name.toLowerCase())}">
                   <input type="checkbox" value="${escapeHtml(character.id)}" ${selectedCharacters.has(character.id) ? 'checked' : ''} />
@@ -834,6 +847,13 @@ const renderShare = (updateMessage = '', uiState = {}) => {
       </div>
     </section>
   `)
+  const characterOptions = root.querySelector('[data-character-options]')
+  if (characterOptions && Number.isFinite(uiState.characterOptionsScrollTop)) {
+    characterOptions.scrollTop = uiState.characterOptionsScrollTop
+  }
+  if (Number.isFinite(uiState.scrollY) && !uiState.scrollAnchor) {
+    window.scrollTo({ top: uiState.scrollY, behavior: 'auto' })
+  }
   root.querySelector('[data-refresh-share]')?.addEventListener('click', () => void refreshSharedScript())
   root.querySelector('[data-character-menu-toggle]')?.addEventListener('click', (event) => {
     const toggle = event.currentTarget
@@ -946,11 +966,12 @@ const renderShare = (updateMessage = '', uiState = {}) => {
   root.querySelectorAll('.character-option input').forEach((input) => {
     input.addEventListener('change', () => {
       const scrollY = window.scrollY
+      const characterOptionsScrollTop = root.querySelector('[data-character-options]')?.scrollTop || 0
       if (input.checked) selectedCharacters.add(input.value)
       else selectedCharacters.delete(input.value)
       persistSelectedCharacters()
       revealedDialogueIds = new Set()
-      renderShare('', { focusCharacterId: input.value, scrollY })
+      renderShare('', { focusCharacterId: input.value, scrollY, characterOptionsScrollTop })
     })
   })
   root.querySelectorAll('[data-filter-mode]').forEach((button) => {
@@ -1057,6 +1078,10 @@ const renderShare = (updateMessage = '', uiState = {}) => {
       if (uiState.focusCharacterId) {
         const input = Array.from(root.querySelectorAll('.character-option input')).find((item) => item.value === uiState.focusCharacterId)
         input?.focus({ preventScroll: true })
+      }
+      const characterOptions = root.querySelector('[data-character-options]')
+      if (characterOptions && Number.isFinite(uiState.characterOptionsScrollTop)) {
+        characterOptions.scrollTop = uiState.characterOptionsScrollTop
       }
       if (uiState.scrollAnchor) {
         const anchor = Array.from(root.querySelectorAll('[data-dialogue-id]')).find((item) => item.dataset.dialogueId === uiState.scrollAnchor.dialogueId)

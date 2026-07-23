@@ -35,6 +35,11 @@ pubblico `store-covers`. Le policy limitano caricamento, modifica e cancellazion
 Il catalogo e le valutazioni restano protetti da Row Level Security; i download vengono incrementati tramite la
 funzione SQL `increment_store_download` e le valutazioni tramite `rate_store_script`.
 
+La pubblicazione dei copioni è versionata: `store_scripts.current_version` e `store_scripts.published_at` indicano
+la versione corrente, mentre `store_script_versions` conserva lo storico dei pacchetti `.stagedesk`, con data e note
+di rilascio. La migrazione è disponibile in `stagedesk-pro/docs/supabase-store-publication-versions.sql` e abilita la
+funzione `publish_store_script`, usata da StageDesk Pro per pubblicare solo i copioni del relativo autore.
+
 Per attivare il catalogo, eseguire nel SQL Editor di Supabase:
 
 ```text
@@ -54,10 +59,10 @@ Lo script `scripts/seed-store-demo.mjs` pubblica nel catalogo dieci copioni inte
 `L'avaro`, `Casa di bambola`, `Don Giovanni` e `La commedia degli equivoci`.
 Per ciascun titolo vengono caricati il pacchetto del copione, la copertina e i metadati di catalogo. I testi sono
 edizioni integrali delle fonti indicate nel pacchetto, con le didascalie conservate e note di regia StageDesk
-originali aggiunte per il lavoro in prova. Il catalogo espone la fonte e la licenza di ogni titolo: l'edizione storica
-del `Malato immaginario` è indicata come pubblico dominio, mentre le edizioni Liber Liber e Wikisource riportano
-le rispettive licenze Creative Commons. Non vengono presentate come opere "senza copyright" le traduzioni per cui la
-fonte dichiara una licenza.
+originali aggiunte per il lavoro in prova. Il `Malato immaginario` presente nel catalogo è un adattamento originale
+StageDesk ispirato all'opera di Molière: non è presentato come una traduzione integrale della scansione OCR precedente.
+Per gli altri titoli il catalogo espone la fonte e la licenza indicata dalla relativa edizione. Non vengono presentate
+come opere "senza copyright" le traduzioni per cui la fonte dichiara una licenza.
 
 La trasformazione dei testi sorgente è gestita da `scripts/import-full-store-classics.py`. Lo script legge i file
 preparati nella cartella locale `FULL_SOURCE_DIR`, mantiene l'ordine di atti, scene, didascalie e battute, costruisce
@@ -72,7 +77,7 @@ etichette dei personaggi anche quando la fonte usa abbreviazioni. L'inventario c
 
 | Copione | Atti | Scene | Ripartizione per atto |
 | --- | ---: | ---: | --- |
-| Il malato immaginario | 3 | 16 | 4 + 4 + 8 |
+| Il malato immaginario | 3 | 10 | 3 + 4 + 3 |
 | Il servitore di due padroni | 3 | 59 | 22 + 20 + 17 |
 | Romeo e Giulietta | 5 | 24 | 5 + 6 + 5 + 5 + 3 |
 | Amleto | 5 | 20 | 5 + 2 + 4 + 7 + 2 |

@@ -93,7 +93,7 @@ def clean_lines(text: str, strip_numbered_notes: bool = False, repair_ocr: bool 
     lines: list[str] = []
     skipping_numbered_note = False
     for raw in text.replace("\r", "").replace("\f", "\n").splitlines():
-        line = raw.strip()
+        line = html.unescape(raw.strip())
         line = re.sub(r"\s+", " ", line)
         if repair_ocr:
             line = repair_historical_ocr(line)
@@ -133,9 +133,12 @@ def clean_lines(text: str, strip_numbered_notes: bool = False, repair_ocr: bool 
 
 def source_lines(work: dict) -> list[str]:
     result: list[str] = []
+    source_root = Path(work.get("source_dir", SOURCE_DIR))
+    if not source_root.is_absolute():
+        source_root = ROOT / source_root
     for filename in work["source_files"]:
         file_lines = clean_lines(
-            (SOURCE_DIR / filename).read_text(encoding="utf-8", errors="ignore"),
+            (source_root / filename).read_text(encoding="utf-8", errors="ignore"),
             strip_numbered_notes=work.get("strip_numbered_notes", False),
             repair_ocr=work.get("repair_ocr", False),
         )
@@ -174,6 +177,149 @@ def source_lines(work: dict) -> list[str]:
             flags=re.IGNORECASE,
         )
         result = source_text.splitlines()
+    # Liber Liber repeats the title as a page header throughout the text.
+    # Those headers must never become part of the preceding dialogue block.
+    title = normalize(work["title"])
+    # A work title can also be the protagonist's printed speaker label
+    # (``Macbeth``, ``Amleto``). Such lines are dialogue labels, not repeated
+    # ebook headers, so keep them while filtering editorial page headers.
+    character_labels = {
+        normalize(value)
+        for value in [*work.get("characters", []), *work.get("aliases", {}).keys()]
+    }
+    source_header_authors = (
+        "WILLIAM SHAKESPEARE",
+        "CARLO GOLDONI",
+        "HENRIK IBSEN",
+        "LORENZO DA PONTE",
+    )
+    filtered: list[str] = []
+    for line in result:
+        if work.get("slug") == "casa-di-bambola":
+            # One PDF line is extracted as ``NOR.A.`` instead of ``NORA.``;
+            # without this repair the generic-label fallback creates NOR and
+            # leaves the initial A in the dialogue.
+            line = re.sub(r"^NOR\.A\.", "NORA.", line, flags=re.IGNORECASE)
+        normalized = normalize(line)
+        is_title_header = (
+            normalized == title and normalized not in character_labels
+            or (title in normalized and len(normalized) <= len(title) + 60 and any(author in normalized for author in source_header_authors))
+        )
+        if is_title_header:
+            continue
+        # These are editorial page markers, not spoken text or directions.
+        if re.fullmatch(r"FINE\s+DELL['’]ATTO(?:\s+(?:PRIMO|SECONDO|TERZO|QUARTO|QUINTO))?\.?", line, re.IGNORECASE):
+            continue
+        filtered.append(line)
+    # Repair line wrapping in scanned editions before speaker detection. This
+    # is especially important for labels such as ``DROMIO D'E.`` and
+    # ``ANTIFOLO DI SIRA-CUSA`` which otherwise become a bogus speaker named
+    # only by the wrapped suffix (for example ``E`` or ``CUSA``).
+    repaired: list[str] = []
+    for line in filtered:
+        if repaired:
+            previous = repaired[-1]
+            if re.search(r"[A-Za-zÀ-ÿ][’']$", previous) and re.match(r"^[A-ZÀ-Ý]{1,3}\.", line):
+                repaired[-1] = f"{previous}{line.lstrip()}"
+                continue
+            if re.search(r"[A-Za-zÀ-ÿ]-$", previous) and re.match(r"^[A-ZÀ-Ý]{1,8}(?:\b|[ ,.;:])", line):
+                repaired[-1] = f"{previous[:-1]}{line.lstrip()}"
+                continue
+        repaired.append(line)
+    # Restore punctuation. One-character connectors are kept here because
+    # they can be part of a cast list (``MACBETH / e / BANQUO``); the dialogue
+    # parser discards isolated connectors when they are not structural.
+    joined: list[str] = []
+    for position, line in enumerate(repaired):
+        if line in {",", ".", ";", ":", "!", "?", ")", "]"} and joined:
+            joined[-1] = f"{joined[-1]}{line}"
+            continue
+        joined.append(line)
+
+    # PDF/text extraction sometimes puts a stage-direction verb and its cast
+    # on separate lines (``Entrano / ROSS / e / ANGUS``), or splits a label
+    # around the em dash (``MACDUFF / MACDUFF / —``). Rejoin only these
+    # unambiguous structural patterns before dialogue parsing.
+    collapsed: list[str] = []
+    index = 0
+    while index < len(joined):
+        line = joined[index]
+        # The Liber Liber text layer occasionally wraps a character label
+        # around a parenthetical direction, for example:
+        # ``DROMIO DI SIRA- (All'etera) / CUSA -``. Reconstruct the printed
+        # label before speaker detection; otherwise ``CUSA`` becomes a fake
+        # character and the following speech is assigned incorrectly.
+        if (
+            work.get("slug") == "la-commedia-degli-equivoci"
+            and index + 1 < len(joined)
+            and re.fullmatch(r"DROMIO DI SIRA-\s*\([^)]*\)", line, re.IGNORECASE)
+            and re.fullmatch(r"CUSA\s*[-–—]", joined[index + 1], re.IGNORECASE)
+        ):
+            collapsed.append(f"DROMIO DI SIRACUSA {line[line.find('('):]} -")
+            index += 2
+            continue
+        # In one scanned Macbeth page the stage direction and the next label
+        # lose their line break: ``Entra LADY MACBETH DUNCANO —``.
+        if work.get("slug") == "macbeth" and re.fullmatch(
+            r"Entra LADY MACBETH DUNCANO\s*[-–—]", line, re.IGNORECASE
+        ):
+            collapsed.extend(["Entra LADY MACBETH", "DUNCANO —"])
+            index += 1
+            continue
+        if (
+            index + 2 < len(joined)
+            and line == joined[index + 1]
+            and line == line.upper()
+            and joined[index + 2] in {"—", "–", "-"}
+        ):
+            collapsed.append(f"{line} {joined[index + 2]}")
+            index += 3
+            continue
+        if (
+            index + 1 < len(joined)
+            and line == line.upper()
+            and joined[index + 1] in {"—", "–", "-"}
+        ):
+            collapsed.append(f"{line} {joined[index + 1]}")
+            index += 2
+            continue
+        if re.fullmatch(r"(?:Entrano|Entrano tutti|Escono|Rientrano|Entra|Esce|Rientra)", line, re.IGNORECASE):
+            parts = [line]
+            cursor = index + 1
+            while cursor < len(joined):
+                candidate = joined[cursor]
+                # A following ``NAME —`` is a new speaker, not part of the
+                # cast listed in the stage direction.
+                if (
+                    candidate == candidate.upper()
+                    and cursor + 1 < len(joined)
+                    and joined[cursor + 1] in {"—", "–", "-"}
+                ):
+                    break
+                if candidate in {"e", "ed", ","} or (
+                    candidate == candidate.upper()
+                    and 1 < len(candidate) <= 80
+                    and not re.search(r"[.!?]", candidate)
+                ):
+                    parts.append(candidate)
+                    cursor += 1
+                    continue
+                break
+            if len(parts) > 1:
+                collapsed.append(" ".join(parts))
+                index = cursor
+                continue
+        collapsed.append(line)
+        index += 1
+    result = collapsed
+
+    # The first ACT match in the selected group marks the beginning of the
+    # actual play. Everything before it is the ebook front matter, cast list,
+    # notes and table of contents. Wikisource files are already trimmed one by
+    # one above; the same logic is still harmless for them.
+    actual_acts = find_actual_acts(result, work["act_count"])
+    if actual_acts and actual_acts[0][0] > 0:
+        result = result[actual_acts[0][0]:]
     drop_source_lines = {normalize(line) for line in work.get("drop_source_lines", [])}
     if drop_source_lines:
         result = [line for line in result if normalize(line) not in drop_source_lines]
@@ -265,7 +411,7 @@ def detect_speaker(line: str, aliases: dict[str, str], bare_labels: set[str] | N
 
     # Prefer an explicit speaker delimiter. A period is included because the
     # historical editions use labels such as "Gio." and "NORA.".
-    label_match = re.match(r"^(.{1,90}?)\s*(?:—|–|-|:|\.)\s*", candidate)
+    label_match = re.match(r"^(.{1,90}?)\s*(?P<delimiter>—|–|-|:|\.)\s*", candidate)
     if label_match:
         label = label_match.group(1).strip()
         remainder = candidate[label_match.end():].strip()
@@ -273,7 +419,11 @@ def detect_speaker(line: str, aliases: dict[str, str], bare_labels: set[str] | N
         # part of the sentence, for example "Lep., e finge...". The comma or
         # conjunction means this is not a new speaker label.
         direct = aliases.get(normalize(label))
-        if direct:
+        if direct and (
+            label == label.upper()
+            or normalize(label) in bare_labels
+            or label_match.group("delimiter") != "."
+        ):
             # Once the label is known, every remainder is part of that
             # character's source block. In particular ``NORA. Con...`` and
             # ``NORA. E...`` were incorrectly rejected because ``CON`` and
@@ -283,6 +433,21 @@ def detect_speaker(line: str, aliases: dict[str, str], bare_labels: set[str] | N
             return None
         if _looks_like_stage_direction(remainder):
             return None
+        # Some complete editions use a cast label that is not present in the
+        # abbreviated metadata list (for example UFFICIALE, SEYTON or
+        # PORTIERE). An all-caps label followed by a dialogue delimiter is a
+        # reliable speaker boundary; preserve it as a discovered character
+        # instead of appending the following speech to the previous speaker.
+        label_words = [word for word in re.split(r"\s+", label) if word.casefold() not in {"e", "ed"}]
+        label_without_joiners = " ".join(label_words)
+        if (
+            label_without_joiners == label_without_joiners.upper()
+            and 2 <= len(label) <= 60
+            and 1 <= len(label.split()) <= 10
+        ):
+            if re.search(r"\b(?:E|ED)\b|,", label, re.IGNORECASE):
+                return "TUTTI"
+            return label.strip(" .,;:-—–")
 
     # A bare label is valid only when it is explicitly supplied by the source
     # edition. This prevents cast lists such as "Leporello, poi Don Giovanni"
@@ -290,7 +455,7 @@ def detect_speaker(line: str, aliases: dict[str, str], bare_labels: set[str] | N
     had_terminal_punctuation = bool(re.search(r"[.?!:;—–-]$", candidate))
     candidate = re.sub(r"\s*(?:—|–|-|:|\.)$", "", candidate).strip()
     direct = aliases.get(normalize(candidate))
-    if direct and (normalize(candidate) in bare_labels or candidate == candidate.upper() or had_terminal_punctuation):
+    if direct and (normalize(candidate) in bare_labels or candidate == candidate.upper()):
         return direct
     return None
 
@@ -317,6 +482,9 @@ def compact(text: str, limit: int = 700) -> str:
 def clean_dialogue(text: str) -> str:
     """Remove OCR punctuation leaked from a separate line before dialogue."""
     text = re.sub(r"^[ \t]*[!?:;,\)\]]+(?=\s|[A-ZÀ-Ýa-zà-ÿ])", "", text).strip()
+    # In La tempesta the source labels the closing speech with an editorial
+    # marker. Keep Prospero's words, but never expose that marker in a cue.
+    text = re.sub(r"\bEPILOGO\s*\(\s*recitato\s+da\s+Prospero\s*\)\s*", "", text, flags=re.IGNORECASE)
     # Liber Liber extracts numbered translator-note anchors as separate
     # parentheses. They are not part of the spoken text.
     text = re.sub(r"\(\s*\)", "", text)
@@ -343,10 +511,20 @@ def split_inline_speaker_segments(line: str, aliases: dict[str, str]) -> list[st
     labels = sorted(aliases, key=len, reverse=True)
     if not labels:
         return [line]
+    # Do not split a collective label such as ``ORAZIO e MARCELLO —`` at the
+    # name of the second participant. It is one printed turn in the source.
+    if detect_speaker(line, aliases) == "TUTTI":
+        return [line]
     label_pattern = "|".join(re.escape(label) for label in labels if label)
+    # Include unknown all-caps labels as a fallback. The delimiter and the
+    # short-label constraint prevent ordinary uppercase words in a speech from
+    # being split accidentally.
+    dynamic_label_pattern = r"[A-ZÀ-Ý][A-ZÀ-Ý0-9'’ .-]{1,59}?"
+    combined_label_pattern = rf"(?:{label_pattern}|{dynamic_label_pattern})" if label_pattern else dynamic_label_pattern
     pattern = re.compile(
-        rf"(?<![A-Za-zÀ-ÿ])(?P<label>{label_pattern})"
-        r"(?:\s+\([^)]*\))?\s*(?:—|–|-|:|\.)\s*"
+        rf"(?<![A-Za-zÀ-ÿ])(?P<label>{combined_label_pattern})"
+        r"(?:\s+\([^)]*\))?\s*(?:—|–|-|:|\.)\s*",
+        flags=re.IGNORECASE,
     )
     matches = list(pattern.finditer(line))
     if not matches or (len(matches) == 1 and matches[0].start() == 0):
@@ -460,7 +638,52 @@ def is_action_direction(line: str, aliases: dict[str, str]) -> bool:
         return False
     if re.match(r"^parte\b", value, re.IGNORECASE):
         return bool(re.match(r"^parte(?:[.?!;,:-]*$|\s+(?:non visto|fuori|con|poi|e)\b)", value, re.IGNORECASE))
-    return bool(re.match(r"^(?:entr(?:a|ano)|esc(?:e|ono)|rientr(?:a|ano)|partono|ritorna|ritornano|si ritira|si avvicina|si allontana|si siede|si alza)\b", value, re.IGNORECASE))
+    return bool(re.match(r"^(?:entr(?:a|ano)|esc(?:e|ono)|rientr(?:a|ano)|partono|ritorna|ritornano|si ritira|si avvicina|si allontana|si siede|si alza|si nasconde|si mostra|si inginocchia|si rialza|si avvia|si ferma|si allontanano|si avvicinano)\b", value, re.IGNORECASE))
+
+
+def split_leading_stage_direction(line: str, aliases: dict[str, str]) -> tuple[list[str], str]:
+    """Separate a leading movement aside from the following spoken text."""
+    value = re.sub(r"\s+", " ", line.strip())
+    directions: list[str] = []
+    while value.startswith(("(", "[")):
+        opener = value[0]
+        closer = ")" if opener == "(" else "]"
+        close_index = value.find(closer, 1)
+        if close_index < 0:
+            break
+        candidate = value[: close_index + 1].strip()
+        if not is_action_direction(candidate, aliases):
+            break
+        directions.append(candidate)
+        value = value[close_index + 1 :].lstrip(" .;,:-—–")
+    return directions, value
+
+
+def extract_embedded_stage_directions(text: str) -> tuple[str, list[str]]:
+    """Remove movement directions accidentally joined to a dialogue line."""
+    directions: list[str] = []
+    movement_word = r"entr(?:a|ano)|esc(?:e|ono)|rientr(?:a|ano)|part(?:e|ono)|ritorn(?:a|ano)|si\s+(?:ritira|avvicina|allontana|siede|alza|nasconde|mostra|inginocchia|rialza|avvia|ferma)"
+    parenthetical = re.compile(r"\((?=[^()]*\b(?:" + movement_word + r")\b)[^()]+\)", re.IGNORECASE)
+
+    def collect_parenthetical(match: re.Match[str]) -> str:
+        directions.append(match.group(0).strip())
+        return " "
+
+    text = parenthetical.sub(collect_parenthetical, text)
+    inline = re.compile(
+        r"(?<!\w)(?:" + movement_word + r")\b[^.;!?]*?(?:[.;]|$)",
+        re.IGNORECASE,
+    )
+
+    def collect_inline(match: re.Match[str]) -> str:
+        candidate = match.group(0).strip()
+        if candidate:
+            directions.append(candidate)
+        return " "
+
+    text = inline.sub(collect_inline, text)
+    text = re.sub(r"\s{2,}", " ", text).strip(" ;,:-—–")
+    return text, directions
 
 
 def scene_notes(scene_text: list[str], speakers: list[str], title: str, scene_id: str, aliases: dict[str, str]) -> list[str]:
@@ -495,7 +718,10 @@ def scene_notes(scene_text: list[str], speakers: list[str], title: str, scene_id
         None,
     )
     position = compact(location or "La scena segue l'ambientazione indicata nell'edizione di riferimento.")
-    directions = [line for line in cleaned_lines if is_action_direction(line, aliases)]
+    directions = list(dict.fromkeys(
+        [line for line in cleaned_lines if is_action_direction(line, aliases)]
+        + [line for line in cleaned_lines if line.startswith(("Entr", "Esce", "Rient", "Part", "Si ")) and not detect_speaker(line, aliases)]
+    ))
     movement = compact("; ".join(directions[:3])) if directions else "Seguire le entrate, le uscite e le azioni indicate nelle didascalie originali, mantenendo leggibili le relazioni nello spazio."
     tone = f"La scena «{title}» conserva il ritmo e il tono dell'edizione di riferimento; le pause devono lasciare emergere il conflitto tra i personaggi."
     cast = ", ".join(dict.fromkeys(speakers)) or "Personaggi indicati nell'edizione di riferimento."
@@ -516,7 +742,19 @@ def parse_scene(scene_text: list[str], aliases: dict[str, str], fallback_charact
     expanded_scene: list[str] = []
     for line in scene_text:
         expanded_scene.extend(split_inline_speaker_segments(line, aliases))
-    for index, line in enumerate(expanded_scene):
+    for index, original_line in enumerate(expanded_scene):
+        leading_directions, line = split_leading_stage_direction(original_line, aliases)
+        for direction in leading_directions:
+            if current_speaker and current:
+                blocks.append((current_speaker, " ".join(current).strip()))
+                current = []
+            preface.append(direction)
+        if not line:
+            continue
+        # A few PDF layers expose the lower-case connector from a cast list
+        # as an isolated pseudo-line. It is never a complete spoken turn.
+        if line.casefold() in {"a", "e", "ed"}:
+            continue
         speaker = detect_speaker(line, aliases, bare_labels)
         # A bare source label followed by punctuation is usually part of the
         # cast description at the top of a scene, not a spoken line.
@@ -534,6 +772,13 @@ def parse_scene(scene_text: list[str], aliases: dict[str, str], fallback_charact
             remainder = dialogue_remainder(line, aliases, speaker)
             current = [remainder] if remainder else []
             continue
+        if current_speaker and is_action_direction(line, aliases):
+            if current:
+                blocks.append((current_speaker, " ".join(current).strip()))
+                current = []
+            preface.append(line)
+            current_speaker = None
+            continue
         if current_speaker:
             current.append(line)
         else:
@@ -546,6 +791,8 @@ def parse_scene(scene_text: list[str], aliases: dict[str, str], fallback_charact
             blocks.append((fallback_character, text))
     cleaned_blocks = []
     for speaker, text in blocks:
+        text, embedded_directions = extract_embedded_stage_directions(text)
+        preface.extend(embedded_directions)
         value = clean_dialogue(join_dialogue_lines(text.splitlines()))
         if value and not is_stage_direction_only(value):
             cleaned_blocks.append((speaker, value))
@@ -614,7 +861,7 @@ def parse_work(work: dict) -> str:
                 continue
             scene_id = f"atto-{act_index}-scena-{scene_index}"
             output.extend([f"## Scena {scene_index}" + (f" — {scene_title}" if scene_title and not scene_title.lower().startswith("scena ") else ""), ""])
-            scene_source = act_prologue + raw_scene
+            scene_source = act_prologue + raw_scene + preface
             output.extend(scene_notes(scene_source, [speaker for speaker, _ in blocks], scene_title, scene_id, aliases))
             output.append("")
             for speaker, text in blocks:
@@ -638,10 +885,10 @@ WORKS = [
         "slug": "il-malato-immaginario-riscrittura",
         "title": "Il malato immaginario",
         "act_count": 3,
-        "source_files": ["malato-atto1.txt", "malato-atto2.txt", "malato-atto3.txt"],
-        "source_url": "https://digital.ub.uni-paderborn.de/ihd/content/structure/3393377",
-        "attribution": "testo di Molière nella traduzione storica di Niccolò di Castelli, tratta dalla scansione dell'edizione settecentesca conservata dalla Universitätsbibliothek Paderborn",
-        "repair_ocr": True,
+        "source_dir": "scripts/store-sources",
+        "source_files": ["malato-stage-adaptation.txt"],
+        "source_url": "https://fr.wikisource.org/wiki/Le_Malade_imaginaire",
+        "attribution": "adattamento originale StageDesk ispirato alla commedia di Molière, opera di pubblico dominio; non contiene una traduzione moderna di terzi",
         "characters": ["ARGAN", "TOINETTE", "ANGELICA", "CLEANTE", "BERALDO", "BELINA", "SIGNOR DIAFOIRUS", "TOMMASO DIAFOIRUS", "DOTTOR PURGONE", "SIGNORA FLEURANT", "NOTAIO"],
         "aliases": {"ARGAN": ["ARGANO", "GANO", "ARGA NO", "ARGAN O", "ARGANG"], "TOINETTE": ["ANTONIETTA", "ANTONIETT", "ANTONI TA", "TONIETTA"], "ANGELICA": ["ANG LICA", "ANGELI A"], "BELINA": ["BELTINA", "BELI", "BE LINA"], "BERALDO": ["RERALDO", "BERAL DO", "BERALD"], "CLEANTE": ["CLEA E", "CLE ANT E"], "SIGNOR DIAFOIRUS": ["DIAFOIRUS", "DIAFORIO", "DIAFORIA", "DIAFORTO", "DIAFORTIO", "DIAFORI0", "DOTTOR DIAFOIRUS"], "TOMMASO DIAFOIRUS": ["TOMMASO", "TOMASO", "TOMASO DIAFORIO", "TOMMASO DIAFORIO"], "DOTTOR PURGONE": ["PURGONE", "PURGON E"], "SIGNORA FLEURANT": ["FLEURANT", "FLORANTE"]},
         "package": "il-malato-immaginario-riscrittura.stagedesk",
@@ -649,6 +896,7 @@ WORKS = [
     {
         "slug": "il-servitore-di-due-padroni", "title": "Il servitore di due padroni", "act_count": 3,
         "source_files": ["servitore-real.txt"], "source_url": "https://liberliber.it/autori/autori-g/carlo-goldoni/il-servitore-di-due-padroni/",
+        "stop_at": r"(?i)^FINE(?: DELLA COMMEDIA)?\.?\s*$",
         "attribution": "testo di Carlo Goldoni, tratto dall'edizione integrale digitale del Progetto Manuzio di Liber Liber, distribuita con licenza Creative Commons BY-NC-SA 4.0",
         "characters": ["TRUFFALDINO", "BRIGHELLA", "BEATRICE", "PANTALONE", "CLARICE", "SILVIO", "FLORINDO", "SMERALDINA", "DOTTORE", "CAMERIERE", "FACCHINO", "TUTTI"],
         "aliases": {"DOTTORE": ["DOTT.", "IL DOTTORE"], "TRUFFALDINO": ["TRUFFALDIN"], "SMERALDINA": ["SMERALDINA"]},
@@ -667,6 +915,7 @@ WORKS = [
     {
         "slug": "amleto", "title": "Amleto", "act_count": 5,
         "source_files": ["amleto-real.txt"], "source_url": "https://liberliber.it/autori/autori-s/william-shakespeare/amleto/",
+        "stop_at": r"(?i)^FINE\s*$",
         "attribution": "testo di William Shakespeare nella traduzione di Goffredo Raponi, tratto dall'edizione integrale digitale di Liber Liber, distribuita con licenza Creative Commons BY-NC-SA 4.0",
         "characters": ["AMLETO", "CLAUDIO", "GERTRUDE", "POLONIO", "OFELIA", "LAERTE", "ORAZIO", "SPETTRO", "ROSENCRANTZ", "GUILDENSTERN", "FORTINBRAS", "BERNARDO", "MARCELLO", "FRANCESCO", "OSRICO", "PRIMO BECCHINO", "SECONDO BECCHINO", "MESSAGGERO", "ATTORI", "TUTTI"],
         "aliases": {
@@ -682,22 +931,25 @@ WORKS = [
     {
         "slug": "la-tempesta", "title": "La tempesta", "act_count": 5,
         "source_files": ["tempesta-real.txt"], "source_url": "https://liberliber.it/autori/autori-s/william-shakespeare/la-tempesta/",
+        "stop_at": r"(?i)^FINE\s*$",
         "attribution": "testo di William Shakespeare nella traduzione di Goffredo Raponi, tratto dall'edizione integrale digitale di Liber Liber, distribuita con licenza Creative Commons BY-NC-SA 4.0",
         "characters": ["PROSPERO", "MIRANDA", "ARIEL", "CALIBANO", "FERDINANDO", "ALONSO", "ANTONIO", "SEBASTIANO", "GONZALO", "TRINCULO", "STEFANO", "ADRIANO", "FRANCESCO", "CAPITANO", "CAPO NOCCHIERO", "MARINAI", "IRIDE", "CERERE", "GIUNONE", "NINFE", "SPIRITI", "TUTTI"],
-        "aliases": {"ARIEL": ["ARIELE"], "SEBASTIANO": ["SEBASTIAN"], "CAPO NOCCHIERO": ["NOSTROMO", "CAPO NOCCHIERO"], "CAPITANO": ["IL CAPITANO DELLA NAVE"]},
+        "aliases": {"ARIEL": ["ARIELE"], "SEBASTIANO": ["SEBASTIAN"], "CAPO NOCCHIERO": ["NOSTROMO", "CAPO NOCCHIERE", "CAPO NOCCHIERO"], "CAPITANO": ["IL CAPITANO DELLA NAVE"]},
         "package": "la-tempesta.stagedesk",
     },
     {
         "slug": "macbeth", "title": "Macbeth", "act_count": 5,
         "source_files": ["macbeth-real.txt"], "source_url": "https://liberliber.it/autori/autori-s/william-shakespeare/macbeth/",
+        "stop_at": r"(?i)^FINE\s*$",
         "attribution": "testo di William Shakespeare nella traduzione di Goffredo Raponi, tratto dall'edizione integrale digitale di Liber Liber, distribuita con licenza Creative Commons BY-NC-SA 4.0",
         "characters": ["MACBETH", "LADY MACBETH", "BANCO", "MACDUFF", "MALCOLM", "DUNCANO", "DONALBANO", "ROSS", "LENNOX", "ANGUS", "MENTEITH", "CAITHNESS", "SIWARD", "FIGLIO DI MACDUFF", "LE TRE STREGHE", "PRIMA STREGA", "SECONDA STREGA", "TERZA STREGA", "FLEANCE", "TUTTI"],
-        "aliases": {"DUNCANO": ["DUNCAN"], "BANCO": ["BANQUO"], "LE TRE STREGHE": ["TUTTE E TRE"], "PRIMA STREGA": ["1A STREGA", "1 A STREGA"], "SECONDA STREGA": ["2A STREGA", "2 A STREGA"], "TERZA STREGA": ["3A STREGA", "3 A STREGA"]},
+        "aliases": {"DUNCANO": ["DUNCAN"], "BANCO": ["BANQUO"], "CAITHNESS": ["CATHNESS", "CATHNES"], "FLEANCE": ["FLEANTE"], "LE TRE STREGHE": ["TUTTE E TRE"], "PRIMA STREGA": ["1A STREGA", "1 A STREGA"], "SECONDA STREGA": ["2A STREGA", "2 A STREGA"], "TERZA STREGA": ["3A STREGA", "3 A STREGA"]},
         "package": "macbeth.stagedesk",
     },
     {
         "slug": "l-avaro", "title": "L'avaro", "act_count": 1,
         "source_files": ["avaro-real.txt"], "source_url": "https://liberliber.it/autori/autori-g/carlo-goldoni/lavaro/",
+        "stop_at": r"(?i)^FINE DELLA COMMEDIA\.?\s*$",
         "attribution": "testo di Carlo Goldoni, tratto dall'edizione integrale digitale del Progetto Manuzio di Liber Liber, distribuita con licenza Creative Commons BY-NC-SA 4.0",
         "characters": ["DON AMBROGIO", "DONNA EUGENIA", "DON FERNANDO", "CONTE DELL'ISOLA", "CAVALIERE COSTANZO", "CECCHINO", "PROCURATORE"],
         "aliases": {"DON AMBROGIO": ["AMB", "AMB."], "DONNA EUGENIA": ["EUG", "EUG."], "DON FERNANDO": ["FER", "FER."], "CONTE DELL'ISOLA": ["CON", "CON."], "CAVALIERE COSTANZO": ["CAV", "CAV."], "CECCHINO": ["CEC", "CEC."]},
@@ -706,18 +958,19 @@ WORKS = [
     {
         "slug": "casa-di-bambola", "title": "Casa di bambola", "act_count": 3,
         "source_files": ["casa.txt"], "source_url": "https://liberliber.it/autori/autori-i/henrik-ibsen/casa-di-bambola/",
+        "stop_at": r"(?i)^FINE(?: DELLA COMMEDIA)?\.?\s*$",
         "attribution": "testo di Henrik Ibsen nella traduzione autorizzata di Pietro Galletti, edizione Fratelli Treves 1928, tratta dall'edizione integrale digitale di Liber Liber, distribuita con licenza Creative Commons BY-NC-SA 4.0",
         "characters": ["NORA", "HELMER", "KROGSTAD", "SIGNORA LINDE", "DOTTOR RANK", "ELENA", "ANNE-MARIE", "IL FACCHINO", "I BAMBINI", "IL MESSO"],
         "aliases": {
             "HELMER": ["HELM", "HELM.", "HIELM", "HIELM.", "IIELM", "IIELM."],
-            "KROGSTAD": ["KROG", "KROG."],
+            "KROGSTAD": ["KROG", "KROG.", "ICROG"],
             "SIGNORA LINDE": ["LINDE", "LINDE.", "SIGNORA LINDE"],
             "DOTTOR RANK": ["RANK", "RANK.", "DOTT. RANK"],
             "ELENA": ["ELENA", "ELENA."],
-            "NORA": ["NOIR", "NOIR."],
+            "NORA": ["NOIR", "NOIR.", "NOR.A"],
             "ANNE-MARIE": ["ANNA MARIA", "ANNE MARIE", "MARIANNA", "MAR", "MAR."],
             "IL FACCHINO": ["FACC", "FACC.", "FACCHINO", "FACCHINO."],
-            "I BAMBINI": ["BAMBINI", "I BAMBINI"],
+            "I BAMBINI": ["BAMBINI", "I BAMBINI", "I BAMB"],
             "IL MESSO": ["MESSO", "MESSO."],
         },
         "package": "casa-di-bambola.stagedesk",
@@ -725,6 +978,7 @@ WORKS = [
     {
         "slug": "don-giovanni", "title": "Don Giovanni", "act_count": 2,
         "source_files": ["don1-clean.txt", "don2-clean.txt"], "source_url": "https://it.wikisource.org/wiki/Don_Giovanni",
+        "stop_at": r"(?i)^FINE\s*$",
         "attribution": "libretto di Lorenzo Da Ponte, edizione 1867 digitalizzata da Wikisource, distribuito con licenza CC BY-SA 3.0 e GFDL",
         "characters": ["DON GIOVANNI", "LEPORELLO", "DONNA ANNA", "DON OTTAVIO", "ELVIRA", "MASETTO", "ZERLINA", "IL COMMENDATORE", "CORO", "CONTADINI", "CAVALIERI", "TUTTI"],
         "aliases": {
@@ -755,6 +1009,7 @@ WORKS = [
     {
         "slug": "la-commedia-degli-equivoci", "title": "La commedia degli equivoci", "act_count": 5,
         "source_files": ["commedia-real.txt"], "source_url": "https://liberliber.it/autori/autori-s/william-shakespeare/la-commedia-degli-equivoci/",
+        "stop_at": r"(?i)^FINE(?: DELLA COMMEDIA)?\.?\s*$",
         "attribution": "testo di William Shakespeare nella traduzione di Goffredo Raponi, tratto dall'edizione integrale digitale di Liber Liber, distribuita con licenza Creative Commons BY-NC-SA 4.0",
         "characters": ["ANTIFOLI DI SIRACUSA", "ANTIFOLI DI EFESO", "DROMI DI SIRACUSA", "DROMI DI EFESO", "ADRIANA", "LUCIANA", "EMILIA", "ANGELO", "EGEONE", "DUCA", "PINCH", "BALTASAR", "CORO", "TUTTI"],
         "aliases": {

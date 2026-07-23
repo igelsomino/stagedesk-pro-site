@@ -16,7 +16,7 @@ import sys
 import time
 import unicodedata
 from pathlib import Path
-from urllib.parse import quote, urlencode
+from urllib.parse import quote, urlencode, unquote
 
 from bs4 import BeautifulSoup
 
@@ -34,7 +34,7 @@ def slugify(value: str) -> str:
 
 def clean(value: str) -> str:
     value = html.unescape(value.replace("\xa0", " "))
-    value = re.sub(r"\[\s*p\.?\s*\d+\s+modifica\s*\]", "", value, flags=re.I)
+    value = re.sub(r"\[\s*p\.?\s*\d+\s+[^\]]+\]", "", value, flags=re.I)
     value = re.sub(r"\[\s*\d+\s*\]", "", value)
     value = re.sub(r"\s+", " ", value)
     return value.strip(" \t\r\n")
@@ -77,7 +77,7 @@ def parse_html(title: str) -> BeautifulSoup:
     cache_path = CACHE_DIR / f"{slugify(title)}.html"
     if cache_path.exists():
         return BeautifulSoup(cache_path.read_text(encoding="utf-8"), "html.parser")
-    url = f"https://it.wikisource.org/wiki/{quote(title, safe='/') }"
+    url = title if title.startswith("http") else f"https://it.wikisource.org/wiki/{quote(title, safe='/') }"
     response = subprocess.run(
         ["curl", "-Lk", "-sS", "--max-time", "45", "-A", "StageDeskStoreImporter/1.0", "-w", "\n%{http_code}", url],
         capture_output=True,
@@ -108,6 +108,7 @@ def roman_or_word(value: str) -> int | None:
 def page_position(title: str) -> tuple[int, int | None]:
     # Match longer Roman numerals first and require the page boundary. Without
     # this, "Atto II" is incorrectly captured as act I.
+    title = unquote(title).replace("_", " ")
     act_match = re.search(r"/Atto\s+(Primo|Secondo|Terzo|Quarto|Quinto|V|IV|III|II|I)(?:/|$)", title, re.I)
     if not act_match:
         raise ValueError(f"Atto non riconosciuto: {title}")
@@ -129,22 +130,33 @@ def page_position(title: str) -> tuple[int, int | None]:
 
 def page_lines(title: str) -> list[str]:
     soup = parse_html(title)
-    root = soup.select_one(".prp-pages-output") or soup.select_one(".testi")
+    root = (
+        soup.select_one(".prp-pages-output")
+        or soup.select_one(".testi")
+        or soup.select_one(".pagetext .mw-parser-output")
+        or soup.select_one(".mw-parser-output")
+    )
     if not root:
         return []
     lines: list[str] = []
+    split_paragraphs = root.find_parent(class_="pagetext") is not None
     # Italian editions on Wikisource use definition lists for speaker/dialogue
     # pairs, while older scanned editions use paragraphs with abbreviated labels.
-    for child in root.find_all(["p", "dt", "dd"], recursive=True):
-        text = clean(child.get_text(" ", strip=True))
-        if not text:
-            continue
-        if child.name == "dt":
-            lines.append(f"@@SPEAKER@@ {text}")
-        elif child.name == "dd":
-            lines.append(text)
-        else:
-            lines.append(text)
+    if split_paragraphs:
+        elements = root.find_all("div", class_="tiInherit", recursive=True) or root.find_all(["p", "dt", "dd"], recursive=True)
+    else:
+        elements = root.find_all(["p", "dt", "dd"], recursive=True)
+    for child in elements:
+        separator = "\n" if split_paragraphs and child.name == "p" else " "
+        text = child.get_text(separator, strip=True)
+        for raw_line in text.splitlines():
+            line = clean(raw_line)
+            if not line:
+                continue
+            if child.name == "dt":
+                lines.append(f"@@SPEAKER@@ {line}")
+            else:
+                lines.append(line)
     return lines
 
 
@@ -202,13 +214,24 @@ def extract_dialogue(lines: list[str], config: dict) -> tuple[list[tuple[str, st
             flush()
             break
         # Music numbers, page headers and source metadata are not dialogue.
-        if re.fullmatch(r"(?:N\.\s*)?\d+\s*(?:[-–].*)?", line) or line.lower().startswith(("informazioni sulla fonte", "modifica")):
+        if (
+            re.fullmatch(r"(?:N\.\s*)?\d+\s*(?:[-–].*)?", line)
+            or re.match(r"^\[?\s*p\.?\s*\d+\b", line, re.I)
+            or line.lower() in {"[p.", "]", "modifica", "càgna"}
+            or line.lower().startswith(("informazioni sulla fonte", "chesta paggena nun è stata leggiuta"))
+        ):
             continue
         speaker: str | None = None
+        # Some scanned editions put the speaker on its own line, without a
+        # trailing full stop. Resolve exact known labels before parsing the
+        # traditional `SPEAKER. text` form.
+        exact_speaker = resolve_speaker(line, aliases, known)
+        if exact_speaker and (line.upper() == exact_speaker.upper() or any(normalize_label(line).upper() == normalize_label(alias).upper() for alias in aliases)):
+            speaker = exact_speaker
         if "@@SPEAKER@@" in raw:
             speaker = resolve_speaker(line, aliases, known)
-        else:
-            match = re.match(r"^(.{1,55}?)\s+\.\s+(.*)$", line)
+        elif not speaker:
+            match = re.match(r"^(.{1,55}?)\s*\.\s+(.*)$", line)
             if match:
                 speaker = resolve_speaker(match.group(1), aliases, known)
                 if speaker:
@@ -217,6 +240,11 @@ def extract_dialogue(lines: list[str], config: dict) -> tuple[list[tuple[str, st
                 speaker = resolve_speaker(line, aliases, known)
                 line = ""
         if speaker:
+            if config.get("strict_characters") and speaker not in known:
+                speaker = None
+            if not speaker:
+                flush()
+                continue
             flush()
             current_speaker = speaker
             if line:
@@ -258,10 +286,16 @@ def split_scenes(lines: list[str], default_scene: int | None) -> list[tuple[int,
 
 
 def source_scenes(config: dict) -> list[tuple[int, int, str, list[tuple[str, str]], list[str]]]:
+    if config.get("embedded_acts"):
+        return embedded_source_scenes(config)
+    if config.get("single_section"):
+        lines = [line for line in page_lines(config["single_section"]) if line]
+        blocks, directions = extract_dialogue(lines, config)
+        return [(1, 1, "Scena 1", blocks, directions[:8])] if blocks else []
     pages = config.get("source_pages") or linked_pages(config["source_page"])
     content_pages = [
         page for page in pages
-        if re.search(r"/Atto\s+(?:Primo|Secondo|Terzo|Quarto|Quinto|V|IV|III|II|I)(?:/Scena\s+.+)?$", page, re.I)
+        if re.search(r"/Atto(?:\s+|_)+(?:Primo|Secondo|Terzo|Quarto|Quinto|V|IV|III|II|I)(?:/Scena(?:\s+|_)+.+)?$", unquote(page), re.I)
     ]
     content_pages.sort(key=lambda page: (page_position(page)[0], page_position(page)[1] or 0, page))
     result: list[tuple[int, int, str, list[tuple[str, str]], list[str]]] = []
@@ -278,6 +312,46 @@ def source_scenes(config: dict) -> list[tuple[int, int, str, list[tuple[str, str
             blocks, directions = extract_dialogue(filtered, config)
             if blocks:
                 result.append((act, scene, title[:120], blocks, directions[:8]))
+    return result
+
+
+def embedded_source_scenes(config: dict) -> list[tuple[int, int, str, list[tuple[str, str]], list[str]]]:
+    """Parse a single Wikisource page containing its acts and scenes inline."""
+    lines: list[str] = []
+    for page in config.get("combined_pages", []):
+        lines.extend(page_lines(page))
+    if not lines:
+        lines = page_lines(config["source_page"])
+    result: list[tuple[int, int, str, list[tuple[str, str]], list[str]]] = []
+    act = 1
+    scene = 1
+    current: list[str] = []
+
+    def flush() -> None:
+        nonlocal current
+        if not current:
+            return
+        blocks, directions = extract_dialogue(current, config)
+        if blocks:
+            result.append((act, scene, f"Scena {scene}", blocks, directions[:8]))
+        current = []
+
+    acts = {"PRIMO": 1, "SECONDO": 2, "TERZO": 3, "QUARTO": 4, "QUINTO": 5, "I": 1, "II": 2, "III": 3, "IV": 4, "V": 5}
+    scenes = {"PRIMA": 1, "SECONDA": 2, "TERZA": 3, "QUARTA": 4, "QUINTA": 5, "SESTA": 6, "SETTIMA": 7, "OTTAVA": 8, "NONA": 9, "DECIMA": 10, "UNDICESIMA": 11, "DODICESIMA": 12}
+    for line in lines:
+        act_match = re.match(r"^ATTO\s+(.+?)\.?$", line, re.I)
+        if act_match:
+            flush()
+            act = acts.get(act_match.group(1).strip().upper(), act)
+            scene = 1
+            continue
+        scene_match = re.match(r"^SCENA\s+(.+?)\.?$", line, re.I)
+        if scene_match:
+            flush()
+            scene = scenes.get(scene_match.group(1).strip().upper(), scene)
+            continue
+        current.append(line)
+    flush()
     return result
 
 
@@ -338,6 +412,11 @@ WORKS = [
     {"slug": "la-dodicesima-notte", "title": "La dodicesima notte", "source_page": "La dodicesima notte o quel che vorrete", "source_pages": [f"La dodicesima notte o quel che vorrete/Atto {word}" for word in ["primo", "secondo", "terzo", "quarto", "quinto"]], "source_url": "https://it.wikisource.org/wiki/La_dodicesima_notte_o_quel_che_vorrete", "attribution": "testo di William Shakespeare nella traduzione storica di Carlo Rusconi, digitalizzato da Wikisource, fonte disponibile con licenza CC BY-SA 3.0 e GFDL", "characters": ["DUCA ORSINO", "CURIO", "VALENTINO", "MALVOLIO", "VIOLA", "OLIVIA", "SEBASTIANO", "ANTONIO", "SIR TOBIA", "SIR ANDREA", "MARIA", "FESTE", "FABIANO", "CAPITANO", "SACERDOTE"], "aliases": {"Duc": "DUCA ORSINO", "Cur": "CURIO", "Val": "VALENTINO", "Mal": "MALVOLIO", "Ces": "VIOLA", "Vio": "VIOLA", "Oli": "OLIVIA", "Seb": "SEBASTIANO", "Ant": "ANTONIO", "Tob": "SIR TOBIA", "And": "SIR ANDREA", "Mar": "MARIA", "Fes": "FESTE", "Fab": "FABIANO"}, "package": "la-dodicesima-notte.stagedesk"},
     {"slug": "otello", "title": "Otello", "source_page": "Otello", "source_pages": [f"Otello/Atto {word}" for word in ["primo", "secondo", "terzo", "quarto", "quinto"]], "source_url": "https://it.wikisource.org/wiki/Otello", "attribution": "testo di William Shakespeare nella traduzione storica di Carlo Rusconi, digitalizzato da Wikisource, fonte disponibile con licenza CC BY-SA 3.0 e GFDL", "characters": ["OTELLO", "JAGO", "RODRIGO", "DESDEMONA", "BRABANZIO", "CASSIO", "DOGE", "EMILIA", "MONTANO", "LODOVICO", "GRATIANO", "BIANCA", "CLARISSA", "ARALDI"], "aliases": {"Otell": "OTELLO", "Jago": "JAGO", "Rodr": "RODRIGO", "Desd": "DESDEMONA", "Brab": "BRABANZIO", "Cass": "CASSIO", "Doge": "DOGE", "Emil": "EMILIA", "Mont": "MONTANO", "Lod": "LODOVICO", "Grat": "GRATIANO", "Bian": "BIANCA"}, "package": "otello.stagedesk"},
     {"slug": "le-nozze-di-figaro", "title": "Le nozze di Figaro", "source_page": "Le nozze di Figaro", "source_pages": [f"Le nozze di Figaro/Atto {act}/Scena {scene}" for act, scenes in [("Primo", ["prima", "seconda", "terza", "quarta", "quinta", "sesta", "settima", "ottava"]), ("Secondo", ["prima", "seconda", "terza", "quarta", "quinta", "sesta", "settima", "ottava", "nona", "decima", "undicesima", "dodicesima"]), ("Terzo", ["prima", "seconda", "terza", "quarta", "quinta", "sesta", "settima", "ottava", "nona", "decima", "undicesima", "dodicesima", "tredicesima", "quattordicesima"]), ("Quarto", ["prima", "seconda", "terza", "quarta", "quinta", "sesta", "settima", "ottava", "nona", "decima", "undicesima", "dodicesima"])] for scene in scenes], "source_url": "https://it.wikisource.org/wiki/Le_nozze_di_Figaro", "attribution": "libretto di Lorenzo Da Ponte per la musica di Wolfgang Amadeus Mozart, edizione storica digitalizzata da Wikisource, fonte disponibile con licenza CC BY-SA 3.0 e GFDL", "characters": ["FIGARO", "SUSANNA", "IL CONTE", "LA CONTESSA", "CHERUBINO", "MARCELLINA", "BARTOLO", "BASILIO", "DON CURZIO", "ANTONIO", "BARBARINA", "DONNE", "CONTADINI"], "aliases": {}, "package": "le-nozze-di-figaro.stagedesk"},
+    {"slug": "il-berretto-a-sonagli", "title": "Il berretto a sonagli", "source_page": "Il berretto a sonagli", "source_pages": ["Il berretto a sonagli/Atto I", "Il berretto a sonagli/Atto II"], "source_url": "https://it.wikisource.org/wiki/Il_berretto_a_sonagli", "strict_characters": True, "attribution": "testo di Luigi Pirandello, edizione storica digitalizzata da Wikisource, fonte disponibile con licenza CC BY-SA 3.0 e GFDL", "characters": ["BEATRICE", "FANA", "LA SARACENA", "CIAMPA", "FIFÌ", "ASSUNTA", "SPANÒ", "PINÒ", "IL DELEGATO", "DON LO GIUECO", "DON FIFÌ"], "aliases": {"La saracena": "LA SARACENA", "Ciampa": "CIAMPA", "Fifì": "FIFÌ", "Fifi": "FIFÌ", "Spanò": "SPANÒ", "Pino": "PINÒ", "Pinò": "PINÒ", "Don Fifì": "DON FIFÌ", "Signor delegato": "IL DELEGATO", "Delegato": "IL DELEGATO"}, "package": "il-berretto-a-sonagli.stagedesk"},
+    {"slug": "enrico-iv", "title": "Enrico IV", "source_page": "Enrico IV (1965)", "source_pages": ["Enrico IV (1965)/Atto I", "Enrico IV (1965)/Atto II", "Enrico IV (1965)/Atto III"], "source_url": "https://it.wikisource.org/wiki/Enrico_IV_%281965%29", "strict_characters": True, "attribution": "testo di Luigi Pirandello, edizione storica digitalizzata da Wikisource, fonte disponibile con licenza CC BY-SA 3.0 e GFDL", "characters": ["ENRICO IV", "MATILDE SPINA", "BELCREDI", "DOTTOR GENONI", "LANDOLFO", "ORDULFO", "ARIALDO", "FRIDA", "CARLO DI NOLLI", "TITO BELCREDI", "BERTOLDO", "FINO", "PRIMO VALLETTO", "SECONDO VALLETTO", "DUE SERVI"], "aliases": {"Enrico": "ENRICO IV", "Enrico IV": "ENRICO IV", "Matilde": "MATILDE SPINA", "Dottore": "DOTTOR GENONI", "Dottor Genoni": "DOTTOR GENONI", "Carlo": "CARLO DI NOLLI", "Primo valletto": "PRIMO VALLETTO", "Secondo valletto": "SECONDO VALLETTO", "Uno dei valletti": "PRIMO VALLETTO"}, "package": "enrico-iv.stagedesk"},
+    {"slug": "sei-personaggi-in-cerca-dautore", "title": "Sei personaggi in cerca d'autore", "source_page": "Sei personaggi in cerca d'autore (1965)", "single_section": "https://it.wikisource.org/wiki/Sei_personaggi_in_cerca_d%27autore_%281965%29/Atto_unico", "source_url": "https://it.wikisource.org/wiki/Sei_personaggi_in_cerca_d%27autore_%281965%29/Atto_unico", "strict_characters": True, "attribution": "testo di Luigi Pirandello, edizione storica digitalizzata da Wikisource, fonte disponibile con licenza CC BY-SA 3.0 e GFDL", "characters": ["IL CAPOCOMICO", "IL DIRETTORE DI SCENA", "IL MACCHINISTA", "IL SUGGERITORE", "IL PRIMO ATTORE", "LA PRIMA ATTRICE", "L'ATTORE GIOVANE", "L'ATTRICE GIOVANE", "IL PADRE", "LA MADRE", "LA FIGLIASTRA", "IL FIGLIO", "LA BAMBINA", "IL GIOVINETTO", "MADAMA PACE", "ATTORI", "ATTRICI"], "aliases": {"Il capocomico": "IL CAPOCOMICO", "Capocomico": "IL CAPOCOMICO", "Il direttore di scena": "IL DIRETTORE DI SCENA", "Direttore": "IL DIRETTORE DI SCENA", "Il macchinista": "IL MACCHINISTA", "Il suggeritore": "IL SUGGERITORE", "Il primo attore": "IL PRIMO ATTORE", "La prima attrice": "LA PRIMA ATTRICE", "L’attore giovane": "L'ATTORE GIOVANE", "L'attor giovane": "L'ATTORE GIOVANE", "L’attrice giovane": "L'ATTRICE GIOVANE", "L'attrice giovane": "L'ATTRICE GIOVANE", "Il padre": "IL PADRE", "La madre": "LA MADRE", "La figliastra": "LA FIGLIASTRA", "Il figlio": "IL FIGLIO", "La bambina": "LA BAMBINA", "Il giovinotto": "IL GIOVINETTO"}, "package": "sei-personaggi-in-cerca-dautore.stagedesk"},
+    {"slug": "miseria-e-nobilta", "title": "Miseria e nobiltà", "source_page": "https://nap.wikisource.org/wiki/Miseria_e_nobilt%C3%A0", "combined_pages": [f"https://nap.wikisource.org/wiki/Paggena:Miseria_e_nobilt%C3%A0.djvu/{page}" for page in range(6, 113)], "embedded_acts": True, "strict_characters": True, "source_url": "https://nap.wikisource.org/wiki/Miseria_e_nobilt%C3%A0", "attribution": "testo di Eduardo Scarpetta, edizione storica napoletana digitalizzata da Wikisource, fonte disponibile con licenza CC BY-SA 3.0 e GFDL", "characters": ["GAETANO", "GEMMA", "LUIGINO", "MARCHESE OTTAVIO FAVETTI", "EUGENIO", "PASQUALE", "FELICE", "CONCETTA", "LUISELLA", "BETTINA", "PUPELLA", "GIOACCHINO CASTIELLO", "VICIENZO", "BIASE", "PEPPENIELLO"], "aliases": {"Gaet": "GAETANO", "Gaet.": "GAETANO", "D. Gaetano": "GAETANO", "Gemma": "GEMMA", "Luig": "LUIGINO", "Luig.": "LUIGINO", "Luis": "LUISELLA", "Luis.": "LUISELLA", "Fel": "FELICE", "Fel.": "FELICE", "Pasc": "PASQUALE", "Pasc.": "PASQUALE", "Conc": "CONCETTA", "Conc.": "CONCETTA", "Bett": "BETTINA", "Bett.": "BETTINA", "Pup": "PUPELLA", "Pup.": "PUPELLA", "Eug": "EUGENIO", "Eug.": "EUGENIO", "Ott": "MARCHESE OTTAVIO FAVETTI", "Ott.": "MARCHESE OTTAVIO FAVETTI", "Ottavio": "MARCHESE OTTAVIO FAVETTI", "Giacc": "GIOACCHINO CASTIELLO", "Vicien": "VICIENZO", "Vicien.": "VICIENZO", "Pepp": "PEPPENIELLO", "Pepp.": "PEPPENIELLO"}, "package": "miseria-e-nobilta.stagedesk"},
+    {"slug": "e-buscia-o-e-verita", "title": "È buscia o è verità", "source_page": "È buscia o è verità", "source_pages": ["https://nap.wikisource.org/wiki/%C3%88_buscia_o_%C3%A8_verit%C3%A0/Atto_I", "https://nap.wikisource.org/wiki/%C3%88_buscia_o_%C3%A8_verit%C3%A0/Atto_II"], "source_url": "https://nap.wikisource.org/wiki/Ennece:%C3%88_buscia_o_%C3%A8_verit%C3%A0.djvu", "strict_characters": True, "attribution": "testo di Eduardo Scarpetta, edizione storica napoletana digitalizzata da Wikisource, fonte disponibile con licenza CC BY-SA 3.0 e GFDL", "characters": ["GIULIO", "ASDRUBALE", "LUCIELLA", "PULCINELLA", "FELICE", "ROSINA", "DONNA BETTINA", "DONNA CONCETTA", "DON PASQUALE", "BARTOLOMEO", "AMALIA", "FELICIELLO"], "aliases": {"Giul": "GIULIO", "Giul.": "GIULIO", "Asd": "ASDRUBALE", "Asd.": "ASDRUBALE", "Luc": "LUCIELLA", "Luc.": "LUCIELLA", "Pul": "PULCINELLA", "Pul.": "PULCINELLA", "Fel": "FELICE", "Fel.": "FELICE", "Ros": "ROSINA", "Ros.": "ROSINA", "Bett": "DONNA BETTINA", "Conc": "DONNA CONCETTA", "Pasc": "DON PASQUALE", "D. Bartolomeo": "BARTOLOMEO", "Amalia": "AMALIA", "Feliciello": "FELICIELLO"}, "package": "e-buscia-o-e-verita.stagedesk"},
 ]
 
 

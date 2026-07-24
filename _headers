@@ -11,6 +11,7 @@
 
 /share-assets/*
   Cache-Control: no-store
+  Service-Worker-Allowed: /share/
 
 /store/*
   Cache-Control: no-store

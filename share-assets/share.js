@@ -205,7 +205,6 @@ const renderBrand = (title, subtitle = '', action = '') => `
         <span class="share-brand-mark">SD</span>
         <span>StageDesk <b>Share</b></span>
       </a>
-      ${action ? '<nav class="share-nav" aria-label="Navigazione Share"><a href="#copione">Copione</a></nav>' : ''}
       ${action || `<div class="share-header-side"><span class="share-uid">${escapeHtml(shareUid)}</span></div>`}
     </div>
   </header>

@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#111314" />
     <title>StageDesk Share</title>
     <link rel="icon" href="../assets/stagedesk-pro-icon.png" />
-    <link rel="stylesheet" href="/share-assets/share.css?v=20260724-04" />
+    <link rel="stylesheet" href="/share-assets/share.css?v=20260724-05" />
   </head>
   <body>
     <main id="share-app" class="share-shell">
@@ -14,9 +14,9 @@
     </main>
     <script>
       if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => navigator.serviceWorker.register('/share/service-worker.js', { scope: '/share/' }).catch(() => {}))
+        window.addEventListener('load', () => navigator.serviceWorker.register('/share-assets/service-worker.js', { scope: '/share/' }).catch(() => {}))
       }
     </script>
-    <script data-cfasync="false" type="module" src="/share-assets/share-20260724-01.js"></script>
+    <script data-cfasync="false" type="module" src="/share-assets/share-20260724-01.js?v=20260724-02"></script>
   </body>
 </html>

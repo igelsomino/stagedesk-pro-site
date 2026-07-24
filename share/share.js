@@ -200,11 +200,14 @@ const captureScriptScrollAnchor = () => {
 
 const renderBrand = (title, subtitle = '', action = '') => `
   <header class="share-header">
-    <a class="share-brand" href="/" aria-label="StageDesk Pro">
-      <span class="share-brand-mark">SD</span>
-      <span>StageDesk <b>Share</b></span>
-    </a>
-    <div class="share-header-side">${action || `<span class="share-uid">${escapeHtml(shareUid)}</span>`}</div>
+    <div class="share-header-inner">
+      <a class="share-brand" href="/" aria-label="StageDesk Pro">
+        <span class="share-brand-mark">SD</span>
+        <span>StageDesk <b>Share</b></span>
+      </a>
+      ${action ? '<nav class="share-nav" aria-label="Navigazione Share"><a href="#copione">Copione</a></nav>' : ''}
+      ${action || `<div class="share-header-side"><span class="share-uid">${escapeHtml(shareUid)}</span></div>`}
+    </div>
   </header>
   <div class="share-heading">
     <span class="share-kicker">StageDesk Pro</span>
@@ -600,6 +603,14 @@ const renderNote = (note, hidden = false, dialogueId = '', searchHidden = false)
 const orderedScriptItems = (items, dialogues, noteDialogueIds) => {
   const dialogueIndexes = new Map(dialogues.map((dialogue, index) => [dialogue.id, index]))
   return items.map((item, index) => {
+    if (item.kind === 'heading') {
+      return {
+        kind: 'heading',
+        item,
+        index,
+        sourceLine: Number(item.sourceLine ?? index + 1),
+      }
+    }
     if (item.kind === 'dialogue') {
       return {
         kind: 'dialogue',
@@ -739,6 +750,11 @@ const renderShare = (updateMessage = '', uiState = {}) => {
   const studyTotal = Object.values(progressStats).reduce((sum, count) => sum + count, 0)
   const activityRingProgress = (status) => studyTotal ? Math.round((progressStats[status] / studyTotal) * 360) : 0
   const renderScriptItem = ({ kind, item, dialogueIndex, dialogueId }) => {
+    if (kind === 'heading') {
+      const headingClass = item.headingType === 'scene' ? 'share-script-heading-scene' : 'share-script-heading-act'
+      const HeadingTag = item.headingType === 'scene' ? 'h3' : 'h2'
+      return `<${HeadingTag} class="share-script-heading ${headingClass}">${escapeHtml(item.text)}</${HeadingTag}>`
+    }
     if (kind === 'note') {
       const owner = dialogues.find((dialogue) => dialogue.id === dialogueId)
       const noteVisible = !owner || filterMode === 'hide-selected' || selectedCharacters.has(owner.characterId)
@@ -769,7 +785,7 @@ const renderShare = (updateMessage = '', uiState = {}) => {
 
   renderShell(`
     ${renderBrand(scriptTitle, formatPublishedAt(share?.publishedAt || payload.publishedAt), `<div class="share-header-actions"><button type="button" class="share-header-icon" data-refresh-share title="Aggiorna copione" aria-label="Aggiorna copione">${iconSvg('refresh')}</button><button type="button" class="share-header-action" data-signout>Esci</button></div>`)}
-    <section class="share-card learning-card">
+    <section id="copione" class="share-card learning-card">
       <div class="learning-layout">
         <aside class="character-panel" aria-label="Selezione personaggi">
           <div class="study-stats desktop-study-stats" aria-label="Statistiche battute">

@@ -22,9 +22,6 @@
           <a href="#catalogo">Catalogo</a>
           <a href="#come-funziona">Come funziona</a>
         </nav>
-        <div class="store-header-actions">
-          <button class="store-button store-button-accent" id="publish-action" type="button" hidden>Pubblica</button>
-        </div>
       </div>
     </header>
 
@@ -76,33 +73,6 @@
       </section>
     </main>
 
-    <dialog id="upload-dialog" class="store-dialog">
-      <form method="dialog" class="store-dialog-card store-upload-card" id="upload-form">
-        <button class="store-dialog-close" value="cancel" aria-label="Chiudi">×</button>
-        <p class="store-eyebrow">NUOVO TITOLO</p>
-        <h2>Pubblica un copione</h2>
-        <p class="store-dialog-copy">Aggiungi le informazioni che aiutano registi e autori a scegliere il testo.</p>
-        <div class="store-upload-grid">
-          <label class="store-field"><span>Titolo *</span><input name="title" required /></label>
-          <label class="store-field"><span>Sottotitolo</span><input name="subtitle" /></label>
-          <label class="store-field store-field-wide"><span>Descrizione *</span><textarea name="description" rows="3" required></textarea></label>
-          <label class="store-field"><span>Autore *</span><input name="author_name" required /></label>
-          <label class="store-field"><span>Genere</span><input name="genre" value="Teatro" /></label>
-          <label class="store-field"><span>Lingua</span><input name="language" value="Italiano" /></label>
-          <label class="store-field"><span>Numero attori</span><input name="actor_count" type="number" min="0" value="0" /></label>
-          <label class="store-field"><span>Atti</span><input name="act_count" type="number" min="0" value="0" /></label>
-          <label class="store-field"><span>Scene</span><input name="scene_count" type="number" min="0" value="0" /></label>
-          <label class="store-field"><span>Durata (minuti)</span><input name="estimated_minutes" type="number" min="0" value="0" /></label>
-          <label class="store-field"><span>Diritti</span><input name="rights_label" value="Testo originale" /></label>
-          <label class="store-field"><span>Tag</span><input name="tags" placeholder="commedia, 2 attori, breve" /></label>
-          <label class="store-field store-field-wide"><span>Copertina</span><input name="cover" type="file" accept="image/png,image/jpeg,image/webp" /></label>
-          <label class="store-field store-field-wide"><span>Pacchetto StageDesk *</span><input name="package" type="file" accept=".stagedesk,text/plain" required /></label>
-        </div>
-        <button class="store-button store-button-accent store-button-wide" type="submit">Pubblica nel catalogo</button>
-        <p id="upload-status" class="store-form-status" role="status"></p>
-      </form>
-    </dialog>
-
     <dialog id="detail-dialog" class="store-dialog">
       <div class="store-dialog-card store-detail-card" id="detail-content"></div>
     </dialog>
@@ -132,6 +102,6 @@
       </form>
     </dialog>
 
-    <script type="module" src="./store.js?v=20260724-01"></script>
+    <script type="module" src="./store.js?v=20260724-03"></script>
   </body>
 </html>

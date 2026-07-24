@@ -8,7 +8,6 @@ const COVER_ASSET_VERSION = '20260723-covers-02'
 const embeddedInStageDesk = window.parent !== window
 const state = {
   client: null,
-  session: null,
   books: [],
   filtered: [],
   canImport: embeddedInStageDesk,
@@ -168,26 +167,6 @@ function populateFilterOptions() {
   $('#filter-language').innerHTML = '<option value="">Tutte</option>' + unique('language').map((value) => `<option>${escapeHtml(value)}</option>`).join('')
 }
 
-function setFormStatus(selector, message, isError = false) {
-  const element = $(selector)
-  if (!element) return
-  element.textContent = message
-  element.style.color = isError ? '#ff8e72' : ''
-}
-
-function showUpload() {
-  if (!state.session) return
-  const metadata = state.session.user.user_metadata || {}
-  const authorField = $('#upload-form [name="author_name"]')
-  if (authorField && !authorField.value) authorField.value = metadata.full_name || metadata.name || metadata.display_name || state.session.user.email?.split('@')[0] || ''
-  $('#upload-dialog')?.showModal()
-}
-
-function updateAccountUi() {
-  const publish = $('#publish-action')
-  if (publish) publish.hidden = !state.session
-}
-
 async function loadCatalog() {
   if (!state.client) {
     state.books = [demoBook]
@@ -271,69 +250,12 @@ function showDetail(book) {
   })
 }
 
-async function submitUpload(event) {
-  event.preventDefault()
-  if (!state.client || !state.session) return setFormStatus('#upload-status', 'Autenticazione richiesta.', true)
-  const form = event.currentTarget
-  const data = new FormData(form)
-  const packageFile = data.get('package')
-  const coverFile = data.get('cover')
-  if (!(packageFile instanceof File) || !packageFile.name.toLowerCase().endsWith('.stagedesk')) return setFormStatus('#upload-status', 'Seleziona un pacchetto .stagedesk valido.', true)
-  setFormStatus('#upload-status', 'Caricamento del copione…')
-  const id = crypto.randomUUID()
-  const packagePath = `${state.session.user.id}/${id}.stagedesk`
-  const packageUpload = await state.client.storage.from('store-packages').upload(packagePath, packageFile, { contentType: 'application/vnd.stagedesk.script', upsert: false })
-  if (packageUpload.error) return setFormStatus('#upload-status', packageUpload.error.message, true)
-  let coverPath = null
-  if (coverFile instanceof File && coverFile.size) {
-    const extension = coverFile.name.split('.').pop()?.toLowerCase() || 'jpg'
-    coverPath = `${state.session.user.id}/${id}.${extension}`
-    const coverUpload = await state.client.storage.from('store-covers').upload(coverPath, coverFile, { contentType: coverFile.type || 'image/jpeg', upsert: false })
-    if (coverUpload.error) {
-      await state.client.storage.from('store-packages').remove([packagePath])
-      return setFormStatus('#upload-status', coverUpload.error.message, true)
-    }
-  }
-  const row = {
-    author_id: state.session.user.id,
-    title: data.get('title'),
-    subtitle: data.get('subtitle') || '',
-    description: data.get('description'),
-    author_name: data.get('author_name'),
-    genre: data.get('genre') || 'Teatro',
-    language: data.get('language') || 'Italiano',
-    actor_count: asNumber(data.get('actor_count')),
-    act_count: asNumber(data.get('act_count')),
-    scene_count: asNumber(data.get('scene_count')),
-    estimated_minutes: asNumber(data.get('estimated_minutes')),
-    rights_label: data.get('rights_label') || 'Testo originale',
-    tags: String(data.get('tags') || '').split(',').map((tag) => tag.trim()).filter(Boolean),
-    package_path: packagePath,
-    package_name: packageFile.name,
-    cover_path: coverPath,
-    current_version: 1,
-    published_at: new Date().toISOString(),
-    is_published: true,
-  }
-  const inserted = await state.client.from('store_scripts').insert(row).select().single()
-  if (inserted.error) {
-    await state.client.storage.from('store-packages').remove([packagePath])
-    if (coverPath) await state.client.storage.from('store-covers').remove([coverPath])
-    return setFormStatus('#upload-status', inserted.error.message, true)
-  }
-  $('#upload-dialog')?.close()
-  form.reset()
-  await loadCatalog()
-}
-
 async function initSupabase() {
   try {
     const configResponse = await fetch(CONFIG_URL, { cache: 'no-store' })
     const config = await configResponse.json()
     if (!config.url || !config.publishableKey) return
-    state.client = createClient(config.url, config.publishableKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce' } })
-    state.session = (await state.client.auth.getSession()).data.session
-    state.client.auth.onAuthStateChange((_event, session) => { state.session = session; updateAccountUi() })
+    state.client = createClient(config.url, config.publishableKey)
   } catch {
     state.client = null
   }
@@ -342,15 +264,12 @@ async function initSupabase() {
 window.addEventListener('message', (event) => {
   if (event.source !== window.parent || event.data?.type !== CONTEXT_MESSAGE) return
   state.canImport = event.data.canImport === true
-  updateAccountUi()
   renderSections()
   if (state.selectedBook && $('#detail-dialog')?.open) {
     $('#detail-content').innerHTML = detailMarkup(state.selectedBook)
   }
 })
 
-$('#publish-action')?.addEventListener('click', showUpload)
-$('#upload-form').addEventListener('submit', submitUpload)
 $('#catalog-search').addEventListener('input', updateFilters)
 document.querySelectorAll('.store-filters select').forEach((select) => select.addEventListener('change', updateFilters))
 $('#catalog-sections').addEventListener('click', (event) => {
@@ -405,6 +324,5 @@ document.querySelectorAll('[data-close-import-consent]').forEach((button) => {
 })
 
 await initSupabase()
-updateAccountUi()
 await loadCatalog()
 window.parent.postMessage({ type: 'stagedesk-store-ready' }, '*')

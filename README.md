@@ -8,7 +8,10 @@ La pagina recupera automaticamente l'ultima release pubblicata su GitHub:
 - Windows: EXE e MSI;
 - Linux: AppImage, DEB e RPM.
 
-In caso di errore sulla GitHub API usa un fallback statico alla release `v1.0.13`.
+In caso di errore sulla GitHub API usa un fallback statico alla release `v1.0.38`.
+
+La release desktop corrente è `v1.0.38`; il catalogo aggiorna automaticamente i collegamenti agli installer
+leggendo la release GitHub più recente, senza richiedere modifiche manuali alla pagina.
 
 La home contiene due caroselli distinti: `Anteprima` presenta le schermate reali dell'applicazione, mentre
 `Funzionalità` descrive in dodici schede testuali il flusso di lavoro, dall'accesso e dalla gestione dei progetti
@@ -23,6 +26,9 @@ wrangler pages deploy . --project-name stagedesk-pro-site
 Repository sorgente applicazione:
 
 https://github.com/igelsomino/stagedesk-pro
+
+La versione 1.0.38 include la valutazione del copione nella toolbar dell'app, visibile solo per i copioni importati
+dallo Store, oltre alla gestione unificata del trascinamento di note, battute e cue nell'editor.
 
 ## StageDesk Store
 

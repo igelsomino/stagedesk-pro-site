@@ -112,14 +112,14 @@ a { color: inherit; }
 .store-form-status { min-height: 18px; margin: 12px 0 0; color: var(--store-muted); font-size: 12px; }
 .store-upload-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 12px; }
 .store-field-wide { grid-column: 1 / -1; }
-.store-detail-card { max-width: 760px; }
-.store-detail-layout { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 28px; }
+.store-detail-card { max-width: 760px; padding: 18px; }
+.store-detail-layout { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 22px; }
 .store-detail-cover-column { display: grid; align-content: start; gap: 10px; }
 .store-detail-cover-figure { position: relative; }
 .store-detail-cover { width: 100%; aspect-ratio: 2 / 3; overflow: hidden; border-radius: 8px; background: #232827; }
 .store-detail-cover img { width: 100%; height: 100%; object-fit: contain; background: #232827; }
-.store-detail-import-stack { position: absolute; z-index: 2; right: 0; bottom: 0; left: 0; display: grid; align-content: end; gap: 6px; min-height: 108px; padding: 42px 10px 10px; background: linear-gradient(180deg, transparent 0%, rgba(7,9,9,.72) 42%, rgba(7,9,9,.96) 100%); pointer-events: none; }
-.store-detail-import { position: relative; z-index: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 34px; padding: 0 14px; font-size: 12px; pointer-events: auto; }
+.store-detail-import-stack { position: absolute; z-index: 2; right: 0; bottom: 0; left: 0; display: grid; align-content: end; gap: 6px; min-height: 96px; padding: 36px 0 8px; background: linear-gradient(180deg, transparent 0%, rgba(7,9,9,.72) 42%, rgba(7,9,9,.96) 100%); pointer-events: none; }
+.store-detail-import { position: relative; z-index: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: calc(100% - 12px); min-height: 34px; margin-inline: 6px; padding: 0 14px; font-size: 12px; pointer-events: auto; }
 .store-import-icon { display: inline-grid; place-items: center; width: 19px; height: 19px; border: 1px solid currentColor; border-radius: 50%; font-size: 15px; font-weight: 900; line-height: 1; }
 .store-detail-rating { text-align: center; }
 .store-detail-copy h2 { margin-top: 0; }
@@ -173,5 +173,6 @@ a { color: inherit; }
   .store-field-wide { grid-column: auto; }
   .store-dialog-card { padding: 24px 18px; }
   .store-detail-layout { grid-template-columns: 1fr; }
+  .store-detail-card { padding: 18px; }
   .store-detail-cover { width: 130px; }
 }

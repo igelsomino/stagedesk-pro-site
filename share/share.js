@@ -87,6 +87,7 @@ const iconSvg = (name) => {
     next: '<path d="m10 6 6 6-6 6"/>',
     top: '<path d="m5 11 7-7 7 7"/><path d="M12 4v16"/>',
     users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+    structure: '<path d="M5 5h14M5 12h14M5 19h14"/><path d="M3 5h.01M3 12h.01M3 19h.01"/>',
     statistics: '<path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-4"/><path d="M12 16V8"/><path d="M16 16v-7"/>',
     study: '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5Z"/><path d="M4 5.5v15M8 7h8m-8 4h8"/>',
     progress: '<path d="m14 6 4 4"/><path d="M4 20h4l10-10a2.8 2.8 0 0 0-4-4L4 16v4Z"/><path d="M13 7 17 11"/>',
@@ -737,6 +738,7 @@ const renderShare = (updateMessage = '', uiState = {}) => {
   const noteDialogueIds = noteDialogueIdsFromItems(items)
   const scriptItems = orderedScriptItems(items, dialogues, noteDialogueIds)
   const renderedScriptItems = scriptItems.slice(0, Math.max(SCRIPT_BATCH_SIZE, scriptRenderLimit))
+  const structureItems = scriptItems.filter(({ kind }) => kind === 'heading')
   const scriptTitle = formatScriptTitle(share?.scriptName)
   const allCharactersSelected = characters.length > 0 && selectedCharacters.size === characters.length
   const selectionActionLabel = allCharactersSelected ? 'Inverti selezione' : 'Seleziona tutto'
@@ -748,11 +750,11 @@ const renderShare = (updateMessage = '', uiState = {}) => {
   }, { da_studiare: 0, in_studio: 0, studiata: 0 })
   const studyTotal = Object.values(progressStats).reduce((sum, count) => sum + count, 0)
   const activityRingProgress = (status) => studyTotal ? Math.round((progressStats[status] / studyTotal) * 360) : 0
-  const renderScriptItem = ({ kind, item, dialogueIndex, dialogueId }) => {
+  const renderScriptItem = ({ kind, item, index, dialogueIndex, dialogueId }) => {
     if (kind === 'heading') {
       const headingClass = item.headingType === 'scene' ? 'share-script-heading-scene' : 'share-script-heading-act'
-      const HeadingTag = item.headingType === 'scene' ? 'h3' : 'h2'
-      return `<${HeadingTag} class="share-script-heading ${headingClass}">${escapeHtml(item.text)}</${HeadingTag}>`
+      const HeadingTag = item.headingType === 'scene' ? 'h2' : 'h1'
+      return `<${HeadingTag} class="share-script-heading ${headingClass}" data-script-structure-index="${index}">${escapeHtml(item.text)}</${HeadingTag}>`
     }
     if (kind === 'note') {
       const owner = dialogues.find((dialogue) => dialogue.id === dialogueId)
@@ -807,6 +809,15 @@ const renderShare = (updateMessage = '', uiState = {}) => {
               <button type="button" data-bookmark-nav-action="next" title="Bookmark successivo" aria-label="Bookmark successivo" ${activeBookmarkIndex >= bookmarkIds.length - 1 || !bookmarkIds.length ? 'disabled' : ''}>${iconSvg('next')}</button>
               <button type="button" data-scroll-top title="Vai all’inizio" aria-label="Vai all’inizio">${iconSvg('top')}</button>
             </div>
+          </div>
+          <div class="script-structure" aria-label="Struttura del copione">
+            <label class="script-structure-heading" for="script-structure-select">
+              <span class="panel-section-title">${iconSvg('structure')}<span class="field-label">Struttura</span></span>
+            </label>
+            <select id="script-structure-select" class="script-structure-select" data-script-structure-select aria-label="Vai a un atto o una scena">
+              <option value="">Vai a un atto o una scena</option>
+              ${structureItems.map(({ item, index }) => `<option value="${index}">${item.headingType === 'scene' ? '↳ ' : ''}${escapeHtml(item.text)}</option>`).join('')}
+            </select>
           </div>
           <button type="button" class="character-menu-toggle" data-character-menu-toggle aria-expanded="${characterMenuOpen}" aria-controls="character-menu-content">${iconSvg('users')}<span>Personaggi</span><span class="selection-count">${selectedCharacters.size}/${characters.length}</span></button>
           <div id="character-menu-content" class="character-panel-content${characterMenuOpen ? ' is-open' : ''}" data-character-menu>
@@ -959,6 +970,16 @@ const renderShare = (updateMessage = '', uiState = {}) => {
       const nextIndex = Math.max(0, Math.min(ids.length - 1, currentIndex < 0 ? (direction > 0 ? 0 : ids.length - 1) : currentIndex + direction))
       scrollToBookmark(ids[nextIndex])
     })
+  })
+  root.querySelector('[data-script-structure-select]')?.addEventListener('change', (event) => {
+    const targetIndex = Number(event.currentTarget.value)
+    if (!Number.isInteger(targetIndex) || targetIndex < 0 || targetIndex >= scriptItems.length) return
+    if (targetIndex >= scriptRenderLimit) {
+      scriptRenderLimit = Math.min(targetIndex + 1, scriptItems.length)
+      renderShare('', { scrollToStructureIndex: targetIndex })
+      return
+    }
+    root.querySelector(`[data-script-structure-index="${targetIndex}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   })
   root.querySelector('.dialogue-list')?.addEventListener('click', (event) => {
     const button = event.target.closest('[data-dialogue-bookmark]')
@@ -1118,6 +1139,9 @@ const renderShare = (updateMessage = '', uiState = {}) => {
   }
   if (uiState.scrollToDialogueId) {
     requestAnimationFrame(() => findDialogueCard(uiState.scrollToDialogueId)?.scrollIntoView({ behavior: 'smooth', block: 'center' }))
+  }
+  if (Number.isInteger(uiState.scrollToStructureIndex)) {
+    requestAnimationFrame(() => root.querySelector(`[data-script-structure-index="${uiState.scrollToStructureIndex}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
   }
 }
 

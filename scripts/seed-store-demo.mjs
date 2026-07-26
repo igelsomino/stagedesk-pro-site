@@ -34,11 +34,11 @@ const catalog = [
   { slug: 'la-dodicesima-notte', title: 'La dodicesima notte', author: 'William Shakespeare · traduzione storica', subtitle: 'Edizione integrale con note di regia originali', description: 'La commedia integrale in cinque atti e diciotto scene, con note originali per il gioco delle identità, del desiderio e dell’equivoco.', actors: 15, acts: 5, scenes: 18, minutes: 150, rights: 'CC BY-SA 3.0 e GFDL · fonte Wikisource', tags: ['Edizione integrale', 'Commedia', 'Equivoci'], package: 'la-dodicesima-notte.stagedesk', cover: 'la-dodicesima-notte.png' },
   { slug: 'otello', title: 'Otello', author: 'William Shakespeare · traduzione storica', subtitle: 'Edizione integrale con note di regia originali', description: 'La tragedia integrale in cinque atti e quindici scene, con note originali su gelosia, manipolazione e progressione della tensione.', actors: 14, acts: 5, scenes: 15, minutes: 180, rights: 'CC BY-SA 3.0 e GFDL · fonte Wikisource', tags: ['Edizione integrale', 'Tragedia', 'Classico inglese'], package: 'otello.stagedesk', cover: 'otello.png' },
   { slug: 'le-nozze-di-figaro', title: 'Le nozze di Figaro', author: 'Lorenzo Da Ponte · Wolfgang Amadeus Mozart', subtitle: 'Libretto integrale con note di regia originali', description: 'Il libretto integrale in quattro atti e quarantacinque scene, con battute, indicazioni sceniche e note originali per il lavoro su ritmo e ensemble.', actors: 13, acts: 4, scenes: 45, minutes: 180, rights: 'CC BY-SA 3.0 e GFDL · fonte Wikisource', tags: ['Edizione integrale', 'Libretto', 'Opera'], package: 'le-nozze-di-figaro.stagedesk', cover: 'le-nozze-di-figaro.png' },
-  { slug: 'il-berretto-a-sonagli', title: 'Il berretto a sonagli', author: 'Luigi Pirandello · edizione storica', subtitle: 'Edizione integrale con note di regia originali', description: 'La commedia integrale in due atti e undici scene, con il testo storico e note originali per lavorare su equivoci, ritmo e tensione familiare.', actors: 11, acts: 2, scenes: 11, minutes: 120, rights: 'CC BY-SA 3.0 e GFDL · fonte Wikisource', tags: ['Edizione integrale', 'Commedia', 'Pirandello'], package: 'il-berretto-a-sonagli.stagedesk', cover: 'il-berretto-a-sonagli.jpg' },
-  { slug: 'enrico-iv', title: 'Enrico IV', author: 'Luigi Pirandello · edizione storica', subtitle: 'Edizione integrale con note di regia originali', description: 'Il dramma integrale in tre atti e tre scene, costruito sul confine tra rappresentazione, memoria e identità.', actors: 15, acts: 3, scenes: 3, minutes: 150, rights: 'CC BY-SA 3.0 e GFDL · fonte Wikisource', tags: ['Edizione integrale', 'Dramma', 'Pirandello'], package: 'enrico-iv.stagedesk', cover: 'enrico-iv.jpg' },
-  { slug: 'sei-personaggi-in-cerca-dautore', title: "Sei personaggi in cerca d'autore", author: 'Luigi Pirandello · edizione storica', subtitle: 'Edizione integrale con note di regia originali', description: 'L’opera integrale in un atto, con il teatro nel teatro e il conflitto tra personaggi, attori e autore.', actors: 17, acts: 1, scenes: 1, minutes: 120, rights: 'CC BY-SA 3.0 e GFDL · fonte Wikisource', tags: ['Edizione integrale', 'Dramma', 'Pirandello', 'Metateatro'], package: 'sei-personaggi-in-cerca-dautore.stagedesk', cover: 'sei-personaggi-in-cerca-dautore.jpg' },
-  { slug: 'miseria-e-nobilta', title: 'Miseria e nobiltà', author: 'Eduardo Scarpetta · edizione napoletana storica', subtitle: 'Edizione integrale con note di regia originali', description: 'La commedia integrale in tre atti e sette scene, tra fame, travestimenti e l’invenzione di una nobiltà impossibile.', actors: 15, acts: 3, scenes: 7, minutes: 150, rights: 'CC BY-SA 3.0 e GFDL · fonte Wikisource', tags: ['Edizione integrale', 'Commedia', 'Teatro napoletano'], package: 'miseria-e-nobilta.stagedesk', cover: 'miseria-e-nobilta.jpg' },
-  { slug: 'e-buscia-o-e-verita', title: 'È buscia o è verità', author: 'Eduardo Scarpetta · edizione napoletana storica', subtitle: 'Edizione integrale con note di regia originali', description: 'La commedia integrale in due atti e diciotto scene, in lingua napoletana, con scambi serrati e note originali per il lavoro corale.', actors: 12, acts: 2, scenes: 18, minutes: 120, rights: 'CC BY-SA 3.0 e GFDL · fonte Wikisource', tags: ['Edizione integrale', 'Commedia', 'Teatro napoletano'], package: 'e-buscia-o-e-verita.stagedesk', cover: 'e-buscia-o-e-verita.jpg' },
+  { slug: 'il-berretto-a-sonagli', title: 'Il berretto a sonagli', author: 'Luigi Pirandello · edizione storica', subtitle: 'Edizione integrale con note di regia originali', description: 'La commedia integrale in due atti e undici scene, con il testo storico e note originali per lavorare su equivoci, ritmo e tensione familiare.', actors: 11, acts: 2, scenes: 11, minutes: 120, rights: 'CC BY-SA 3.0 e GFDL · fonte Wikisource', tags: ['Edizione integrale', 'Commedia', 'Pirandello'], package: 'il-berretto-a-sonagli.stagedesk', cover: 'il-berretto-a-sonagli.png' },
+  { slug: 'enrico-iv', title: 'Enrico IV', author: 'Luigi Pirandello · edizione storica', subtitle: 'Edizione integrale con note di regia originali', description: 'Il dramma integrale in tre atti e tre scene, costruito sul confine tra rappresentazione, memoria e identità.', actors: 15, acts: 3, scenes: 3, minutes: 150, rights: 'CC BY-SA 3.0 e GFDL · fonte Wikisource', tags: ['Edizione integrale', 'Dramma', 'Pirandello'], package: 'enrico-iv.stagedesk', cover: 'enrico-iv.png' },
+  { slug: 'sei-personaggi-in-cerca-dautore', title: "Sei personaggi in cerca d'autore", author: 'Luigi Pirandello · edizione storica', subtitle: 'Edizione integrale con note di regia originali', description: 'L’opera integrale in un atto, con il teatro nel teatro e il conflitto tra personaggi, attori e autore.', actors: 17, acts: 1, scenes: 1, minutes: 120, rights: 'CC BY-SA 3.0 e GFDL · fonte Wikisource', tags: ['Edizione integrale', 'Dramma', 'Pirandello', 'Metateatro'], package: 'sei-personaggi-in-cerca-dautore.stagedesk', cover: 'sei-personaggi-in-cerca-dautore.png' },
+  { slug: 'miseria-e-nobilta', title: 'Miseria e nobiltà', author: 'Eduardo Scarpetta · edizione napoletana storica', subtitle: 'Edizione integrale con note di regia originali', description: 'La commedia integrale in tre atti e sette scene, tra fame, travestimenti e l’invenzione di una nobiltà impossibile.', actors: 15, acts: 3, scenes: 7, minutes: 150, rights: 'CC BY-SA 3.0 e GFDL · fonte Wikisource', tags: ['Edizione integrale', 'Commedia', 'Teatro napoletano'], package: 'miseria-e-nobilta.stagedesk', cover: 'miseria-e-nobilta.png' },
+  { slug: 'e-buscia-o-e-verita', title: 'È buscia o è verità', author: 'Eduardo Scarpetta · edizione napoletana storica', subtitle: 'Edizione integrale con note di regia originali', description: 'La commedia integrale in due atti e diciotto scene, in lingua napoletana, con scambi serrati e note originali per il lavoro corale.', actors: 12, acts: 2, scenes: 18, minutes: 120, rights: 'CC BY-SA 3.0 e GFDL · fonte Wikisource', tags: ['Edizione integrale', 'Commedia', 'Teatro napoletano'], package: 'e-buscia-o-e-verita.stagedesk', cover: 'e-buscia-o-e-verita.png' },
 ]
 
 async function upload(bucket, path, content, contentType) {
@@ -50,6 +50,20 @@ async function upload(bucket, path, content, contentType) {
   if (!response.ok) throw new Error(`Upload fallito per ${path} (${response.status}): ${await response.text()}`)
 }
 
+const catalogKey = (value) => String(value || '')
+  .toLocaleLowerCase('it-IT')
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/^-+|-+$/g, '')
+
+const catalogQuery = new URL(`${supabaseUrl}/rest/v1/store_scripts`)
+catalogQuery.searchParams.set('select', 'id,title,package_path')
+catalogQuery.searchParams.set('limit', '1000')
+const catalogResponse = await fetch(catalogQuery, { headers })
+if (!catalogResponse.ok) throw new Error(`Lettura catalogo fallita (${catalogResponse.status}): ${await catalogResponse.text()}`)
+const catalogRows = await catalogResponse.json()
+
 for (const entry of catalog) {
   const packagePath = `official/${entry.package}`
   const coverPath = `official/${entry.cover}`
@@ -57,13 +71,7 @@ for (const entry of catalog) {
   const coverContentType = entry.cover.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg'
   await upload('store-covers', coverPath, await readFile(resolve(coverDir, entry.cover)), coverContentType)
 
-  const query = new URL(`${supabaseUrl}/rest/v1/store_scripts`)
-  query.searchParams.set('select', 'id')
-  query.searchParams.set('package_path', `eq.${packagePath}`)
-  query.searchParams.set('limit', '1')
-  const existingResponse = await fetch(query, { headers })
-  if (!existingResponse.ok) throw new Error(`Lettura catalogo fallita (${existingResponse.status}): ${await existingResponse.text()}`)
-  const existing = await existingResponse.json()
+  const existing = catalogRows.filter((row) => row.package_path === packagePath || catalogKey(row.title) === catalogKey(entry.title))
   const metadata = {
     title: entry.title,
     subtitle: entry.subtitle,
@@ -93,4 +101,5 @@ for (const entry of catalog) {
   })
   if (!response.ok) throw new Error(`Catalogo non aggiornato per ${entry.title} (${response.status}): ${await response.text()}`)
   console.log(`${existing[0]?.id ? 'Aggiornato' : 'Pubblicato'}: ${entry.title}`)
+  if (!existing[0]?.id) catalogRows.push({ id: response.headers.get('content-location') || '', title: entry.title, package_path: packagePath })
 }

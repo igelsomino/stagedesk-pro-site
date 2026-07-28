@@ -9,7 +9,7 @@
     <meta property="og:type" content="website" />
     <title>StageDesk Store</title>
     <link rel="icon" href="../assets/stagedesk-pro-icon.png" />
-    <link rel="stylesheet" href="./store.css?v=20260726-01" />
+    <link rel="stylesheet" href="./store.css?v=20260726-09" />
   </head>
   <body class="store-page">
     <header class="store-header">
@@ -28,12 +28,8 @@
     <main id="store-app" class="store-main">
       <section class="store-intro" aria-labelledby="store-title">
         <div>
-          <h1 id="store-title">La tua prossima scena<br /><em>comincia qui.</em></h1>
+          <h1 id="store-title">La tua prossima<br /><span class="store-intro-title-line">scena <em>comincia qui.</em></span></h1>
           <p class="store-intro-copy">Un catalogo curato di copioni pronti da leggere, provare e portare sul palco con StageDesk Pro.</p>
-        </div>
-        <div class="store-intro-note">
-          <span class="store-note-dot"></span>
-          <span>Testi, dati e materiali raccolti in un unico posto.</span>
         </div>
       </section>
 
@@ -41,19 +37,31 @@
         <div class="store-toolbar">
           <div>
             <p class="store-eyebrow">CATALOGO</p>
-            <h2 id="catalog-title">Trova il copione giusto per la tua compagnia.</h2>
+          <h2 id="catalog-title">Trova il copione giusto per la tua compagnia.</h2>
           </div>
-          <label class="store-search">
-            <span class="sr-only">Cerca copione</span>
-            <span class="store-search-icon" aria-hidden="true"></span>
-            <input id="catalog-search" type="search" placeholder="Cerca per titolo, autore o tema" autocomplete="off" />
-          </label>
-        </div>
-        <div class="store-filters" aria-label="Filtri catalogo">
-          <label><span>Genere</span><select id="filter-genre"><option value="">Tutti</option></select></label>
-          <label><span>Lingua</span><select id="filter-language"><option value="">Tutte</option></select></label>
-          <label><span>Attori</span><select id="filter-actors"><option value="">Qualsiasi cast</option><option value="1-3">1–3</option><option value="4-8">4–8</option><option value="9-15">9–15</option><option value="16+">16+</option></select></label>
-          <label><span>Ordina</span><select id="filter-sort"><option value="featured">In evidenza</option><option value="newest">Più recenti</option><option value="downloads">Più richiesti</option><option value="rating">Più votati</option></select></label>
+          <div class="store-catalog-grid">
+            <div class="store-catalog-controls">
+              <form class="store-search" id="catalog-search-form" role="search">
+                <label class="store-search-field">
+                  <span class="sr-only">Cerca copione</span>
+                  <span class="store-search-icon" aria-hidden="true"></span>
+                  <input id="catalog-search" type="search" placeholder="Cerca per titolo, autore o tema" autocomplete="off" />
+                </label>
+                <button class="store-button store-button-accent store-search-button" type="submit">Cerca</button>
+              </form>
+              <div class="store-filters" aria-label="Filtri catalogo">
+                <label><span>Genere</span><select id="filter-genre"><option value="">Tutti</option></select></label>
+                <label><span>Lingua</span><select id="filter-language"><option value="">Tutte</option></select></label>
+                <label><span>Attori</span><select id="filter-actors"><option value="">Qualsiasi cast</option><option value="1-3">1–3</option><option value="4-8">4–8</option><option value="9-15">9–15</option><option value="16+">16+</option></select></label>
+                <label><span>Ordina</span><select id="filter-sort"><option value="featured">In evidenza</option><option value="newest">Più recenti</option><option value="downloads">Più richiesti</option><option value="rating">Più votati</option></select></label>
+              </div>
+            </div>
+            <aside class="store-catalog-aside" aria-label="Esplora il catalogo">
+              <p><strong>ESPLORA:</strong> Filtra per genere, lingua e dimensione del cast.</p>
+              <p><strong>CRITERI:</strong> Confronta le caratteristiche prima di scegliere il copione.</p>
+              <p><strong>SCOPRI:</strong> Apri la scheda per conoscere cast, durata e contenuti.</p>
+            </aside>
+          </div>
         </div>
         <p id="catalog-status" class="store-status" role="status">Caricamento catalogo…</p>
         <div id="catalog-sections"></div>

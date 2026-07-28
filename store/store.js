@@ -3,7 +3,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const IMPORT_MESSAGE = 'stagedesk-store-import'
 const CONTEXT_MESSAGE = 'stagedesk-store-context'
 const CONFIG_URL = '/store-config'
-const COVER_ASSET_VERSION = '20260726-covers-01'
+const COVER_ASSET_VERSION = '20260728-covers-02'
 // The Store is embedded only by StageDesk Pro; direct browser visits keep import disabled.
 const embeddedInStageDesk = window.parent !== window
 const state = {
@@ -26,7 +26,7 @@ const demoBook = {
   description: 'La commedia integrale in tre atti e sedici scene, con il testo della fonte storica, le didascalie e note originali per la preparazione della prova.',
   authorName: 'Molière · traduzione storica Niccolò di Castelli',
   language: 'Italiano',
-  genre: 'Teatro',
+  genre: 'Commedia',
   rightsLabel: 'Edizione storica in pubblico dominio; fonte digitale UB Paderborn',
   actorCount: 11,
   actCount: 3,
@@ -58,7 +58,7 @@ function normaliseBook(row) {
     description: row.description || '',
     authorName: row.author_name || 'Autore non indicato',
     language: row.language || 'Italiano',
-    genre: row.genre || 'Teatro',
+    genre: row.genre || 'Non classificato',
     rightsLabel: row.rights_label || 'Diritti non indicati',
     actorCount: asNumber(row.actor_count),
     actCount: asNumber(row.act_count),
@@ -271,6 +271,10 @@ window.addEventListener('message', (event) => {
 })
 
 $('#catalog-search').addEventListener('input', updateFilters)
+$('#catalog-search-form').addEventListener('submit', (event) => {
+  event.preventDefault()
+  updateFilters()
+})
 document.querySelectorAll('.store-filters select').forEach((select) => select.addEventListener('change', updateFilters))
 $('#catalog-sections').addEventListener('click', (event) => {
   const carouselButton = event.target.closest('[data-carousel-prev], [data-carousel-next]')

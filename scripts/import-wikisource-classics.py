@@ -184,9 +184,15 @@ def resolve_speaker(label: str, aliases: dict[str, str], known: list[str]) -> st
     for character in known:
         if key == character.upper() or key.startswith(character.upper() + " "):
             return character
-    if re.search(r"[.!?]$", label) and " " not in label:
+    # A source line can begin with an abbreviation followed by the complete
+    # speech (for example ``TES. Grazie...``). Never promote the whole line
+    # to a character name: only exact aliases, known names, or a known name
+    # followed by a separator are valid speakers.
+    if re.search(r"[.!?]$", label) or re.search(r"[.!?]", label):
         return None
-    return label.upper()
+    if any(char in label for char in ",;:!?()[]"):
+        return None
+    return label.upper() if len(label.split()) <= 4 else None
 
 
 def extract_dialogue(lines: list[str], config: dict) -> tuple[list[tuple[str, str]], list[str]]:
@@ -228,8 +234,11 @@ def extract_dialogue(lines: list[str], config: dict) -> tuple[list[tuple[str, st
         exact_speaker = resolve_speaker(line, aliases, known)
         if exact_speaker and (line.upper() == exact_speaker.upper() or any(normalize_label(line).upper() == normalize_label(alias).upper() for alias in aliases)):
             speaker = exact_speaker
+            # The Wikisource HTML marks a standalone speaker with a trailing
+            # period. Do not leave that label in the following speech.
+            line = ""
         if "@@SPEAKER@@" in raw:
-            speaker = resolve_speaker(line, aliases, known)
+            speaker = speaker or resolve_speaker(line, aliases, known)
         elif not speaker:
             match = re.match(r"^(.{1,55}?)\s*\.\s+(.*)$", line)
             if match:

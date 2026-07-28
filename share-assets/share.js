@@ -1205,11 +1205,32 @@ async function submitEmailAuth(form) {
 
 async function signInWithProvider(provider) {
   setMessage('Apertura del provider in corso...')
-  const { error } = await supabase.auth.signInWithOAuth({
+  const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
-    options: { redirectTo: shareAuthRedirectUrl() },
+    options: {
+      redirectTo: shareAuthRedirectUrl(),
+      skipBrowserRedirect: true,
+    },
   })
-  if (error) renderAuth(error.message)
+  if (error) {
+    renderAuth(error.message)
+    return
+  }
+  if (!data.url) {
+    renderAuth('Redirect del provider non disponibile.')
+    return
+  }
+
+  if (window.parent !== window) {
+    window.parent.postMessage(
+      { type: 'stagedesk-share-auth', url: data.url },
+      window.location.origin,
+    )
+    setMessage('Autenticazione aperta fuori dal pannello. Completa l’accesso e torna a StageDesk Share.')
+    return
+  }
+
+  window.location.assign(data.url)
 }
 
 const submitProfileCompletion = async (form) => {

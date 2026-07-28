@@ -8,9 +8,9 @@ La pagina recupera automaticamente l'ultima release pubblicata su GitHub:
 - Windows: EXE e MSI;
 - Linux: AppImage, DEB e RPM.
 
-In caso di errore sulla GitHub API usa un fallback statico alla release `v1.0.40`.
+In caso di errore sulla GitHub API usa un fallback statico alla release `v1.0.43`.
 
-La release desktop corrente è `v1.0.40`; il catalogo aggiorna automaticamente i collegamenti agli installer
+La release desktop corrente è `v1.0.43`; il catalogo aggiorna automaticamente i collegamenti agli installer
 leggendo la release GitHub più recente, senza richiedere modifiche manuali alla pagina.
 
 La home contiene due caroselli distinti: `Anteprima` presenta le schermate reali dell'applicazione, mentre
@@ -27,9 +27,10 @@ Repository sorgente applicazione:
 
 https://github.com/igelsomino/stagedesk-pro
 
-La versione 1.0.40 include la valutazione del copione nella toolbar dell'app, visibile solo per i copioni importati
+La versione 1.0.43 include la valutazione del copione nella toolbar dell'app, visibile solo per i copioni importati
 dallo Store, oltre alla gestione unificata del trascinamento di note, battute, cue e file multimediali, con ghost
-nativo e indicatori di rilascio coerenti.
+nativo e indicatori di rilascio coerenti. Il comando di apertura della condivisione usa il browser esterno per
+completare correttamente l'autenticazione OAuth anche quando StageDesk Share viene aperto da StageDesk Pro.
 
 ## StageDesk Store
 

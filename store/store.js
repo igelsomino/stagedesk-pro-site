@@ -3,7 +3,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const IMPORT_MESSAGE = 'stagedesk-store-import'
 const CONTEXT_MESSAGE = 'stagedesk-store-context'
 const CONFIG_URL = '/store-config'
-const COVER_ASSET_VERSION = '20260731-catalog-metadata-01'
+const COVER_ASSET_VERSION = '20260731-catalog-metadata-02'
 // The Store is embedded only by StageDesk Pro; direct browser visits keep import disabled.
 const embeddedInStageDesk = window.parent !== window
 const state = {

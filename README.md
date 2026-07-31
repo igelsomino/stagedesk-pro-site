@@ -10,12 +10,15 @@ La pagina recupera automaticamente l'ultima release pubblicata su GitHub:
 
 In caso di errore sulla GitHub API usa un fallback statico alla release `v1.0.43`.
 
-La release desktop corrente è `v1.0.43`; il catalogo aggiorna automaticamente i collegamenti agli installer
+La release desktop corrente è `v1.0.47`; il catalogo aggiorna automaticamente i collegamenti agli installer
 leggendo la release GitHub più recente, senza richiedere modifiche manuali alla pagina.
 
 La home contiene due caroselli distinti: `Anteprima` presenta le schermate reali dell'applicazione, mentre
 `Funzionalità` descrive in dodici schede testuali il flusso di lavoro, dall'accesso e dalla gestione dei progetti
 fino a cue, modalità spettacolo, export PDF, condivisione e aggiornamenti.
+
+Gli ultimi aggiornamenti del sito includono controlli del carosello con icone SVG coerenti tra i browser, filtri del
+catalogo più leggibili e importazione dei classici con riconoscimento più preciso di scene, alias e didascalie.
 
 ## Deploy Cloudflare Pages
 

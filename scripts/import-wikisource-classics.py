@@ -161,7 +161,7 @@ def page_lines(title: str) -> list[str]:
 
 
 def is_heading(line: str, prefix: str) -> bool:
-    return bool(re.match(rf"^{prefix}\s+(?:PRIMO|PRIMA|SECONDO|SECONDA|TERZO|TERZA|QUARTO|QUARTA|QUINTO|QUINTA|[IVX]+)\.?$", line, re.I))
+    return bool(re.match(rf"^{prefix}\s+(?:PRIMO|PRIMA|SECONDO|SECONDA|TERZO|TERZA|QUARTO|QUARTA|QUINTO|QUINTA|[IVX]+)\s*\.?$", line, re.I))
 
 
 def normalize_label(value: str) -> str:
@@ -218,6 +218,9 @@ def resolve_speaker(label: str, aliases: dict[str, str], known: list[str]) -> st
 def extract_dialogue(lines: list[str], config: dict) -> tuple[list[tuple[str, str]], list[str]]:
     aliases = config.get("aliases", {})
     known = config["characters"]
+    ignored_speakers = {
+        normalize_label(value).upper() for value in config.get("ignored_speakers", [])
+    }
     blocks: list[tuple[str, str]] = []
     directions: list[str] = []
     current_speaker: str | None = None
@@ -255,6 +258,9 @@ def extract_dialogue(lines: list[str], config: dict) -> tuple[list[tuple[str, st
         # traditional `SPEAKER. text` form.
         exact_speaker = resolve_speaker(line, aliases, known)
         normalized_line = normalize_label(line)
+        if normalized_line.upper() in ignored_speakers:
+            flush()
+            continue
         if exact_speaker and (
             normalized_line.upper() == exact_speaker.upper()
             or any(normalized_line.upper() == normalize_label(alias).upper() for alias in aliases)
@@ -309,7 +315,7 @@ def split_scenes(lines: list[str], default_scene: int | None) -> list[tuple[int,
     current: list[str] = []
     seen_scene_heading = False
     for line in lines:
-        match = re.match(r"^SCENA\s+(.+?)\.?$", line, re.I)
+        match = re.match(r"^SCENA\s+(.+?)\s*\.?$", line, re.I)
         if match:
             # Act pages contain a title, the act heading and often a cast
             # preamble before the first scene heading. That material must not
@@ -317,7 +323,7 @@ def split_scenes(lines: list[str], default_scene: int | None) -> list[tuple[int,
             if seen_scene_heading and current:
                 scenes.append((current_number, current))
             seen_scene_heading = True
-            value = match.group(1).strip().upper()
+            value = match.group(1).strip().rstrip(".").strip().upper()
             current_number = {
                 "I": 1, "II": 2, "III": 3, "IV": 4, "V": 5, "VI": 6,
                 "VII": 7, "VIII": 8, "IX": 9, "X": 10, "XI": 11, "XII": 12,
@@ -399,10 +405,10 @@ def embedded_source_scenes(config: dict) -> list[tuple[int, int, str, list[tuple
             act = acts.get(act_match.group(1).strip().upper(), act)
             scene = 1
             continue
-        scene_match = re.match(r"^SCENA\s+(.+?)\.?$", line, re.I)
+        scene_match = re.match(r"^SCENA\s+(.+?)\s*\.?$", line, re.I)
         if scene_match:
             flush()
-            scene = scenes.get(scene_match.group(1).strip().upper(), scene)
+            scene = scenes.get(scene_match.group(1).strip().rstrip(".").strip().upper(), scene)
             continue
         current.append(line)
     flush()
@@ -464,7 +470,7 @@ WORKS = [
     {"slug": "il-teatro-comico", "title": "Il teatro comico", "source_page": "Il teatro comico", "source_pages": ["Il teatro comico/Atto I", "Il teatro comico/Atto II", "Il teatro comico/Atto III"], "source_url": "https://it.wikisource.org/wiki/Il_teatro_comico", "attribution": "testo di Carlo Goldoni, edizione storica digitalizzata da Wikisource, fonte disponibile con licenza CC BY-SA 3.0 e GFDL", "characters": ["ORAZIO", "PLACIDA", "BEATRICE", "EUGENIO", "LELIO", "ELEONORA", "VITTORIA", "TONINO", "PETRONIO", "ANSELMO", "GIANNI", "IL SUGGERITORE", "STAFFIERE"], "aliases": {}, "package": "il-teatro-comico.stagedesk"},
     {"slug": "sogno-di-una-notte-d-estate", "title": "Il sogno di una notte d'estate", "source_page": "Il Sogno di una notte d'estate", "source_pages": [f"Il Sogno di una notte d'estate/Atto {word}" for word in ["primo", "secondo", "terzo", "quarto", "quinto"]], "source_url": "https://it.wikisource.org/wiki/Il_Sogno_di_una_notte_d%27estate", "attribution": "testo di William Shakespeare nella traduzione storica di Carlo Rusconi, digitalizzato da Wikisource, fonte disponibile con licenza CC BY-SA 3.0 e GFDL", "strict_characters": True, "characters": ["TESEO", "IPPOLITA", "FILOSTRATO", "EGEI", "ERMIA", "LISANDRO", "DEMETRIO", "ELENA", "OBERONE", "TITANIA", "PUCK", "FATA 1", "FATA 2", "FATA 3", "FATA 4", "FONDO", "QUINCE", "FLAUTO", "STARVELING", "SNOUT", "SNUG", "PIRAMO", "TISBE", "MURO", "CHIARO DI LUNA", "LEONE", "PROLOGO", "TUTTI"], "aliases": {"Tes": "TESEO", "Teseo": "TESEO", "Ip": "IPPOLITA", "Ipolita": "IPPOLITA", "Fil": "FILOSTRATO", "Filostrato": "FILOSTRATO", "Eg": "EGEI", "Egeo": "EGEI", "Er": "ERMIA", "Ermia": "ERMIA", "Lis": "LISANDRO", "Lisandro": "LISANDRO", "Dem": "DEMETRIO", "Demetrio": "DEMETRIO", "El": "ELENA", "Elena": "ELENA", "Ob": "OBERONE", "Oberone": "OBERONE", "Tit": "TITANIA", "Titania": "TITANIA", "Puc": "PUCK", "Puck": "PUCK", "Bot": "FONDO", "Bott": "FONDO", "Bottom": "FONDO", "Fondo": "FONDO", "Quin": "QUINCE", "Quinz": "QUINCE", "Quince": "QUINCE", "Quinzio": "QUINCE", "Flu": "FLAUTO", "Flut": "FLAUTO", "Flauto": "FLAUTO", "Star": "STARVELING", "Starveling": "STARVELING", "Snout": "SNOUT", "Snug": "SNUG", "Fat": "FATA 1", "1ª Fat": "FATA 1", "2ª Fat": "FATA 2", "3ª Fat": "FATA 3", "4ª Fat": "FATA 4", "Pir": "PIRAMO", "Piramo": "PIRAMO", "Tis": "TISBE", "Tisbe": "TISBE", "Muro": "MURO", "Il muro": "MURO", "Luna": "CHIARO DI LUNA", "Leon": "LEONE", "Il Leone": "LEONE", "Prol": "PROLOGO", "Tutti": "TUTTI"}, "package": "sogno-di-una-notte-d-estate.stagedesk"},
     {"slug": "la-dodicesima-notte", "title": "La dodicesima notte", "source_page": "La dodicesima notte o quel che vorrete", "source_pages": [f"La dodicesima notte o quel che vorrete/Atto {word}" for word in ["primo", "secondo", "terzo", "quarto", "quinto"]], "source_url": "https://it.wikisource.org/wiki/La_dodicesima_notte_o_quel_che_vorrete", "attribution": "testo di William Shakespeare nella traduzione storica di Carlo Rusconi, digitalizzato da Wikisource, fonte disponibile con licenza CC BY-SA 3.0 e GFDL", "characters": ["DUCA ORSINO", "CURIO", "VALENTINO", "MALVOLIO", "VIOLA", "OLIVIA", "SEBASTIANO", "ANTONIO", "SIR TOBIA", "SIR ANDREA", "MARIA", "FESTE", "FABIANO", "CAPITANO", "SACERDOTE"], "aliases": {"Duc": "DUCA ORSINO", "Cur": "CURIO", "Val": "VALENTINO", "Mal": "MALVOLIO", "Ces": "VIOLA", "Vio": "VIOLA", "Oli": "OLIVIA", "Seb": "SEBASTIANO", "Ant": "ANTONIO", "Tob": "SIR TOBIA", "And": "SIR ANDREA", "Mar": "MARIA", "Fes": "FESTE", "Fab": "FABIANO"}, "package": "la-dodicesima-notte.stagedesk"},
-    {"slug": "otello", "title": "Otello", "source_page": "Otello", "source_pages": [f"Otello/Atto {word}" for word in ["primo", "secondo", "terzo", "quarto", "quinto"]], "source_url": "https://it.wikisource.org/wiki/Otello", "attribution": "testo di William Shakespeare nella traduzione storica di Carlo Rusconi, digitalizzato da Wikisource, fonte disponibile con licenza CC BY-SA 3.0 e GFDL", "characters": ["OTELLO", "JAGO", "RODRIGO", "DESDEMONA", "BRABANZIO", "CASSIO", "DOGE", "EMILIA", "MONTANO", "LODOVICO", "GRATIANO", "BIANCA", "CLARISSA", "ARALDI"], "aliases": {"Otell": "OTELLO", "Jago": "JAGO", "Rodr": "RODRIGO", "Desd": "DESDEMONA", "Brab": "BRABANZIO", "Cass": "CASSIO", "Doge": "DOGE", "Emil": "EMILIA", "Mont": "MONTANO", "Lod": "LODOVICO", "Grat": "GRATIANO", "Bian": "BIANCA"}, "package": "otello.stagedesk"},
+    {"slug": "otello", "title": "Otello", "source_page": "Otello", "source_pages": [f"Otello/Atto {word}" for word in ["primo", "secondo", "terzo", "quarto", "quinto"]], "source_url": "https://it.wikisource.org/wiki/Otello", "attribution": "testo di William Shakespeare nella traduzione storica di Carlo Rusconi, digitalizzato da Wikisource, fonte disponibile con licenza CC BY-SA 3.0 e GFDL", "strict_characters": True, "characters": ["OTELLO", "JAGO", "RODRIGO", "DESDEMONA", "BRABANZIO", "CASSIO", "DOGE", "EMILIA", "MONTANO", "LODOVICO", "GRATIANO", "BIANCA", "ARALDO", "MARINAIO", "MESSAGGERO", "UFFICIALE", "1° SENATORE", "2° SENATORE", "DOGE E SENATORI", "1° GENTILUOMO", "2° GENTILUOMO", "3° GENTILUOMO", "4° GENTILUOMO", "GENTILUOMO", "SUONATORE", "1° SUONATORE", "CLOWN"], "aliases": {"Ot": "OTELLO", "Otell": "OTELLO", "Jago": "JAGO", "Rodr": "RODRIGO", "Rodrigo": "RODRIGO", "Desd": "DESDEMONA", "Brab": "BRABANZIO", "Cass": "CASSIO", "Doge": "DOGE", "Emil": "EMILIA", "Mont": "MONTANO", "Lod": "LODOVICO", "Graz": "GRATIANO", "Grat": "GRATIANO", "Bian": "BIANCA", "Bianc": "BIANCA", "Ar": "ARALDO", "Mar": "MARINAIO", "Mess": "MESSAGGERO", "Uff": "UFFICIALE", "1° Sen": "1° SENATORE", "2° Sen": "2° SENATORE", "2° Senat": "2° SENATORE", "Doge e Sen": "DOGE E SENATORI", "1° Gent": "1° GENTILUOMO", "2° Gent": "2° GENTILUOMO", "3° Gent": "3° GENTILUOMO", "4° Gent": "4° GENTILUOMO", "Gent": "GENTILUOMO", "Suon": "SUONATORE", "1° Suon": "1° SUONATORE", "Cl": "CLOWN"}, "ignored_speakers": ["SCENA I", "SCENA II", "SCENA III", "SCENA IV", "SCENA V", "SALA DEL CONSIGLIO", "UNA STRADA", "UNA STANZA NELLA FORTEZZA", "DINANZI ALLA FORTEZZA", "SCIOGLI QUESTA FETTUCCIA", "NO, NON SEGUE COSÌ", "DESDEMONA IN LETTO, ADDORMENTATA", "ORA VATTENE; BUONA NOTTE"], "package": "otello.stagedesk"},
     {"slug": "le-nozze-di-figaro", "title": "Le nozze di Figaro", "source_page": "Le nozze di Figaro", "source_pages": [f"Le nozze di Figaro/Atto {act}/Scena {scene}" for act, scenes in [("Primo", ["prima", "seconda", "terza", "quarta", "quinta", "sesta", "settima", "ottava"]), ("Secondo", ["prima", "seconda", "terza", "quarta", "quinta", "sesta", "settima", "ottava", "nona", "decima", "undicesima", "dodicesima"]), ("Terzo", ["prima", "seconda", "terza", "quarta", "quinta", "sesta", "settima", "ottava", "nona", "decima", "undicesima", "dodicesima", "tredicesima", "quattordicesima"]), ("Quarto", ["prima", "seconda", "terza", "quarta", "quinta", "sesta", "settima", "ottava", "nona", "decima", "undicesima", "dodicesima"])] for scene in scenes], "source_url": "https://it.wikisource.org/wiki/Le_nozze_di_Figaro", "attribution": "libretto di Lorenzo Da Ponte per la musica di Wolfgang Amadeus Mozart, edizione storica digitalizzata da Wikisource, fonte disponibile con licenza CC BY-SA 3.0 e GFDL", "strict_characters": True, "characters": ["FIGARO", "SUSANNA", "IL CONTE", "LA CONTESSA", "CHERUBINO", "MARCELLINA", "BARTOLO", "BASILIO", "DON CURZIO", "ANTONIO", "BARBARINA", "DONNE", "CONTADINI"], "aliases": {"Conte": "IL CONTE", "Il Conte": "IL CONTE", "Contessa": "LA CONTESSA", "La Contessa": "LA CONTESSA", "Curzio": "DON CURZIO", "Don Curzio": "DON CURZIO"}, "package": "le-nozze-di-figaro.stagedesk"},
     {"slug": "il-berretto-a-sonagli", "title": "Il berretto a sonagli", "source_page": "Il berretto a sonagli", "source_pages": ["Il berretto a sonagli/Atto I", "Il berretto a sonagli/Atto II"], "source_url": "https://it.wikisource.org/wiki/Il_berretto_a_sonagli", "strict_characters": True, "attribution": "testo di Luigi Pirandello, edizione storica digitalizzata da Wikisource, fonte disponibile con licenza CC BY-SA 3.0 e GFDL", "characters": ["BEATRICE", "FANA", "LA SARACENA", "CIAMPA", "FIFÌ", "ASSUNTA", "SPANÒ", "PINÒ", "IL DELEGATO", "DON LO GIUECO", "DON FIFÌ"], "aliases": {"La saracena": "LA SARACENA", "Ciampa": "CIAMPA", "Fifì": "FIFÌ", "Fifi": "FIFÌ", "Spanò": "SPANÒ", "Pino": "PINÒ", "Pinò": "PINÒ", "Don Fifì": "DON FIFÌ", "Signor delegato": "IL DELEGATO", "Delegato": "IL DELEGATO"}, "package": "il-berretto-a-sonagli.stagedesk"},
     {"slug": "enrico-iv", "title": "Enrico IV", "source_page": "Enrico IV (1965)", "source_pages": ["Enrico IV (1965)/Atto I", "Enrico IV (1965)/Atto II", "Enrico IV (1965)/Atto III"], "source_url": "https://it.wikisource.org/wiki/Enrico_IV_%281965%29", "strict_characters": True, "attribution": "testo di Luigi Pirandello, edizione storica digitalizzata da Wikisource, fonte disponibile con licenza CC BY-SA 3.0 e GFDL", "characters": ["ENRICO IV", "MATILDE SPINA", "BELCREDI", "DOTTOR GENONI", "LANDOLFO", "ORDULFO", "ARIALDO", "FRIDA", "CARLO DI NOLLI", "TITO BELCREDI", "BERTOLDO", "FINO", "PRIMO VALLETTO", "SECONDO VALLETTO", "DUE SERVI"], "aliases": {"Enrico": "ENRICO IV", "Enrico IV": "ENRICO IV", "Matilde": "MATILDE SPINA", "Dottore": "DOTTOR GENONI", "Dottor Genoni": "DOTTOR GENONI", "Carlo": "CARLO DI NOLLI", "Primo valletto": "PRIMO VALLETTO", "Secondo valletto": "SECONDO VALLETTO", "Uno dei valletti": "PRIMO VALLETTO"}, "package": "enrico-iv.stagedesk"},

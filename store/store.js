@@ -3,7 +3,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const IMPORT_MESSAGE = 'stagedesk-store-import'
 const CONTEXT_MESSAGE = 'stagedesk-store-context'
 const CONFIG_URL = '/store-config'
-const COVER_ASSET_VERSION = '20260729-covers-03'
+const COVER_ASSET_VERSION = '20260731-catalog-metadata-01'
 // The Store is embedded only by StageDesk Pro; direct browser visits keep import disabled.
 const embeddedInStageDesk = window.parent !== window
 const state = {
@@ -19,6 +19,14 @@ const state = {
 const $ = (selector) => document.querySelector(selector)
 const escapeHtml = (value = '') => String(value).replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char])
 const asNumber = (value) => Number.isFinite(Number(value)) ? Number(value) : 0
+const rightsLabels = {
+  unknown: 'Da verificare',
+  original: 'Opera originale',
+  'public-domain': 'Pubblico dominio',
+  'creative-commons': 'Creative Commons',
+  siae: 'SIAE / diritti gestiti',
+  licensed: 'Licenza specifica',
+}
 const demoBook = {
   id: 'demo-il-malato-immaginario',
   title: 'Il malato immaginario',
@@ -28,6 +36,11 @@ const demoBook = {
   language: 'Italiano',
   genre: 'Commedia',
   rightsLabel: 'Edizione storica in pubblico dominio; fonte digitale UB Paderborn',
+  rightsCode: 'public-domain',
+  rightsHolder: 'Fonte storica UB Paderborn',
+  setting: 'Casa borghese e ambienti domestici',
+  castBreakdown: '6 donne, 5 uomini',
+  ageBreakdown: 'Adulti',
   actorCount: 11,
   actCount: 3,
   sceneCount: 16,
@@ -59,7 +72,13 @@ function normaliseBook(row) {
     authorName: row.author_name || 'Autore non indicato',
     language: row.language || 'Italiano',
     genre: row.genre || 'Non classificato',
-    rightsLabel: row.rights_label || 'Diritti non indicati',
+    rightsLabel: row.rights_label || rightsLabels[row.rights_code] || 'Diritti non indicati',
+    rightsCode: row.rights_code || 'unknown',
+    rightsHolder: row.rights_holder || '',
+    licenseUrl: row.license_url || '',
+    setting: row.setting || '',
+    castBreakdown: row.cast_breakdown?.summary || '',
+    ageBreakdown: row.age_breakdown?.summary || '',
     actorCount: asNumber(row.actor_count),
     actCount: asNumber(row.act_count),
     sceneCount: asNumber(row.scene_count),
@@ -190,14 +209,20 @@ function updateFilters() {
   const language = $('#filter-language').value
   const actors = $('#filter-actors').value
   const query = ($('#catalog-search').value || '').trim().toLocaleLowerCase('it-IT')
+  const rights = $('#filter-rights').value
   const sort = $('#filter-sort').value
   state.filtered = state.books.filter((book) => {
-    const matchesQuery = !query || [book.title, book.authorName, book.description, book.genre, ...book.tags].join(' ').toLocaleLowerCase('it-IT').includes(query)
+    const matchesQuery = !query || [book.title, book.authorName, book.description, book.genre, book.setting, book.castBreakdown, book.ageBreakdown, ...book.tags].join(' ').toLocaleLowerCase('it-IT').includes(query)
     const matchesGenre = !genre || book.genre === genre
     const matchesLanguage = !language || book.language === language
+    const matchesRights = !rights || book.rightsCode === rights
+    const cast = $('#filter-cast').value
+    const age = $('#filter-age').value
+    const matchesCast = !cast || book.castBreakdown === cast
+    const matchesAge = !age || book.ageBreakdown === age
     const count = book.actorCount
     const matchesActors = !actors || (actors === '1-3' && count >= 1 && count <= 3) || (actors === '4-8' && count >= 4 && count <= 8) || (actors === '9-15' && count >= 9 && count <= 15) || (actors === '16+' && count >= 16)
-    return matchesQuery && matchesGenre && matchesLanguage && matchesActors
+    return matchesQuery && matchesGenre && matchesLanguage && matchesActors && matchesCast && matchesAge && matchesRights
   })
   state.filtered.sort((a, b) => sort === 'downloads' ? b.downloadCount - a.downloadCount : sort === 'rating' ? b.averageRating - a.averageRating : sort === 'newest' ? String(b.createdAt).localeCompare(String(a.createdAt)) : 0)
   $('#catalog-status').textContent = `${state.filtered.length} ${state.filtered.length === 1 ? 'copione disponibile' : 'copioni disponibili'}`
@@ -208,6 +233,9 @@ function populateFilterOptions() {
   const unique = (key) => [...new Set(state.books.map((book) => book[key]).filter(Boolean))].sort()
   $('#filter-genre').innerHTML = '<option value="">Tutti</option>' + unique('genre').map((value) => `<option>${escapeHtml(value)}</option>`).join('')
   $('#filter-language').innerHTML = '<option value="">Tutte</option>' + unique('language').map((value) => `<option>${escapeHtml(value)}</option>`).join('')
+  $('#filter-cast').innerHTML = '<option value="">Qualsiasi composizione</option>' + unique('castBreakdown').map((value) => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join('')
+  $('#filter-age').innerHTML = '<option value="">Qualsiasi età</option>' + unique('ageBreakdown').map((value) => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join('')
+  $('#filter-rights').innerHTML = '<option value="">Tutti</option>' + unique('rightsCode').map((value) => `<option value="${escapeHtml(value)}">${escapeHtml(rightsLabels[value] || value)}</option>`).join('')
 }
 
 async function loadCatalog() {
@@ -261,6 +289,12 @@ function detailMarkup(book) {
         <button class="store-button store-button-accent store-detail-import" type="button" data-import-book="${escapeHtml(book.id)}"><span class="store-import-icon" aria-hidden="true">↓</span><span>Importa</span></button>
       </div>`
     : ''
+  const metadata = [
+    book.setting ? `<span><strong>Ambientazione</strong>${escapeHtml(book.setting)}</span>` : '',
+    book.castBreakdown ? `<span><strong>Cast</strong>${escapeHtml(book.castBreakdown)}</span>` : '',
+    book.ageBreakdown ? `<span><strong>Età</strong>${escapeHtml(book.ageBreakdown)}</span>` : '',
+    book.rightsHolder ? `<span><strong>Titolare o fonte</strong>${escapeHtml(book.rightsHolder)}</span>` : '',
+  ].filter(Boolean).join('')
   return `<button class="store-dialog-close" data-close-detail aria-label="Chiudi">×</button>
     <div class="store-detail-layout">
       <div class="store-detail-cover-column">
@@ -277,6 +311,7 @@ function detailMarkup(book) {
         <p class="store-book-author">di ${escapeHtml(book.authorName)}</p>
         <p class="store-detail-description">${escapeHtml(book.description)}</p>
         <div class="store-detail-facts"><span>${book.actorCount || '—'} attori</span><span>${book.actCount || '—'} atti</span><span>${book.sceneCount || '—'} scene</span><span>${book.estimatedMinutes || '—'} min</span><span>${escapeHtml(book.language)}</span></div>
+        ${metadata ? `<div class="store-detail-metadata">${metadata}</div>` : ''}
         <p class="store-detail-publication">${escapeHtml(publicationLabel(book))}</p>
       </div>
     </div>`

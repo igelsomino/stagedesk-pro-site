@@ -166,7 +166,13 @@ def is_heading(line: str, prefix: str) -> bool:
 
 def normalize_label(value: str) -> str:
     value = clean(value)
+    # Wikisource frequently appends acting directions to the speaker label:
+    # ``Conte (fra sé)`` or ``Figaro (a Susanna)``. Those directions belong to
+    # the speech metadata, not to the character name.
+    value = re.sub(r"\s*\([^)]*\)", "", value)
+    value = re.sub(r"\s*\[[^]]*\]", "", value)
     value = re.sub(r"\s*\.$", "", value)
+    value = re.sub(r"\s*[:,;]\s*$", "", value)
     value = re.sub(r"\s+", " ", value)
     return value
 
@@ -182,8 +188,22 @@ def resolve_speaker(label: str, aliases: dict[str, str], known: list[str]) -> st
         if key == source.upper():
             return target
     for character in known:
-        if key == character.upper() or key.startswith(character.upper() + " "):
+        if key == character.upper():
             return character
+
+    # Duets and ensembles are printed as a single speaker label in many
+    # editions (for example ``Susanna e Figaro``). Keep the label stable and
+    # visible instead of attaching the speech to the previous speaker.
+    parts = [part.strip() for part in re.split(r"\s+(?:e|ed)\s+|\s*,\s*|\s*&\s*", label, flags=re.I) if part.strip()]
+    if len(parts) > 1:
+        resolved_parts: list[str] = []
+        for part in parts:
+            resolved = resolve_speaker(part, aliases, known)
+            if not resolved:
+                break
+            resolved_parts.append(resolved)
+        if len(resolved_parts) == len(parts):
+            return " E ".join(dict.fromkeys(resolved_parts))
     # A source line can begin with an abbreviation followed by the complete
     # speech (for example ``TES. Grazie...``). Never promote the whole line
     # to a character name: only exact aliases, known names, or a known name
@@ -222,6 +242,8 @@ def extract_dialogue(lines: list[str], config: dict) -> tuple[list[tuple[str, st
         # Music numbers, page headers and source metadata are not dialogue.
         if (
             re.fullmatch(r"(?:N\.\s*)?\d+\s*(?:[-–].*)?", line)
+            or re.match(r"^(?:N\.\s*)?\d+\s*[-–]\s*(?:Duettino|Duetto|Aria|Cavatina|Terzetto|Quartetto|Quintetto|Finale|Marcia|Coro|Recitativo)\b", line, re.I)
+            or line.lower() in {"recitativo secco", "recitativo"}
             or re.match(r"^\[?\s*p\.?\s*\d+\b", line, re.I)
             or line.lower() in {"[p.", "]", "modifica", "càgna"}
             or line.lower().startswith(("informazioni sulla fonte", "chesta paggena nun è stata leggiuta"))
@@ -232,7 +254,12 @@ def extract_dialogue(lines: list[str], config: dict) -> tuple[list[tuple[str, st
         # trailing full stop. Resolve exact known labels before parsing the
         # traditional `SPEAKER. text` form.
         exact_speaker = resolve_speaker(line, aliases, known)
-        if exact_speaker and (line.upper() == exact_speaker.upper() or any(normalize_label(line).upper() == normalize_label(alias).upper() for alias in aliases)):
+        normalized_line = normalize_label(line)
+        if exact_speaker and (
+            normalized_line.upper() == exact_speaker.upper()
+            or any(normalized_line.upper() == normalize_label(alias).upper() for alias in aliases)
+            or (normalized_line != line and not re.search(r"[.!?]", normalized_line))
+        ):
             speaker = exact_speaker
             # The Wikisource HTML marks a standalone speaker with a trailing
             # period. Do not leave that label in the following speech.
@@ -249,7 +276,8 @@ def extract_dialogue(lines: list[str], config: dict) -> tuple[list[tuple[str, st
                 speaker = resolve_speaker(line, aliases, known)
                 line = ""
         if speaker:
-            if config.get("strict_characters") and speaker not in known:
+            is_known_group = " E " in speaker and all(part in known for part in speaker.split(" E "))
+            if config.get("strict_characters") and speaker not in known and not is_known_group and speaker not in {"TUTTI", "TUTTE", "CORO", "ENSEMBLE"}:
                 speaker = None
             if not speaker:
                 flush()
@@ -258,6 +286,12 @@ def extract_dialogue(lines: list[str], config: dict) -> tuple[list[tuple[str, st
             current_speaker = speaker
             if line:
                 current_text.append(line)
+            continue
+        # A marked speaker line that is not in the configured cast must never
+        # be appended to the preceding character's speech. This was the main
+        # source of cross-character contamination in imported libretti.
+        if "@@SPEAKER@@" in raw:
+            flush()
             continue
         if current_speaker:
             if line.startswith(("(", "[")) and line.endswith((")", "]")):
@@ -321,6 +355,11 @@ def source_scenes(config: dict) -> list[tuple[int, int, str, list[tuple[str, str
             chunks = [(page_scene, lines)]
         else:
             chunks = split_scenes(lines, None)
+            # Some complete plays use one Wikisource page per act without
+            # explicit scene headings. Treat the act page as Scene 1 instead
+            # of dropping the entire act from the package.
+            if not chunks and lines:
+                chunks = [(1, lines)]
         for scene, chunk in chunks:
             filtered = [line for line in chunk if not is_heading(line, "ATTO") and not is_heading(line, "SCENA")]
             title = next((line for line in filtered if line and not re.match(r"^[A-ZÀ-Ý .,'’\-]+$", line) and not line.startswith("@@SPEAKER@@")), f"Scena {scene}")
@@ -426,7 +465,7 @@ WORKS = [
     {"slug": "sogno-di-una-notte-d-estate", "title": "Il sogno di una notte d'estate", "source_page": "Il Sogno di una notte d'estate", "source_pages": [f"Il Sogno di una notte d'estate/Atto {word}" for word in ["primo", "secondo", "terzo", "quarto", "quinto"]], "source_url": "https://it.wikisource.org/wiki/Il_Sogno_di_una_notte_d%27estate", "attribution": "testo di William Shakespeare nella traduzione storica di Carlo Rusconi, digitalizzato da Wikisource, fonte disponibile con licenza CC BY-SA 3.0 e GFDL", "strict_characters": True, "characters": ["TESEO", "IPPOLITA", "FILOSTRATO", "EGEI", "ERMIA", "LISANDRO", "DEMETRIO", "ELENA", "OBERONE", "TITANIA", "PUCK", "FATA 1", "FATA 2", "FATA 3", "FATA 4", "FONDO", "QUINCE", "FLAUTO", "STARVELING", "SNOUT", "SNUG", "PIRAMO", "TISBE", "MURO", "CHIARO DI LUNA", "LEONE", "PROLOGO", "TUTTI"], "aliases": {"Tes": "TESEO", "Teseo": "TESEO", "Ip": "IPPOLITA", "Ipolita": "IPPOLITA", "Fil": "FILOSTRATO", "Filostrato": "FILOSTRATO", "Eg": "EGEI", "Egeo": "EGEI", "Er": "ERMIA", "Ermia": "ERMIA", "Lis": "LISANDRO", "Lisandro": "LISANDRO", "Dem": "DEMETRIO", "Demetrio": "DEMETRIO", "El": "ELENA", "Elena": "ELENA", "Ob": "OBERONE", "Oberone": "OBERONE", "Tit": "TITANIA", "Titania": "TITANIA", "Puc": "PUCK", "Puck": "PUCK", "Bot": "FONDO", "Bott": "FONDO", "Bottom": "FONDO", "Fondo": "FONDO", "Quin": "QUINCE", "Quinz": "QUINCE", "Quince": "QUINCE", "Quinzio": "QUINCE", "Flu": "FLAUTO", "Flut": "FLAUTO", "Flauto": "FLAUTO", "Star": "STARVELING", "Starveling": "STARVELING", "Snout": "SNOUT", "Snug": "SNUG", "Fat": "FATA 1", "1ª Fat": "FATA 1", "2ª Fat": "FATA 2", "3ª Fat": "FATA 3", "4ª Fat": "FATA 4", "Pir": "PIRAMO", "Piramo": "PIRAMO", "Tis": "TISBE", "Tisbe": "TISBE", "Muro": "MURO", "Il muro": "MURO", "Luna": "CHIARO DI LUNA", "Leon": "LEONE", "Il Leone": "LEONE", "Prol": "PROLOGO", "Tutti": "TUTTI"}, "package": "sogno-di-una-notte-d-estate.stagedesk"},
     {"slug": "la-dodicesima-notte", "title": "La dodicesima notte", "source_page": "La dodicesima notte o quel che vorrete", "source_pages": [f"La dodicesima notte o quel che vorrete/Atto {word}" for word in ["primo", "secondo", "terzo", "quarto", "quinto"]], "source_url": "https://it.wikisource.org/wiki/La_dodicesima_notte_o_quel_che_vorrete", "attribution": "testo di William Shakespeare nella traduzione storica di Carlo Rusconi, digitalizzato da Wikisource, fonte disponibile con licenza CC BY-SA 3.0 e GFDL", "characters": ["DUCA ORSINO", "CURIO", "VALENTINO", "MALVOLIO", "VIOLA", "OLIVIA", "SEBASTIANO", "ANTONIO", "SIR TOBIA", "SIR ANDREA", "MARIA", "FESTE", "FABIANO", "CAPITANO", "SACERDOTE"], "aliases": {"Duc": "DUCA ORSINO", "Cur": "CURIO", "Val": "VALENTINO", "Mal": "MALVOLIO", "Ces": "VIOLA", "Vio": "VIOLA", "Oli": "OLIVIA", "Seb": "SEBASTIANO", "Ant": "ANTONIO", "Tob": "SIR TOBIA", "And": "SIR ANDREA", "Mar": "MARIA", "Fes": "FESTE", "Fab": "FABIANO"}, "package": "la-dodicesima-notte.stagedesk"},
     {"slug": "otello", "title": "Otello", "source_page": "Otello", "source_pages": [f"Otello/Atto {word}" for word in ["primo", "secondo", "terzo", "quarto", "quinto"]], "source_url": "https://it.wikisource.org/wiki/Otello", "attribution": "testo di William Shakespeare nella traduzione storica di Carlo Rusconi, digitalizzato da Wikisource, fonte disponibile con licenza CC BY-SA 3.0 e GFDL", "characters": ["OTELLO", "JAGO", "RODRIGO", "DESDEMONA", "BRABANZIO", "CASSIO", "DOGE", "EMILIA", "MONTANO", "LODOVICO", "GRATIANO", "BIANCA", "CLARISSA", "ARALDI"], "aliases": {"Otell": "OTELLO", "Jago": "JAGO", "Rodr": "RODRIGO", "Desd": "DESDEMONA", "Brab": "BRABANZIO", "Cass": "CASSIO", "Doge": "DOGE", "Emil": "EMILIA", "Mont": "MONTANO", "Lod": "LODOVICO", "Grat": "GRATIANO", "Bian": "BIANCA"}, "package": "otello.stagedesk"},
-    {"slug": "le-nozze-di-figaro", "title": "Le nozze di Figaro", "source_page": "Le nozze di Figaro", "source_pages": [f"Le nozze di Figaro/Atto {act}/Scena {scene}" for act, scenes in [("Primo", ["prima", "seconda", "terza", "quarta", "quinta", "sesta", "settima", "ottava"]), ("Secondo", ["prima", "seconda", "terza", "quarta", "quinta", "sesta", "settima", "ottava", "nona", "decima", "undicesima", "dodicesima"]), ("Terzo", ["prima", "seconda", "terza", "quarta", "quinta", "sesta", "settima", "ottava", "nona", "decima", "undicesima", "dodicesima", "tredicesima", "quattordicesima"]), ("Quarto", ["prima", "seconda", "terza", "quarta", "quinta", "sesta", "settima", "ottava", "nona", "decima", "undicesima", "dodicesima"])] for scene in scenes], "source_url": "https://it.wikisource.org/wiki/Le_nozze_di_Figaro", "attribution": "libretto di Lorenzo Da Ponte per la musica di Wolfgang Amadeus Mozart, edizione storica digitalizzata da Wikisource, fonte disponibile con licenza CC BY-SA 3.0 e GFDL", "characters": ["FIGARO", "SUSANNA", "IL CONTE", "LA CONTESSA", "CHERUBINO", "MARCELLINA", "BARTOLO", "BASILIO", "DON CURZIO", "ANTONIO", "BARBARINA", "DONNE", "CONTADINI"], "aliases": {}, "package": "le-nozze-di-figaro.stagedesk"},
+    {"slug": "le-nozze-di-figaro", "title": "Le nozze di Figaro", "source_page": "Le nozze di Figaro", "source_pages": [f"Le nozze di Figaro/Atto {act}/Scena {scene}" for act, scenes in [("Primo", ["prima", "seconda", "terza", "quarta", "quinta", "sesta", "settima", "ottava"]), ("Secondo", ["prima", "seconda", "terza", "quarta", "quinta", "sesta", "settima", "ottava", "nona", "decima", "undicesima", "dodicesima"]), ("Terzo", ["prima", "seconda", "terza", "quarta", "quinta", "sesta", "settima", "ottava", "nona", "decima", "undicesima", "dodicesima", "tredicesima", "quattordicesima"]), ("Quarto", ["prima", "seconda", "terza", "quarta", "quinta", "sesta", "settima", "ottava", "nona", "decima", "undicesima", "dodicesima"])] for scene in scenes], "source_url": "https://it.wikisource.org/wiki/Le_nozze_di_Figaro", "attribution": "libretto di Lorenzo Da Ponte per la musica di Wolfgang Amadeus Mozart, edizione storica digitalizzata da Wikisource, fonte disponibile con licenza CC BY-SA 3.0 e GFDL", "strict_characters": True, "characters": ["FIGARO", "SUSANNA", "IL CONTE", "LA CONTESSA", "CHERUBINO", "MARCELLINA", "BARTOLO", "BASILIO", "DON CURZIO", "ANTONIO", "BARBARINA", "DONNE", "CONTADINI"], "aliases": {"Conte": "IL CONTE", "Il Conte": "IL CONTE", "Contessa": "LA CONTESSA", "La Contessa": "LA CONTESSA", "Curzio": "DON CURZIO", "Don Curzio": "DON CURZIO"}, "package": "le-nozze-di-figaro.stagedesk"},
     {"slug": "il-berretto-a-sonagli", "title": "Il berretto a sonagli", "source_page": "Il berretto a sonagli", "source_pages": ["Il berretto a sonagli/Atto I", "Il berretto a sonagli/Atto II"], "source_url": "https://it.wikisource.org/wiki/Il_berretto_a_sonagli", "strict_characters": True, "attribution": "testo di Luigi Pirandello, edizione storica digitalizzata da Wikisource, fonte disponibile con licenza CC BY-SA 3.0 e GFDL", "characters": ["BEATRICE", "FANA", "LA SARACENA", "CIAMPA", "FIFÌ", "ASSUNTA", "SPANÒ", "PINÒ", "IL DELEGATO", "DON LO GIUECO", "DON FIFÌ"], "aliases": {"La saracena": "LA SARACENA", "Ciampa": "CIAMPA", "Fifì": "FIFÌ", "Fifi": "FIFÌ", "Spanò": "SPANÒ", "Pino": "PINÒ", "Pinò": "PINÒ", "Don Fifì": "DON FIFÌ", "Signor delegato": "IL DELEGATO", "Delegato": "IL DELEGATO"}, "package": "il-berretto-a-sonagli.stagedesk"},
     {"slug": "enrico-iv", "title": "Enrico IV", "source_page": "Enrico IV (1965)", "source_pages": ["Enrico IV (1965)/Atto I", "Enrico IV (1965)/Atto II", "Enrico IV (1965)/Atto III"], "source_url": "https://it.wikisource.org/wiki/Enrico_IV_%281965%29", "strict_characters": True, "attribution": "testo di Luigi Pirandello, edizione storica digitalizzata da Wikisource, fonte disponibile con licenza CC BY-SA 3.0 e GFDL", "characters": ["ENRICO IV", "MATILDE SPINA", "BELCREDI", "DOTTOR GENONI", "LANDOLFO", "ORDULFO", "ARIALDO", "FRIDA", "CARLO DI NOLLI", "TITO BELCREDI", "BERTOLDO", "FINO", "PRIMO VALLETTO", "SECONDO VALLETTO", "DUE SERVI"], "aliases": {"Enrico": "ENRICO IV", "Enrico IV": "ENRICO IV", "Matilde": "MATILDE SPINA", "Dottore": "DOTTOR GENONI", "Dottor Genoni": "DOTTOR GENONI", "Carlo": "CARLO DI NOLLI", "Primo valletto": "PRIMO VALLETTO", "Secondo valletto": "SECONDO VALLETTO", "Uno dei valletti": "PRIMO VALLETTO"}, "package": "enrico-iv.stagedesk"},
     {"slug": "sei-personaggi-in-cerca-dautore", "title": "Sei personaggi in cerca d'autore", "source_page": "Sei personaggi in cerca d'autore (1965)", "single_section": "https://it.wikisource.org/wiki/Sei_personaggi_in_cerca_d%27autore_%281965%29/Atto_unico", "source_url": "https://it.wikisource.org/wiki/Sei_personaggi_in_cerca_d%27autore_%281965%29/Atto_unico", "strict_characters": True, "attribution": "testo di Luigi Pirandello, edizione storica digitalizzata da Wikisource, fonte disponibile con licenza CC BY-SA 3.0 e GFDL", "characters": ["IL CAPOCOMICO", "IL DIRETTORE DI SCENA", "IL MACCHINISTA", "IL SUGGERITORE", "IL PRIMO ATTORE", "LA PRIMA ATTRICE", "L'ATTORE GIOVANE", "L'ATTRICE GIOVANE", "IL PADRE", "LA MADRE", "LA FIGLIASTRA", "IL FIGLIO", "LA BAMBINA", "IL GIOVINETTO", "MADAMA PACE", "ATTORI", "ATTRICI"], "aliases": {"Il capocomico": "IL CAPOCOMICO", "Capocomico": "IL CAPOCOMICO", "Il direttore di scena": "IL DIRETTORE DI SCENA", "Direttore": "IL DIRETTORE DI SCENA", "Il macchinista": "IL MACCHINISTA", "Il suggeritore": "IL SUGGERITORE", "Il primo attore": "IL PRIMO ATTORE", "La prima attrice": "LA PRIMA ATTRICE", "L’attore giovane": "L'ATTORE GIOVANE", "L'attor giovane": "L'ATTORE GIOVANE", "L’attrice giovane": "L'ATTRICE GIOVANE", "L'attrice giovane": "L'ATTRICE GIOVANE", "Il padre": "IL PADRE", "La madre": "LA MADRE", "La figliastra": "LA FIGLIASTRA", "Il figlio": "IL FIGLIO", "La bambina": "LA BAMBINA", "Il giovinotto": "IL GIOVINETTO"}, "package": "sei-personaggi-in-cerca-dautore.stagedesk"},

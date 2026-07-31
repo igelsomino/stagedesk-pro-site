@@ -822,10 +822,13 @@ const renderShare = (updateMessage = '', uiState = {}) => {
             <label class="script-structure-heading" for="script-structure-select">
               <span class="panel-section-title">${iconSvg('structure')}<span class="field-label">Struttura</span></span>
             </label>
-            <select id="script-structure-select" class="script-structure-select" data-script-structure-select aria-label="Vai a un atto o una scena">
-              <option value="" ${activeStructureIndex < 0 ? 'selected' : ''}>Vai a un atto o una scena</option>
-              ${structureItems.map(({ item, index }) => `<option value="${index}" ${index === activeStructureIndex ? 'selected' : ''}>${item.headingType === 'scene' ? '↳ ' : ''}${escapeHtml(item.text)}</option>`).join('')}
-            </select>
+            <div class="script-structure-select-wrap">
+              <select id="script-structure-select" class="script-structure-select" data-script-structure-select aria-label="Vai a un atto o una scena">
+                <option value="" ${activeStructureIndex < 0 ? 'selected' : ''}>Vai a un atto o una scena</option>
+                ${structureItems.map(({ item, index }) => `<option value="${index}" ${index === activeStructureIndex ? 'selected' : ''}>${item.headingType === 'scene' ? '↳ ' : ''}${escapeHtml(item.text)}</option>`).join('')}
+              </select>
+              <span class="script-structure-select-chevron" aria-hidden="true"></span>
+            </div>
           </div>
           <button type="button" class="character-menu-toggle" data-character-menu-toggle aria-expanded="${characterMenuOpen}" aria-controls="character-menu-content">${iconSvg('users')}<span>Personaggi</span><span class="selection-count">${selectedCharacters.size}/${characters.length}</span></button>
           <div id="character-menu-content" class="character-panel-content${characterMenuOpen ? ' is-open' : ''}" data-character-menu>

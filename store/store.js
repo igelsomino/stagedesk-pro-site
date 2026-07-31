@@ -3,7 +3,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const IMPORT_MESSAGE = 'stagedesk-store-import'
 const CONTEXT_MESSAGE = 'stagedesk-store-context'
 const CONFIG_URL = '/store-config'
-const COVER_ASSET_VERSION = '20260728-covers-02'
+const COVER_ASSET_VERSION = '20260729-covers-03'
 // The Store is embedded only by StageDesk Pro; direct browser visits keep import disabled.
 const embeddedInStageDesk = window.parent !== window
 const state = {
@@ -115,10 +115,51 @@ function bookCard(book) {
   </article>`
 }
 
+function normalizeCoverImages(root) {
+  root.querySelectorAll('.store-book-cover:not(.store-detail-cover) img').forEach((image) => {
+    const applyFit = () => {
+      const aspectRatio = image.naturalWidth / image.naturalHeight
+      image.classList.toggle('store-book-cover-image--wide', Number.isFinite(aspectRatio) && aspectRatio >= (2 / 3))
+    }
+    if (image.complete) applyFit()
+    else image.addEventListener('load', applyFit, { once: true })
+  })
+}
+
+function initializeCarousels(root) {
+  requestAnimationFrame(() => {
+    root.querySelectorAll('[data-carousel-track]').forEach((track) => {
+      const itemCount = Number(track.dataset.carouselCount)
+      if (itemCount < 2) return
+      const styles = getComputedStyle(track)
+      const gap = parseFloat(styles.columnGap || styles.gap) || 0
+      const loopWidth = (track.scrollWidth + gap) / 3
+      if (!Number.isFinite(loopWidth) || loopWidth <= 0) return
+      track.dataset.loopWidth = String(loopWidth)
+      track.scrollLeft = loopWidth
+      track.addEventListener('scroll', () => {
+        const width = Number(track.dataset.loopWidth)
+        if (!width || track.dataset.normalizing === 'true') return
+        if (track.scrollLeft < width * 0.2) {
+          track.dataset.normalizing = 'true'
+          track.scrollLeft += width
+          requestAnimationFrame(() => { delete track.dataset.normalizing })
+        } else if (track.scrollLeft > width * 1.8) {
+          track.dataset.normalizing = 'true'
+          track.scrollLeft -= width
+          requestAnimationFrame(() => { delete track.dataset.normalizing })
+        }
+      }, { passive: true })
+    })
+  })
+}
+
 function carouselShelf(key, title, items, note) {
+  const cards = items.map(bookCard).join('')
+  const loopedCards = items.length > 1 ? `${cards}${cards}${cards}` : cards
   return `<section class="store-shelf store-carousel-shelf">
-    <div class="store-shelf-heading"><div><h3>${title}</h3><span>${note}</span></div><div class="store-carousel-controls"><button type="button" class="store-carousel-button" data-carousel-prev="${key}" aria-label="${title} precedenti">‹</button><button type="button" class="store-carousel-button" data-carousel-next="${key}" aria-label="${title} successivi">›</button></div></div>
-    <div class="store-carousel-viewport"><div class="store-carousel-track" data-carousel-track="${key}">${items.map(bookCard).join('')}</div></div>
+    <div class="store-shelf-heading"><div><h3>${title}</h3><span>${note}</span></div><div class="store-carousel-controls"><button type="button" class="store-carousel-button" data-carousel-prev="${key}" aria-label="${title} precedenti"><span aria-hidden="true">‹</span></button><button type="button" class="store-carousel-button" data-carousel-next="${key}" aria-label="${title} successivi"><span aria-hidden="true">›</span></button></div></div>
+    <div class="store-carousel-viewport"><div class="store-carousel-track" data-carousel-track="${key}" data-carousel-count="${items.length}">${loopedCards}</div></div>
   </section>`
 }
 
@@ -140,6 +181,8 @@ function renderSections() {
     books.length > 1 ? carouselShelf('newest', 'Nuovi arrivi', newest, 'Appena pubblicati') : '',
     books.length > 1 ? carouselShelf('rated', 'Più votati', rated, 'Le valutazioni della community') : '',
   ].join('')
+  normalizeCoverImages(target)
+  initializeCarousels(target)
 }
 
 function updateFilters() {
@@ -284,8 +327,15 @@ $('#catalog-sections').addEventListener('click', (event) => {
     if (track) {
       const direction = carouselButton.hasAttribute('data-carousel-next') ? 1 : -1
       const distance = Math.max(1, Math.round(track.clientWidth * 0.86))
-      const maxScroll = track.scrollWidth - track.clientWidth
-      const target = Math.max(0, Math.min(maxScroll, track.scrollLeft + direction * distance))
+      const loopWidth = Number(track.dataset.loopWidth)
+      let target = track.scrollLeft + direction * distance
+      if (loopWidth) {
+        if (target < loopWidth * 0.05) target += loopWidth
+        if (target > loopWidth * 1.95) target -= loopWidth
+      } else {
+        const maxScroll = track.scrollWidth - track.clientWidth
+        target = Math.max(0, Math.min(maxScroll, target))
+      }
       track.scrollTo({ left: target, behavior: 'smooth' })
     }
     return

@@ -154,9 +154,12 @@ button { cursor: pointer; }
 .script-structure-heading { display: flex; align-items: center; min-height: 28px; }
 .script-structure-heading .field-label { color: var(--text); font-size: 0.95rem; line-height: 1.2; font-weight: 800; }
 .script-structure-heading .inline-icon { width: 16px; height: 16px; color: var(--muted); }
-.script-structure-select { width: 100%; min-width: 0; min-height: 36px; border: 1px solid var(--line); border-radius: 5px; padding: 7px 34px 7px 9px; color: var(--text); background: #101213; text-overflow: ellipsis; }
-.script-structure-select:hover, .script-structure-select:focus { border-color: var(--accent); }
-.script-structure-select:focus { outline: 2px solid rgba(255, 91, 31, 0.32); outline-offset: 1px; }
+.script-structure-select-wrap { position: relative; min-width: 0; }
+.script-structure-select { display: block; width: 100%; min-width: 0; min-height: 40px; appearance: none; -webkit-appearance: none; border: 1px solid var(--line); border-radius: 7px; padding: 8px 38px 8px 11px; color: var(--text); background: var(--panel-soft); line-height: 1.35; text-overflow: ellipsis; cursor: pointer; transition: border-color 140ms ease, background-color 140ms ease, box-shadow 140ms ease; }
+.script-structure-select:hover { border-color: #5a6061; background: #222627; }
+.script-structure-select:focus { border-color: var(--accent); outline: 2px solid rgba(255, 91, 31, 0.24); outline-offset: 1px; box-shadow: 0 0 0 1px rgba(255, 91, 31, 0.12); }
+.script-structure-select-chevron { position: absolute; top: 50%; right: 14px; width: 8px; height: 8px; border-right: 1.5px solid var(--muted); border-bottom: 1.5px solid var(--muted); transform: translateY(-65%) rotate(45deg); pointer-events: none; }
+.script-structure-select:hover + .script-structure-select-chevron, .script-structure-select:focus + .script-structure-select-chevron { border-color: var(--accent); }
 .script-structure-select option { color: var(--text); background: var(--panel); }
 .desktop-study-stats { display: grid; gap: 0; align-items: stretch; justify-content: stretch; margin: 0; padding: 0; }
 .study-stats-heading { display: flex; align-items: center; width: 100%; min-height: 36px; padding-bottom: 0; }
